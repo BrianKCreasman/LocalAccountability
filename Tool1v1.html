@@ -23,7 +23,6 @@
       --risk:#b42318;
 
       --line: rgba(0,0,0,.10);
-      --ring: rgba(0,0,0,.14);
     }
 
     *{box-sizing:border-box}
@@ -54,28 +53,16 @@
       justify-content: space-between;
       flex-wrap: wrap;
     }
-    .titleBlock{
-      display:flex; gap:12px; align-items:center;
-    }
+    .titleBlock{display:flex; gap:12px; align-items:center;}
     .mark{
       width:44px;height:44px;border-radius:16px;
       background: radial-gradient(circle at 30% 30%, var(--gold), #fff 38%, #d9dbe0 85%);
       border: 1px solid rgba(0,0,0,.10);
       box-shadow: var(--shadow2);
     }
-    .titleBlock h1{
-      margin:0;
-      font-size: 15px;
-      letter-spacing: .2px;
-    }
-    .titleBlock p{
-      margin:2px 0 0 0;
-      font-size: 12px;
-      color: var(--gray);
-    }
-    .actions{
-      display:flex; gap:8px; flex-wrap:wrap;
-    }
+    .titleBlock h1{margin:0;font-size:15px;letter-spacing:.2px;}
+    .titleBlock p{margin:2px 0 0 0;font-size:12px;color: var(--gray);}
+    .actions{display:flex; gap:8px; flex-wrap:wrap;}
     button{
       border: 1px solid rgba(0,0,0,.14);
       background: var(--white);
@@ -86,20 +73,9 @@
       cursor: pointer;
       box-shadow: 0 8px 18px rgba(0,0,0,.06);
     }
-    button.primary{
-      background: var(--black);
-      color: var(--white);
-      border-color: transparent;
-    }
-    button.gold{
-      background: var(--gold);
-      color: var(--black);
-      border-color: rgba(0,0,0,.12);
-    }
-    button.danger{
-      color: var(--risk);
-      border-color: rgba(180,35,24,.25);
-    }
+    button.primary{background: var(--black);color: var(--white);border-color: transparent;}
+    button.gold{background: var(--gold);color: var(--black);border-color: rgba(0,0,0,.12);}
+    button.danger{color: var(--risk);border-color: rgba(180,35,24,.25);}
     button:hover{filter:brightness(.98)}
     button:active{transform: translateY(1px)}
 
@@ -124,17 +100,8 @@
       gap:12px;
       border-bottom: 1px solid rgba(0,0,0,.08);
     }
-    .panelHeader h2{
-      margin:0;
-      font-size: 13px;
-      letter-spacing: .2px;
-    }
-    .panelHeader .hint{
-      margin-top:4px;
-      font-size: 12px;
-      color: var(--gray);
-      line-height: 1.35;
-    }
+    .panelHeader h2{margin:0;font-size:13px;letter-spacing:.2px;}
+    .panelHeader .hint{margin-top:4px;font-size:12px;color: var(--gray);line-height:1.35;}
     .chip{
       display:inline-flex; align-items:center; gap:8px;
       border-radius: 999px;
@@ -149,14 +116,14 @@
     .dot{width:9px;height:9px;border-radius:99px;background:var(--gold);display:inline-block}
     .panelBody{padding: 14px 16px}
 
-    /* Color themes (focus-based rectangles) */
+    /* Color themes */
     .theme-black .panelHeader{background: linear-gradient(90deg, rgba(0,0,0,.92), rgba(0,0,0,.86)); color:#fff}
     .theme-black .panelHeader .hint{color: rgba(255,255,255,.78)}
     .theme-gold  .panelHeader{background: linear-gradient(90deg, rgba(219,213,155,.95), rgba(219,213,155,.75)); color:#000}
     .theme-gray  .panelHeader{background: linear-gradient(90deg, #f2f3f5, #ffffff); color:#000}
     .theme-white .panelHeader{background: linear-gradient(90deg, #ffffff, #fbfbfc); color:#000}
 
-    /* Inner blocks (rounded squares/rectangles) */
+    /* Inner blocks */
     .blocks{
       display:grid;
       grid-template-columns: repeat(12, 1fr);
@@ -243,31 +210,23 @@
       border-color: rgba(0,0,0,.18);
       box-shadow: 0 16px 26px rgba(0,0,0,.12);
     }
-    .legend{
-      display:flex; gap:8px; flex-wrap:wrap; margin-top:8px;
-      font-size: 11px; color: var(--gray);
-    }
+
     .pillTag{
       border-radius: 999px;
       padding: 6px 10px;
       border: 1px solid rgba(0,0,0,.12);
       background: #fff;
       font-weight: 900;
+      display:inline-block;
+      font-size:11px;
+      margin-right:6px;
+      margin-top:6px;
     }
-    .pillTag.good{color: var(--good)}
-    .pillTag.warn{color: var(--warn)}
-    .pillTag.risk{color: var(--risk)}
+    .pillTag.good{color: #1f7a6d}
+    .pillTag.warn{color: #b26a1d}
+    .pillTag.risk{color: #b42318}
 
-    /* table */
-    table{width:100%;border-collapse:separate;border-spacing:0;overflow:hidden;border-radius:18px;border:1px solid rgba(0,0,0,.10);box-shadow:0 14px 26px rgba(0,0,0,.10)}
-    th,td{padding:10px 10px;font-size:12px;border-bottom:1px solid rgba(0,0,0,.08);vertical-align:top;background:#fff}
-    th{background: linear-gradient(90deg, rgba(219,213,155,.35), rgba(255,255,255,.96));text-align:left;font-weight:1000}
-    tr:last-child td{border-bottom:none}
-    .clickRow{cursor:pointer}
-    .muted{color:var(--gray)}
-    .foot{font-size:11px;color:var(--gray);margin-top:10px;line-height:1.35}
-
-    /* focus selector as tiles */
+    /* focus selector tiles */
     .focusTiles{
       display:grid;
       grid-template-columns: repeat(12, 1fr);
@@ -290,6 +249,42 @@
     .tile small{display:block;font-size:11px;color:var(--gray);line-height:1.25;margin-top:3px}
     .tile input{margin-top:2px}
     @media(max-width:900px){ .tile{grid-column: span 12;} }
+
+    /* details / accordion */
+    details{
+      border-radius: 18px;
+      border: 1px solid rgba(0,0,0,.12);
+      background: #fff;
+      box-shadow: 0 12px 22px rgba(0,0,0,.08);
+      padding: 10px 12px;
+    }
+    details + details{margin-top:10px}
+    summary{
+      cursor:pointer;
+      font-weight:1000;
+      font-size:12px;
+      list-style:none;
+      outline:none;
+      display:flex;
+      align-items:center;
+      justify-content: space-between;
+      gap:10px;
+    }
+    summary::-webkit-details-marker{display:none}
+    .sumHint{font-size:11px;color:var(--gray);font-weight:900}
+    .detailBody{margin-top:10px;font-size:12px;color: var(--black);line-height:1.4}
+    .detailBody .muted{color:var(--gray)}
+    ul{margin:8px 0 0 18px; padding:0}
+    li{margin:4px 0}
+
+    /* table */
+    table{width:100%;border-collapse:separate;border-spacing:0;overflow:hidden;border-radius:18px;border:1px solid rgba(0,0,0,.10);box-shadow:0 14px 26px rgba(0,0,0,.10)}
+    th,td{padding:10px 10px;font-size:12px;border-bottom:1px solid rgba(0,0,0,.08);vertical-align:top;background:#fff}
+    th{background: linear-gradient(90deg, rgba(219,213,155,.35), rgba(255,255,255,.96));text-align:left;font-weight:1000}
+    tr:last-child td{border-bottom:none}
+    .clickRow{cursor:pointer}
+    .muted{color:var(--gray)}
+    .foot{font-size:11px;color:var(--gray);margin-top:10px;line-height:1.35}
   </style>
 </head>
 
@@ -326,6 +321,20 @@
         </div>
 
         <div class="panelBody">
+          <!-- SYSTEM TIGHTENING NARRATIVE (your requested text) -->
+          <div class="block gold span-12" style="margin-bottom:12px;">
+            <div class="k">System Tightening Moment</div>
+            <p class="q" style="color:var(--black); margin-bottom:8px;">
+              <b>This is a strong moment to pause and tighten the system.</b> You already have the right architecture.
+              What you are really doing here is making the invisible visible. Daily practice, clear signals,
+              and credible evidence all lining up.
+            </p>
+            <p class="q" style="margin-bottom:0;">
+              This tool intentionally separates <b>what can be observed daily</b> from <b>what can be validated through artifacts</b>.
+              That distinction is where most systems lose clarity.
+            </p>
+          </div>
+
           <!-- Identity + cadence -->
           <div class="blocks">
             <div class="block gold span-6">
@@ -346,7 +355,7 @@
 
             <div class="block gray span-6">
               <div class="k">Context</div>
-              <p class="q">What are you trying to improve this week? What is the “next inch”?</p>
+              <p class="q">What are you trying to improve this week? What is the next inch?</p>
               <label for="school">School</label>
               <select id="school">
                 <option value="">Select...</option>
@@ -381,7 +390,7 @@
                     <option value="Yellow">Yellow (Uneven, recovery in motion)</option>
                     <option value="Red">Red (Off plan, needs help)</option>
                   </select>
-                  <div class="legend">
+                  <div>
                     <span class="pillTag good">Green</span>
                     <span class="pillTag warn">Yellow</span>
                     <span class="pillTag risk">Red</span>
@@ -417,7 +426,7 @@
             </div>
           </div>
 
-          <!-- Focus area selection as tiles -->
+          <!-- Focus area selection -->
           <div style="height:14px"></div>
           <div class="panel theme-gold" style="box-shadow: var(--shadow); border-radius: var(--radius);">
             <div class="panelHeader">
@@ -425,7 +434,7 @@
                 <h2>Weekly Focus Areas</h2>
                 <div class="hint">Choose 1–2 focus areas. The tool shows only the questions and evidence for what you select.</div>
               </div>
-              <div class="chip"><span class="dot"></span><span>Vision + Tracking</span></div>
+              <div class="chip"><span class="dot"></span><span>Daily vs Evidence</span></div>
             </div>
             <div class="panelBody">
               <div class="focusTiles" id="focusTiles"></div>
@@ -444,18 +453,46 @@
             </div>
           </div>
 
-          <!-- Dynamic focus modules -->
+          <!-- Focus modules -->
           <div style="height:14px"></div>
           <div class="panel theme-white">
             <div class="panelHeader">
               <div>
                 <h2>Focus Modules</h2>
-                <div class="hint">Each module has guiding questions, look-fors, ratings, and proof. Keep it honest and useful.</div>
+                <div class="hint">Each module separates daily observable practice from evidence that can be validated through artifacts.</div>
               </div>
-              <div class="chip"><span class="dot"></span><span>Evidence required</span></div>
+              <div class="chip"><span class="dot"></span><span>Coherence</span></div>
             </div>
             <div class="panelBody">
               <div id="modulesHost"></div>
+            </div>
+          </div>
+
+          <!-- Final system check (your requested coherence test) -->
+          <div style="height:14px"></div>
+          <div class="panel theme-gray">
+            <div class="panelHeader">
+              <div>
+                <h2>Final System Check</h2>
+                <div class="hint">If any one component operates in isolation, the system weakens. When they align, daily practice and evidence tell the same story.</div>
+              </div>
+              <div class="chip"><span class="dot"></span><span>Coherence Test</span></div>
+            </div>
+            <div class="panelBody">
+              <div class="blocks">
+                <div class="block gold span-12">
+                  <div class="k">Coherence test that matters most</div>
+                  <ul>
+                    <li><b>Vibrant Learning</b> defines the experience</li>
+                    <li><b>Priority Standards</b> define the focus</li>
+                    <li><b>BIM</b> defines the daily practice</li>
+                    <li><b>BPAs</b> define the demonstration of learning</li>
+                    <li><b>BPIs</b> define the learner outcomes</li>
+                    <li><b>Compelling Evidence and SRG</b> define credibility and trust</li>
+                  </ul>
+                  <div class="foot">Use this as a quick leadership check: Are we aligning the daily with the durable?</div>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -556,22 +593,45 @@
 
 <script>
   // ---------------- STORAGE ----------------
-  const STORAGE_KEY = "vibrant_accountability_weekly_tool_v2";
+  const STORAGE_KEY = "vibrant_accountability_weekly_tool_v3";
 
   // ---------------- DEFINITIONS ----------------
-  // Your required areas of focus, with “three sub areas” where applicable.
-  // Vibrant Learning keeps your four sub-focuses as the selectable sub-areas.
+  // Includes your 6 areas of focus, and explicitly separates daily observable vs validated evidence.
   const FOCUS = [
     {
       key: "Vibrant Learning",
       theme: "gold",
       title: "Vibrant Learning",
-      purpose: "Is the learner experience becoming more authentic, student-centered, and worth capturing?",
-      guiding: [
-        "Where did you see student agency, not just student compliance?",
-        "What evidence shows relevance, transfer, and real-world application?",
-        "If a student had to explain the why, could they?"
+      tagline: "The learner experience. The why behind everything else.",
+      majorComponents: [
+        "Student agency and voice",
+        "Purposeful, contextual, real-world learning",
+        "Interdisciplinary connections",
+        "Writing Across the Content",
+        "Engagement, relevance, and ownership"
       ],
+      keyIndicators: [
+        "Students understand the purpose of the learning",
+        "Students make choices in process, product, or pathway",
+        "Learning connects to real-world contexts or problems",
+        "Students communicate thinking through writing, speaking, or creating",
+        "Students reflect on learning and growth"
+      ],
+      observedDaily: [
+        "Students explaining why they are learning something",
+        "Multiple pathways or products visible in the room",
+        "Students asking questions, not just answering them",
+        "Writing, discussion, or creation embedded in lessons",
+        "Students referencing real-world examples or applications"
+      ],
+      validatedEvidence: [
+        "Student reflections tied to learning goals",
+        "Interdisciplinary task descriptions or unit plans",
+        "Writing samples across content areas",
+        "Project briefs showing real-world context",
+        "Student-created artifacts demonstrating choice and ownership"
+      ],
+      pushQuestion: "If a visitor walked into a classroom for ten minutes, would they know who owns the learning? The teacher or the students?",
       subareas: [
         { key:"Interdisciplinary Learning", desc:"Students connect learning across subjects to create, solve, or explain something meaningful." },
         { key:"Writing Across the Content", desc:"Writing is used to think, explain, argue, and create in all subjects." },
@@ -580,9 +640,8 @@
       ],
       lookFors: [
         {id:"student_why", title:"Students can explain the why", desc:"Purpose and relevance are understood by learners."},
-        {id:"quality_visible", title:"Quality is visible and usable", desc:"Students use criteria, exemplars, or rubrics to improve."},
         {id:"choice_real", title:"Choice is meaningful", desc:"Product, process, topic, audience, or tools are student-influenced."},
-        {id:"thinking_visible", title:"Thinking is visible", desc:"Reasoning, drafts, revisions, reflection, problem-solving steps are present."},
+        {id:"thinking_visible", title:"Thinking is visible", desc:"Reasoning, drafts, revisions, reflection, and problem-solving steps appear."},
         {id:"audience", title:"Authentic audience/purpose", desc:"Work is designed to matter beyond the classroom."},
         {id:"integrated", title:"Integrated learning", desc:"Two or more disciplines are connected in a real way."}
       ],
@@ -599,25 +658,47 @@
       ],
       evidenceRule: "Attach 1 artifact link (work sample/photo) plus 1 student quote that proves relevance or agency."
     },
+
     {
       key: "Priority Standards and Proficiency Scales",
       theme: "gray",
       title: "Priority Standards and Proficiency Scales",
-      purpose: "Are we teaching what matters most, with shared clarity on what proficiency looks like?",
-      guiding: [
-        "Are we clear on the priority outcome and the success criteria?",
-        "Where are students getting stuck on the scale, and why?",
-        "What instructional response happened because of the evidence?"
+      tagline: "Clarity about what matters most.",
+      majorComponents: [
+        "Identified priority standards",
+        "Student-friendly learning targets",
+        "Proficiency scales (1–4 or continuum-based)",
+        "Alignment between instruction, assessment, and reporting"
       ],
+      keyIndicators: [
+        "Focus on depth over coverage",
+        "Clear descriptions of what proficiency looks like",
+        "Consistent language across classrooms and schools",
+        "Students tracking their own progress"
+      ],
+      observedDaily: [
+        "Learning targets posted and referenced",
+        "Teachers using proficiency language during instruction",
+        "Students discussing where they are on a scale",
+        "Feedback aligned to specific standards"
+      ],
+      validatedEvidence: [
+        "Documented priority standards by grade/course",
+        "Proficiency scales with clear descriptors",
+        "Student self-assessments",
+        "Standards-aligned formative assessments",
+        "Lesson plans intentionally aligned to priority standards"
+      ],
+      pushQuestion: "Are proficiency scales tools for learning or just compliance documents?",
       subareas: [
-        { key:"Priority Standard Clarity", desc:"Staff know priority outcomes and the language of the standards." },
-        { key:"Scale Quality and Use", desc:"Scales are accurate and used in planning, instruction, and feedback." },
+        { key:"Priority Standard Clarity", desc:"Staff can name priority outcomes and unpack what they mean." },
+        { key:"Scale Quality and Use", desc:"Scales are accurate and actively used to plan and give feedback." },
         { key:"Monitoring and Response", desc:"Teams track movement and adjust teaching based on evidence." }
       ],
       lookFors: [
         {id:"target_explicit", title:"Priority target is explicit", desc:"Priority standard is named and unpacked."},
-        {id:"scale_used", title:"Scale is used in instruction", desc:"Teacher and students reference what level looks like."},
-        {id:"task_match", title:"Tasks match the intended level", desc:"Work aligns to the level of thinking expected."},
+        {id:"scale_used", title:"Scale language is used", desc:"Teacher and students reference what levels look like."},
+        {id:"task_match", title:"Tasks match intent", desc:"Work aligns to the level of thinking expected."},
         {id:"on_off_track", title:"On/off-track picture is clear", desc:"Teams can name who is on track and who is not."},
         {id:"response", title:"Response is evidence-based", desc:"Reteach/enrich decisions match what evidence shows."}
       ],
@@ -634,20 +715,44 @@
       ],
       evidenceRule: "Attach the scale used this week and one labeled student work sample tied to a level."
     },
+
     {
-      key: "BRIDGE Instructional Model: Workshop Model",
+      key: "BRIDGE Instructional Model (BIM): The Workshop Model",
       theme: "gold",
-      title: "BRIDGE Instructional Model: The Workshop Model",
-      purpose: "Is the daily instructional engine predictable, coherent, and producing learning growth?",
-      guiding: [
-        "Was the teaching point tight, modeled, and understood?",
-        "Did work time show evidence of thinking and engagement?",
-        "Did checks for understanding change what happened next?"
+      title: "BRIDGE Instructional Model (BIM): The Workshop Model",
+      tagline: "How learning is designed and facilitated.",
+      majorComponents: [
+        "Mini-lesson",
+        "Guided practice or workshop time",
+        "Independent or collaborative work",
+        "Conferencing and feedback",
+        "Reflection and closure"
       ],
+      keyIndicators: [
+        "Gradual release of responsibility",
+        "Differentiation based on student need",
+        "Active student work time",
+        "Feedback driving improvement"
+      ],
+      observedDaily: [
+        "Short, focused instruction followed by student work",
+        "Teacher conferring with individuals or small groups",
+        "Students engaged in purposeful tasks",
+        "Flexible grouping",
+        "Clear routines and transitions"
+      ],
+      validatedEvidence: [
+        "Lesson plans aligned to the workshop structure",
+        "Conferencing notes or feedback logs",
+        "Student work in progress",
+        "Differentiation plans or grouping strategies",
+        "Reflection prompts used consistently"
+      ],
+      pushQuestion: "Is most class time spent watching learning or doing learning?",
       subareas: [
         { key:"Mini-lesson Precision", desc:"Clear teaching point, modeling, and purpose." },
         { key:"Work Time Quality", desc:"Conferencing, small groups, differentiation, engagement." },
-        { key:"Share/Closure and CFUs", desc:"Checks for understanding, reflection, and next steps." }
+        { key:"Reflection, Closure, and CFUs", desc:"Checks for understanding, reflection, and next steps." }
       ],
       lookFors: [
         {id:"teach_point", title:"Teaching point is tight", desc:"One clear focus, not a list."},
@@ -670,20 +775,43 @@
       ],
       evidenceRule: "Attach one CFU sample (exit ticket/photo) and one conferring or small-group plan note."
     },
+
     {
       key: "BRIDGE Performance Assessments (BPAs)",
       theme: "gray",
       title: "BRIDGE Performance Assessments (BPAs)",
-      purpose: "Are students demonstrating mastery through authentic performance and application?",
-      guiding: [
-        "Is the task worth doing, and does it produce compelling evidence?",
-        "Are students drafting, revising, presenting, and reflecting?",
-        "Are we calibrating expectations so quality is consistent?"
+      tagline: "Where students demonstrate learning in meaningful ways.",
+      majorComponents: [
+        "Performance-based tasks",
+        "Real-world or authentic scenarios",
+        "Interdisciplinary connections",
+        "Durable skills embedded by design",
+        "Reflection on learning and process"
       ],
+      keyIndicators: [
+        "Students applying knowledge, not recalling it",
+        "Multiple ways to demonstrate mastery",
+        "Clear criteria for success",
+        "Student choice and creativity"
+      ],
+      observedDaily: [
+        "Students working on extended tasks or projects",
+        "Problem-solving, collaboration, and communication",
+        "Teachers coaching rather than directing",
+        "Use of rubrics or success criteria during work time"
+      ],
+      validatedEvidence: [
+        "BPA task descriptions and prompts",
+        "Rubrics aligned to standards and durable skills",
+        "Student products and presentations",
+        "Reflection responses",
+        "Feedback cycles tied to improvement"
+      ],
+      pushQuestion: "Would this assessment exist outside of school and still make sense?",
       subareas: [
         { key:"Assessment Quality", desc:"Aligned, rigorous, authentic, worth doing." },
         { key:"Implementation", desc:"Students create, revise, present, and reflect." },
-        { key:"Calibration", desc:"Scoring is consistent and results change instruction." }
+        { key:"Calibration and Use", desc:"Scoring is consistent and results change instruction." }
       ],
       lookFors: [
         {id:"prompt", title:"Prompt is aligned and authentic", desc:"Task requires application and demonstrates mastery."},
@@ -693,7 +821,7 @@
         {id:"calibration", title:"Calibration occurs", desc:"Adults score together using anchors."}
       ],
       ratings: [
-        {key:"quality", label:"BPA Quality", hint:"Task and rubric create valid evidence."},
+        {key:"quality", label:"BPA Quality", hint:"Task and rubric create credible evidence."},
         {key:"implementation", label:"Implementation", hint:"Students are supported to produce quality."},
         {key:"calibration", label:"Calibration", hint:"Scoring is consistent and anchored."},
         {key:"use", label:"Use of Results", hint:"Results drive next instructional moves."}
@@ -705,31 +833,111 @@
       ],
       evidenceRule: "Attach BPA prompt + rubric + one student product (draft/final) + reflection note."
     },
+
+    {
+      key: "BRIDGE Performance Indicators (BPIs): Portrait of a Learner",
+      theme: "gold",
+      title: "BRIDGE Performance Indicators (BPIs): Portrait of a Learner",
+      tagline: "Who the student is becoming.",
+      majorComponents: [
+        "Communication",
+        "Problem-solving",
+        "Collaboration",
+        "Creativity and innovation",
+        "Growth and learning resilience"
+      ],
+      keyIndicators: [
+        "Students demonstrating skills across contexts",
+        "Skills embedded in academic work",
+        "Language of the Portrait used consistently",
+        "Students reflecting on skill development"
+      ],
+      observedDaily: [
+        "Students working together intentionally",
+        "Presentations, discussions, and explanations",
+        "Students revising work based on feedback",
+        "Teachers naming durable skills during instruction"
+      ],
+      validatedEvidence: [
+        "BPI websites or digital portfolios",
+        "Reflections tied to specific indicators",
+        "Performance rubrics aligned to Portrait skills",
+        "Artifacts collected across time and content",
+        "Student-led conferences or presentations"
+      ],
+      pushQuestion: "Are BPIs add-ons, or are they visible inside core learning?",
+      subareas: [
+        { key:"Communication", desc:"Students explain, present, write, and communicate thinking across contexts." },
+        { key:"Problem-Solving", desc:"Students identify constraints, test solutions, and reflect on results." },
+        { key:"Collaboration / Innovation / Resilience", desc:"Students work with others, create, iterate, and persist through difficulty." }
+      ],
+      lookFors: [
+        {id:"named_skills", title:"Durable skills are named", desc:"Adults and students use shared Portrait language."},
+        {id:"embedded", title:"Skills are embedded", desc:"Skills show up in core learning, not side activities."},
+        {id:"feedback", title:"Feedback drives growth", desc:"Students revise and improve based on feedback."},
+        {id:"reflection", title:"Reflection is tied to skills", desc:"Students can describe growth in a specific indicator."},
+        {id:"portfolio", title:"Evidence is curated", desc:"Students capture artifacts across time and content."}
+      ],
+      ratings: [
+        {key:"visibility", label:"Visibility", hint:"Skills are visible in daily learning."},
+        {key:"language", label:"Shared Language", hint:"Portrait terms are used consistently."},
+        {key:"student_ownership", label:"Student Ownership", hint:"Students curate and explain their evidence."},
+        {key:"quality", label:"Evidence Quality", hint:"Artifacts credibly demonstrate durable skills."}
+      ],
+      signals: [
+        {key:"portfolio_updates", label:"# portfolio/BPI website updates this week"},
+        {key:"student_led_moments", label:"# student-led moments (conferences/presentations)"},
+        {key:"revision_cycles", label:"# revision cycles observed (est.)"}
+      ],
+      evidenceRule: "Attach a portfolio link and one reflection tied to a specific Portrait indicator."
+    },
+
     {
       key: "Compelling Evidence and Standards-Referenced Grading (SRG)",
-      theme: "gold",
+      theme: "gray",
       title: "Compelling Evidence and Standards-Referenced Grading (SRG)",
-      purpose: "Do grades and reporting credibly reflect standards mastery, backed by evidence?",
-      guiding: [
-        "Does the grade reflect mastery, not compliance or averages?",
-        "Can a student explain their current level and next step?",
-        "Are we separating behaviors from mastery evidence?"
+      tagline: "How learning is documented, validated, and communicated.",
+      majorComponents: [
+        "Multiple measures of evidence",
+        "Standards-referenced reporting",
+        "Separation of product, process, and progress",
+        "Transparency for students and families"
       ],
+      keyIndicators: [
+        "Grades reflect mastery of standards",
+        "Evidence gathered over time",
+        "Clear connection between evidence and reporting",
+        "Students understand how grades are determined"
+      ],
+      observedDaily: [
+        "Teachers referencing evidence during feedback",
+        "Students revising work to improve mastery",
+        "Conversations focused on learning, not points",
+        "Use of formative evidence to guide instruction"
+      ],
+      validatedEvidence: [
+        "Gradebooks aligned to standards",
+        "Collections of student evidence over time",
+        "Documentation of reassessment or revision",
+        "Clear reporting tools for families",
+        "Alignment between BPAs, BPIs, and grades"
+      ],
+      pushQuestion: "Does the grade tell the story of learning or just the final snapshot?",
       subareas: [
         { key:"Evidence Rules", desc:"Shared expectations for what counts and what does not." },
-        { key:"Grade Integrity", desc:"Grades reflect standards performance, not averages/compliance." },
-        { key:"Student Clarity", desc:"Students can explain current level and next steps." }
+        { key:"Grade Integrity", desc:"Grades reflect standards performance, not averages or compliance." },
+        { key:"Transparency and Understanding", desc:"Students and families understand how grades are determined." }
       ],
       lookFors: [
         {id:"evidence_std", title:"Evidence is standards-based", desc:"Artifacts tie to standards, not points."},
         {id:"recency", title:"Recency matters", desc:"Recent evidence is prioritized over old averages."},
-        {id:"separate", title:"Behaviors separated", desc:"Work habits are not mixed into mastery."},
+        {id:"separate", title:"Behaviors are separated", desc:"Work habits are not mixed into mastery."},
         {id:"reassess", title:"Reassess/revise exists", desc:"Students can improve with new evidence."},
         {id:"student", title:"Student can explain level", desc:"Learners know where they are and what to do next."}
       ],
       ratings: [
         {key:"integrity", label:"Grade Integrity", hint:"Grades match mastery evidence."},
-        {key:"consistency", label:"Consistency", hint:"Expectations are consistent across teachers."},
+        {key:"consistency", label:"Consistency", hint:"Expectations are consistent across classrooms."},
         {key:"clarity", label:"Student Clarity", hint:"Students understand levels and next steps."},
         {key:"evidence", label:"Evidence Quality", hint:"Evidence is compelling and current."}
       ],
@@ -779,7 +987,7 @@
         <input type="checkbox" id="focus_${safeId(f.key)}" data-focus="${f.key}">
         <div>
           <b>${f.title}</b>
-          <small>${f.purpose}</small>
+          <small>${f.tagline}</small>
         </div>
       `;
       host.appendChild(div);
@@ -793,13 +1001,17 @@
   }
 
   // ---------------- MODULES ----------------
+  function listHTML(arr){ return `<ul>${arr.map(x=>`<li>${x}</li>`).join("")}</ul>`; }
+
   function renderModules(){
     const host = $("modulesHost");
     host.innerHTML = "";
 
     const picks = selectedFocusKeys();
     if(!picks.length){
-      host.innerHTML = `<div class="foot">Select one or more focus areas above to load the guiding questions, look-fors, ratings, and evidence prompts.</div>`;
+      host.innerHTML = `<div class="foot">Select one or more focus areas above to load the guiding questions, daily look-fors, and evidence validation prompts.</div>`;
+      refreshMetricPicker();
+      refreshCharts();
       return;
     }
 
@@ -816,18 +1028,58 @@
         <div class="panelHeader">
           <div>
             <h2>${f.title}</h2>
-            <div class="hint">${f.purpose}</div>
+            <div class="hint">${f.tagline}</div>
           </div>
-          <div class="chip"><span class="dot"></span><span>Module</span></div>
+          <div class="chip"><span class="dot"></span><span>Daily vs Evidence</span></div>
         </div>
 
         <div class="panelBody">
           <div class="blocks">
-            <div class="block ${f.theme==="gold" ? "gold" : "gray"} span-6">
-              <div class="k">Guiding Questions</div>
-              <p class="q" style="margin-bottom:0">
-                ${f.guiding.map(q=>`• ${q}`).join("<br/>")}
-              </p>
+            <div class="block ${f.theme==="gold" ? "gold" : "gray"} span-12">
+              <div class="k">Component Map</div>
+              <p class="q">Major components, indicators, daily observable practice, and evidence validation points.</p>
+
+              <details open>
+                <summary>
+                  <span>Major Components + Key Indicators</span>
+                  <span class="sumHint">architecture and signals</span>
+                </summary>
+                <div class="detailBody">
+                  <div><b>Major Components</b>${listHTML(f.majorComponents)}</div>
+                  <div style="margin-top:10px;"><b>Key Indicators</b>${listHTML(f.keyIndicators)}</div>
+                </div>
+              </details>
+
+              <details>
+                <summary>
+                  <span>What Can Be Observed Daily</span>
+                  <span class="sumHint">walkthrough look-fors</span>
+                </summary>
+                <div class="detailBody">
+                  ${listHTML(f.observedDaily)}
+                </div>
+              </details>
+
+              <details>
+                <summary>
+                  <span>What Can Be Validated Through Evidence</span>
+                  <span class="sumHint">artifacts and proof</span>
+                </summary>
+                <div class="detailBody">
+                  ${listHTML(f.validatedEvidence)}
+                </div>
+              </details>
+
+              <details>
+                <summary>
+                  <span>Precision Push Question</span>
+                  <span class="sumHint">where clarity matters</span>
+                </summary>
+                <div class="detailBody">
+                  <b>${f.pushQuestion}</b>
+                  <div class="muted" style="margin-top:6px;">Use this question to sharpen coaching notes and the next proof point.</div>
+                </div>
+              </details>
             </div>
 
             <div class="block ${f.theme==="gold" ? "gold" : "gray"} span-6">
@@ -840,7 +1092,7 @@
               <div class="foot" id="subDesc_${safeId(key)}"></div>
             </div>
 
-            <div class="block span-4">
+            <div class="block span-6">
               <div class="k">Module status</div>
               <p class="q">Truth first. Then improvement.</p>
               <label for="mstatus_${safeId(key)}">R/Y/G</label>
@@ -849,10 +1101,10 @@
                 <option value="Yellow">Yellow (Uneven)</option>
                 <option value="Red">Red (Off plan)</option>
               </select>
-              <div style="margin-top:8px">${tagHTML("Green")} ${tagHTML("Yellow")} ${tagHTML("Red")}</div>
+              <div>${tagHTML("Green")} ${tagHTML("Yellow")} ${tagHTML("Red")}</div>
             </div>
 
-            <div class="block span-8">
+            <div class="block span-6">
               <div class="k">What changed since last week?</div>
               <p class="q">Name what moved. If nothing moved, say that clearly.</p>
               <textarea id="mchanged_${safeId(key)}" class="small" placeholder="Numbers or observable differences. What improved? What regressed?"></textarea>
@@ -861,7 +1113,7 @@
             <div class="block span-6">
               <div class="k">Main barrier (root cause, 1 sentence)</div>
               <p class="q">What is the real constraint holding this back?</p>
-              <textarea id="mbarrier_${safeId(key)}" class="small" placeholder="Example: CFUs are inconsistent, so teams cannot respond to learning needs fast enough."></textarea>
+              <textarea id="mbarrier_${safeId(key)}" class="small" placeholder="Example: CFUs are inconsistent, so teams cannot respond fast enough."></textarea>
             </div>
 
             <div class="block span-6">
@@ -871,8 +1123,8 @@
             </div>
 
             <div class="block ${f.theme==="gold" ? "gold" : "gray"} span-12">
-              <div class="k">Look-fors (check what you observed)</div>
-              <p class="q">These look-fors are designed to match Fleming County’s shift toward vibrant outcomes and compelling evidence.</p>
+              <div class="k">Walkthrough look-fors (checkbox)</div>
+              <p class="q">Use this as your daily observable scan. Check only what you actually saw.</p>
               <div class="checks" id="checks_${safeId(key)}"></div>
             </div>
 
@@ -988,7 +1240,6 @@
       });
     });
 
-    // refresh charts after modules change (so metric dropdown stays useful)
     refreshMetricPicker();
     refreshCharts();
   }
@@ -1384,7 +1635,6 @@
       return;
     }
     const summary = buildMondaySummary(e);
-    // Simple modal using prompt-like approach
     const w = window.open("", "_blank");
     w.document.write(`<pre style="white-space:pre-wrap;font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace; padding:16px;">${summary.replace(/</g,"&lt;")}</pre>`);
     w.document.title = "Monday Summary";
