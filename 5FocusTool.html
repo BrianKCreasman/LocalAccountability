@@ -1,0 +1,1183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>Walkthrough Look-For Tool | Vibrant Accountability</title>
+  <style>
+    :root{
+      --black:#0b0b0c;
+      --gray-900:#121214;
+      --gray-800:#1b1b1f;
+      --gray-700:#2a2a31;
+      --gray-600:#3a3a44;
+      --gray-300:#cfd2d8;
+      --gray-200:#e7e9ee;
+      --white:#ffffff;
+      --gold:#dbd59b;
+
+      --card-radius:18px;
+      --shadow: 0 10px 26px rgba(0,0,0,0.14);
+      --shadow-soft: 0 8px 18px rgba(0,0,0,0.10);
+      --border: 1px solid rgba(0,0,0,0.10);
+    }
+
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Helvetica Neue", Helvetica, sans-serif;
+      color: var(--black);
+      background: linear-gradient(180deg, var(--white), #f6f7f9);
+    }
+
+    /* Top bar */
+    .topbar{
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(10px);
+      border-bottom: var(--border);
+    }
+    .topbar-inner{
+      display:flex;
+      gap:14px;
+      align-items:center;
+      justify-content:space-between;
+      padding: 14px 18px;
+      max-width: 1240px;
+      margin: 0 auto;
+    }
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      min-width: 280px;
+    }
+    .dot{
+      width:14px;height:14px;border-radius:50%;
+      background: var(--gold);
+      box-shadow: 0 0 0 6px rgba(219,213,155,0.35);
+    }
+    .brand h1{
+      margin:0;
+      font-size: 15px;
+      letter-spacing: 0.2px;
+      line-height: 1.2;
+    }
+    .brand .sub{
+      font-size: 12px;
+      color: #4b4f57;
+      margin-top: 2px;
+    }
+
+    .top-actions{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      flex-wrap: wrap;
+      justify-content:flex-end;
+    }
+
+    .pill{
+      display:inline-flex;
+      gap:8px;
+      align-items:center;
+      padding: 9px 12px;
+      border-radius: 999px;
+      border: var(--border);
+      background: var(--white);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+      font-size: 12px;
+      cursor: pointer;
+      user-select:none;
+    }
+    .pill:hover{transform: translateY(-1px)}
+    .pill:active{transform: translateY(0px)}
+    .pill.gold{
+      background: var(--gold);
+      border-color: rgba(0,0,0,0.10);
+    }
+    .pill.dark{
+      background: var(--black);
+      color: var(--white);
+      border-color: rgba(255,255,255,0.12);
+    }
+
+    .progress-wrap{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      min-width: 240px;
+    }
+    .progress-bar{
+      height:10px;
+      width: 220px;
+      border-radius: 999px;
+      background: var(--gray-200);
+      overflow:hidden;
+      border: var(--border);
+    }
+    .progress-fill{
+      height:100%;
+      width: 0%;
+      background: var(--gold);
+      transition: width 280ms ease;
+    }
+    .progress-text{
+      font-size: 12px;
+      color:#4b4f57;
+      min-width: 86px;
+      text-align:right;
+    }
+
+    /* Layout */
+    .wrap{
+      max-width: 1240px;
+      margin: 0 auto;
+      display:grid;
+      grid-template-columns: 320px 1fr;
+      gap: 16px;
+      padding: 16px 18px 28px 18px;
+    }
+
+    /* Sidebar */
+    .sidebar{
+      position: sticky;
+      top: 72px;
+      align-self:start;
+      border: var(--border);
+      background: var(--white);
+      border-radius: var(--card-radius);
+      box-shadow: var(--shadow-soft);
+      overflow:hidden;
+    }
+    .sidebar-header{
+      padding: 14px 14px 10px 14px;
+      border-bottom: var(--border);
+      background: linear-gradient(180deg, #ffffff, #fbfbfc);
+    }
+    .sidebar-header .title{
+      font-weight: 800;
+      font-size: 13px;
+      margin:0 0 6px 0;
+    }
+    .sidebar-header .hint{
+      font-size: 12px;
+      color:#4b4f57;
+      margin:0;
+      line-height: 1.35;
+    }
+
+    .nav{
+      display:flex;
+      flex-direction:column;
+      padding: 10px;
+      gap: 8px;
+    }
+    .navbtn{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      padding: 12px 12px;
+      border-radius: 14px;
+      border: var(--border);
+      background: var(--white);
+      cursor:pointer;
+      box-shadow: 0 6px 14px rgba(0,0,0,0.06);
+      transition: transform 160ms ease, box-shadow 160ms ease;
+      text-align:left;
+    }
+    .navbtn:hover{
+      transform: translateY(-1px);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.10);
+    }
+    .navbtn.active{
+      outline: 3px solid rgba(219,213,155,0.40);
+      border-color: rgba(0,0,0,0.12);
+      background: linear-gradient(180deg, #ffffff, #fbfbf6);
+    }
+    .tag{
+      width: 12px;
+      height: 12px;
+      border-radius: 4px;
+      background: var(--gold);
+      flex: 0 0 auto;
+      border: 1px solid rgba(0,0,0,0.10);
+    }
+    .navtext{
+      display:flex;
+      flex-direction:column;
+      gap:2px;
+      flex:1;
+    }
+    .navtext .name{
+      font-weight: 800;
+      font-size: 12px;
+    }
+    .navtext .desc{
+      font-size: 12px;
+      color:#4b4f57;
+      line-height: 1.25;
+    }
+    .chip{
+      font-size: 11px;
+      padding: 5px 8px;
+      border-radius: 999px;
+      border: var(--border);
+      background: #f4f5f7;
+      color:#3b3f46;
+      white-space: nowrap;
+    }
+
+    /* Main panel */
+    .panel{
+      border: var(--border);
+      background: var(--white);
+      border-radius: var(--card-radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+      min-height: 520px;
+    }
+    .panel-head{
+      padding: 16px 18px 14px 18px;
+      border-bottom: var(--border);
+      background: linear-gradient(180deg, #ffffff, #fbfbfc);
+      display:flex;
+      gap:12px;
+      align-items:flex-start;
+      justify-content:space-between;
+      flex-wrap: wrap;
+    }
+    .panel-title{
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+      max-width: 760px;
+    }
+    .panel-title h2{
+      margin:0;
+      font-size: 16px;
+      letter-spacing: 0.2px;
+    }
+    .panel-title p{
+      margin:0;
+      font-size: 12px;
+      color:#4b4f57;
+      line-height:1.35;
+    }
+
+    .panel-meta{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      flex-wrap: wrap;
+      justify-content:flex-end;
+    }
+
+    .field-row{
+      display:grid;
+      grid-template-columns: repeat(3, minmax(160px, 1fr));
+      gap: 10px;
+      padding: 14px 18px 0 18px;
+    }
+    .field{
+      border: var(--border);
+      border-radius: 14px;
+      padding: 10px 10px;
+      background: #fcfcfd;
+      box-shadow: 0 6px 14px rgba(0,0,0,0.05);
+    }
+    .field label{
+      display:block;
+      font-size: 11px;
+      color:#4b4f57;
+      margin: 0 0 6px 0;
+      font-weight: 700;
+      letter-spacing: 0.2px;
+    }
+    .field input, .field select{
+      width: 100%;
+      padding: 10px 10px;
+      border-radius: 12px;
+      border: 1px solid rgba(0,0,0,0.12);
+      background: var(--white);
+      outline:none;
+      font-size: 12px;
+    }
+    .field input:focus, .field select:focus{
+      box-shadow: 0 0 0 4px rgba(219,213,155,0.40);
+      border-color: rgba(0,0,0,0.18);
+    }
+
+    .content{
+      padding: 14px 18px 18px 18px;
+      display:flex;
+      flex-direction:column;
+      gap: 14px;
+    }
+
+    .card{
+      border: var(--border);
+      border-radius: var(--card-radius);
+      background: var(--white);
+      box-shadow: var(--shadow-soft);
+      overflow:hidden;
+    }
+    .card-h{
+      padding: 12px 14px;
+      border-bottom: var(--border);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      background: linear-gradient(180deg, #ffffff, #fbfbf6);
+    }
+    .card-h .left{
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+    .badge{
+      width: 28px; height: 28px;
+      border-radius: 10px;
+      background: var(--black);
+      color: var(--white);
+      display:flex; align-items:center; justify-content:center;
+      font-weight: 900;
+      font-size: 12px;
+      box-shadow: 0 8px 14px rgba(0,0,0,0.18);
+    }
+    .card-h h3{
+      margin:0;
+      font-size: 13px;
+      letter-spacing: 0.2px;
+    }
+    .toggle{
+      border: var(--border);
+      background: var(--white);
+      border-radius: 999px;
+      padding: 8px 10px;
+      cursor:pointer;
+      font-size: 12px;
+      box-shadow: 0 6px 14px rgba(0,0,0,0.06);
+      user-select:none;
+    }
+
+    .card-b{
+      padding: 12px 14px 14px 14px;
+      display:flex;
+      flex-direction:column;
+      gap: 12px;
+    }
+
+    .grid-2{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .subbox{
+      border: var(--border);
+      border-radius: 16px;
+      padding: 12px 12px;
+      background: #fcfcfd;
+      box-shadow: 0 8px 18px rgba(0,0,0,0.05);
+    }
+    .subbox h4{
+      margin:0 0 8px 0;
+      font-size: 12px;
+      letter-spacing: 0.2px;
+    }
+    .subbox p{
+      margin:0 0 10px 0;
+      font-size: 12px;
+      color:#4b4f57;
+      line-height:1.35;
+    }
+
+    .checks{
+      display:flex;
+      flex-direction:column;
+      gap: 8px;
+    }
+    .check{
+      display:flex;
+      gap:10px;
+      align-items:flex-start;
+      padding: 10px 10px;
+      border-radius: 14px;
+      border: 1px solid rgba(0,0,0,0.10);
+      background: var(--white);
+    }
+    .check input{
+      margin-top: 3px;
+      width: 18px; height: 18px;
+      accent-color: var(--black);
+    }
+    .check .t{
+      display:flex;
+      flex-direction:column;
+      gap: 3px;
+    }
+    .check .t .k{
+      font-size: 12px;
+      font-weight: 800;
+    }
+    .check .t .s{
+      font-size: 12px;
+      color:#4b4f57;
+      line-height:1.3;
+    }
+
+    .rating-row{
+      display:grid;
+      grid-template-columns: 1fr 220px;
+      gap: 10px;
+      align-items:stretch;
+    }
+    .rating{
+      border: var(--border);
+      border-radius: 16px;
+      padding: 12px 12px;
+      background: #fcfcfd;
+      box-shadow: 0 8px 18px rgba(0,0,0,0.05);
+    }
+    .rating label{
+      font-size: 11px;
+      color:#4b4f57;
+      font-weight: 800;
+      display:block;
+      margin-bottom: 6px;
+    }
+    .rating select{
+      width:100%;
+      padding: 10px 10px;
+      border-radius: 12px;
+      border: 1px solid rgba(0,0,0,0.12);
+      background: var(--white);
+      font-size: 12px;
+      outline:none;
+    }
+    .notes{
+      border: var(--border);
+      border-radius: 16px;
+      padding: 12px 12px;
+      background: #fcfcfd;
+      box-shadow: 0 8px 18px rgba(0,0,0,0.05);
+    }
+    textarea{
+      width:100%;
+      min-height: 110px;
+      padding: 10px 10px;
+      border-radius: 12px;
+      border: 1px solid rgba(0,0,0,0.12);
+      background: var(--white);
+      font-size: 12px;
+      outline:none;
+      resize: vertical;
+    }
+    textarea:focus{
+      box-shadow: 0 0 0 4px rgba(219,213,155,0.40);
+      border-color: rgba(0,0,0,0.18);
+    }
+
+    .evidence{
+      display:flex;
+      gap:10px;
+      flex-wrap: wrap;
+      align-items:center;
+    }
+    .ev-pill{
+      display:inline-flex;
+      gap:8px;
+      align-items:center;
+      padding: 8px 10px;
+      border-radius: 999px;
+      border: var(--border);
+      background: var(--white);
+      font-size: 12px;
+      box-shadow: 0 6px 14px rgba(0,0,0,0.06);
+    }
+    .ev-pill input{
+      width: 220px;
+      padding: 8px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(0,0,0,0.12);
+      outline:none;
+      font-size: 12px;
+    }
+
+    .footer-nav{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding: 14px 18px;
+      border-top: var(--border);
+      background: linear-gradient(180deg, #ffffff, #fbfbfc);
+    }
+    .small{
+      font-size: 12px;
+      color:#4b4f57;
+      line-height:1.3;
+    }
+
+    .hidden{display:none !important}
+
+    /* Responsive */
+    @media (max-width: 1020px){
+      .wrap{grid-template-columns: 1fr; }
+      .sidebar{position:relative; top:auto}
+      .field-row{grid-template-columns: 1fr}
+      .grid-2{grid-template-columns: 1fr}
+      .rating-row{grid-template-columns: 1fr}
+      .progress-wrap{min-width: 0}
+      .progress-bar{width: 150px}
+    }
+  </style>
+</head>
+<body>
+
+  <div class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <div class="dot"></div>
+        <div>
+          <h1>Walkthrough Look-For Tool</h1>
+          <div class="sub">Clarity. Alignment. Coherence. Evidence.</div>
+        </div>
+      </div>
+
+      <div class="progress-wrap">
+        <div class="progress-bar" aria-label="Progress">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <div class="progress-text" id="progressText">0 of 6</div>
+      </div>
+
+      <div class="top-actions">
+        <div class="pill" id="btnExpandAll" title="Expand all cards in this section">Expand</div>
+        <div class="pill" id="btnCollapseAll" title="Collapse all cards in this section">Collapse</div>
+        <div class="pill gold" id="btnSave" title="Save to your browser (local)">Save</div>
+        <div class="pill" id="btnExport" title="Export this walkthrough as JSON">Export</div>
+        <div class="pill dark" id="btnPrint" title="Print this page">Print</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="wrap">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="title">Areas of Focus</div>
+        <p class="hint">Click a section to conduct the walkthrough. Use Next/Back to keep pace. Keep notes tight. Tie claims to evidence.</p>
+      </div>
+      <div class="nav" id="nav"></div>
+    </aside>
+
+    <!-- Main panel -->
+    <main class="panel">
+      <div class="panel-head">
+        <div class="panel-title">
+          <h2 id="sectionTitle">Select a Focus Area</h2>
+          <p id="sectionDesc">This tool is built to capture what you can observe daily and what you can validate through evidence or artifacts.</p>
+        </div>
+        <div class="panel-meta">
+          <span class="chip" id="sectionChip">Ready</span>
+          <span class="chip" id="completionChip">0% complete</span>
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label for="walkDate">Date</label>
+          <input id="walkDate" type="date" />
+        </div>
+        <div class="field">
+          <label for="walkSchool">School / Location</label>
+          <input id="walkSchool" type="text" placeholder="e.g., Fleming County Middle" />
+        </div>
+        <div class="field">
+          <label for="walkObserver">Observer</label>
+          <input id="walkObserver" type="text" placeholder="Name" />
+        </div>
+      </div>
+
+      <div class="content" id="content"></div>
+
+      <div class="footer-nav">
+        <div class="small" id="footerHint">
+          Tip: Write notes like evidence, not opinions. Name what you saw, then tie it to a standard, scale, or learner outcome.
+        </div>
+        <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end;">
+          <div class="pill" id="btnBack">Back</div>
+          <div class="pill gold" id="btnNext">Next</div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+<script>
+  // ---------------------------
+  // Data model
+  // ---------------------------
+  const SECTIONS = [
+    {
+      key: "vibrantLearning",
+      name: "Vibrant Learning",
+      short: "Learner experience. Purpose, agency, relevance.",
+      desc: "Look for student ownership, real-world relevance, interdisciplinary connections, and writing across content. Separate what you observed from what can be validated through artifacts.",
+      cards: [
+        {
+          id: "vl_daily",
+          title: "Daily Look-Fors",
+          badge: "1",
+          intro: "These are observable in real time, without opening a folder or asking for a document.",
+          checks: [
+            { id:"vl_d1", k:"Students can explain the purpose (the why).", s:"Students describe what they are learning and why it matters in plain language."},
+            { id:"vl_d2", k:"Student choice is visible.", s:"Students have choice in product, pathway, process, or topic, not just decoration."},
+            { id:"vl_d3", k:"Learning connects to a real-world context.", s:"Scenario, problem, audience, or authentic constraint is present."},
+            { id:"vl_d4", k:"Writing or communication is embedded.", s:"Students are writing, speaking, presenting, or creating to communicate thinking."},
+            { id:"vl_d5", k:"Students reflect and self-assess.", s:"Students name what improved, what is next, and why."}
+          ]
+        },
+        {
+          id: "vl_evidence",
+          title: "Evidence and Artifacts",
+          badge: "2",
+          intro: "These validate claims. If you cannot point to evidence, treat it as a hypothesis.",
+          checks: [
+            { id:"vl_e1", k:"Task prompt shows context and purpose.", s:"Project or task brief includes audience, need, or real-world framing."},
+            { id:"vl_e2", k:"Student artifacts show multiple pathways.", s:"Different products or approaches still align to the same learning target."},
+            { id:"vl_e3", k:"Writing samples exist across content.", s:"Not only ELA. Writing is used to think and communicate in science, social studies, math, etc."},
+            { id:"vl_e4", k:"Student reflection ties to goals.", s:"Reflection references standards, proficiency language, or Portrait skills."}
+          ],
+          evidenceLinks: true
+        }
+      ]
+    },
+    {
+      key: "priorityStandards",
+      name: "Priority Standards and Proficiency Scales",
+      short: "Clarity of targets and what proficiency looks like.",
+      desc: "Look for tight alignment: priority standards -> student-friendly targets -> instruction -> assessment -> feedback -> reporting.",
+      cards: [
+        {
+          id: "ps_daily",
+          title: "Daily Look-Fors",
+          badge: "1",
+          intro: "Clear targets change student behavior. If targets are vague, everything downstream gets noisy.",
+          checks: [
+            { id:"ps_d1", k:"Learning target is visible and referenced.", s:"Teacher and students use it during the lesson, not just posted."},
+            { id:"ps_d2", k:"Proficiency language is used in feedback.", s:"Feedback references the scale or success criteria, not points."},
+            { id:"ps_d3", k:"Students can say where they are and what is next.", s:"Students name a next step that matches the scale."},
+            { id:"ps_d4", k:"Instruction focuses on depth over coverage.", s:"Teacher prioritizes key concepts/skills tied to priority standards."}
+          ]
+        },
+        {
+          id: "ps_evidence",
+          title: "Evidence and Validation",
+          badge: "2",
+          intro: "This is where you verify that the system is coherent, not just well-intentioned.",
+          checks: [
+            { id:"ps_e1", k:"Priority standards are clearly identified.", s:"List exists by grade/course, not a moving target."},
+            { id:"ps_e2", k:"Proficiency scale has clear descriptors.", s:"Descriptors are concrete, skill-based, and student-friendly."},
+            { id:"ps_e3", k:"Assessments align to the target and scale.", s:"Items/tasks measure the intended skill, not side skills."},
+            { id:"ps_e4", k:"Student self-assessments exist.", s:"Students track progress with evidence and dates."}
+          ],
+          evidenceLinks: true
+        }
+      ]
+    },
+    {
+      key: "bimWorkshop",
+      name: "BRIDGE Instructional Model: Workshop Model",
+      short: "How learning is designed and facilitated daily.",
+      desc: "Look for the core workshop flow: brief instruction, strong work time, conferencing/feedback, and a closure that builds clarity.",
+      cards: [
+        {
+          id: "bim_daily",
+          title: "Daily Look-Fors",
+          badge: "1",
+          intro: "Workshop is not a schedule. It is a set of moves that shifts ownership to students.",
+          checks: [
+            { id:"bim_d1", k:"Mini-lesson is short and focused.", s:"Teacher models, clarifies success, then releases students to work."},
+            { id:"bim_d2", k:"Most time is student work.", s:"Students are doing purposeful work tied to the target, individually or collaboratively."},
+            { id:"bim_d3", k:"Teacher confers and gives actionable feedback.", s:"Feedback is specific, timely, and connected to targets or scales."},
+            { id:"bim_d4", k:"Flexible grouping is used.", s:"Groups adjust based on evidence, not permanent labels."},
+            { id:"bim_d5", k:"Closure includes reflection or next steps.", s:"Students exit with clarity: what improved, what matters next."}
+          ]
+        },
+        {
+          id: "bim_evidence",
+          title: "Evidence and Artifacts",
+          badge: "2",
+          intro: "These artifacts show the system is operating with consistency, not luck.",
+          checks: [
+            { id:"bim_e1", k:"Lesson plans reflect workshop design.", s:"Plans show mini-lesson, work time, conferencing, closure."},
+            { id:"bim_e2", k:"Conferencing notes exist.", s:"Notes show patterns, next steps, and differentiation decisions."},
+            { id:"bim_e3", k:"Student work in progress is visible.", s:"Drafts, revisions, iterations, and feedback cycles exist."}
+          ],
+          evidenceLinks: true
+        }
+      ]
+    },
+    {
+      key: "bpas",
+      name: "BRIDGE Performance Assessments (BPAs)",
+      short: "Students demonstrate learning in meaningful ways.",
+      desc: "BPAs should require application, not recall. Look for authentic scenarios, criteria for success, and reflection tied to improvement.",
+      cards: [
+        {
+          id: "bpa_daily",
+          title: "Daily Look-Fors",
+          badge: "1",
+          intro: "In a BPA environment, the teacher shifts from delivering to coaching.",
+          checks: [
+            { id:"bpa_d1", k:"Students are building or solving something real.", s:"The task has a purpose beyond school compliance."},
+            { id:"bpa_d2", k:"Criteria for success is used during work.", s:"Rubrics or success criteria guide decisions midstream."},
+            { id:"bpa_d3", k:"Students revise based on feedback.", s:"Feedback drives iteration, not just correction."},
+            { id:"bpa_d4", k:"Durable skills are visible.", s:"Communication, collaboration, problem-solving, creativity show up in the work."}
+          ]
+        },
+        {
+          id: "bpa_evidence",
+          title: "Evidence and Validation",
+          badge: "2",
+          intro: "BPAs earn trust when evidence is clear, consistent, and anchored to standards and outcomes.",
+          checks: [
+            { id:"bpa_e1", k:"Task prompt includes authentic context.", s:"Audience, role, constraints, or real-world need are explicit."},
+            { id:"bpa_e2", k:"Rubric aligns to standards and durable skills.", s:"Clear indicators for both academic mastery and learner outcomes."},
+            { id:"bpa_e3", k:"Student products are archived.", s:"Examples at multiple proficiency levels exist for calibration."},
+            { id:"bpa_e4", k:"Reflection is required and meaningful.", s:"Students explain learning, decisions, challenges, and growth."}
+          ],
+          evidenceLinks: true
+        }
+      ]
+    },
+    {
+      key: "bpis",
+      name: "BRIDGE Performance Indicators (BPIs): Portrait of a Learner",
+      short: "Who the student is becoming, proven over time.",
+      desc: "BPIs become real when they are named during instruction, practiced through tasks, and documented through portfolios and reflection.",
+      cards: [
+        {
+          id: "bpi_daily",
+          title: "Daily Look-Fors",
+          badge: "1",
+          intro: "Portrait outcomes should be visible inside core learning, not parked in an advisory period.",
+          checks: [
+            { id:"bpi_d1", k:"Teachers name the durable skill being practiced.", s:"Students know which skill is being strengthened and why."},
+            { id:"bpi_d2", k:"Students communicate thinking in multiple modes.", s:"Speaking, writing, presenting, and creating appear regularly."},
+            { id:"bpi_d3", k:"Students collaborate with roles and accountability.", s:"Collaboration is structured, not just sitting together."},
+            { id:"bpi_d4", k:"Students demonstrate resilience through revision.", s:"Students persist and improve rather than submit once."}
+          ]
+        },
+        {
+          id: "bpi_evidence",
+          title: "Evidence and Artifacts",
+          badge: "2",
+          intro: "BPIs require longitudinal evidence. One artifact is an example. A set is proof.",
+          checks: [
+            { id:"bpi_e1", k:"Portfolio (BPI website) contains tagged artifacts.", s:"Artifacts are labeled to specific indicators and dates."},
+            { id:"bpi_e2", k:"Reflection connects artifact to growth.", s:"Students explain what improved and what they learned about themselves."},
+            { id:"bpi_e3", k:"Common rubric language is used across settings.", s:"Indicators are consistent across classrooms and schools."}
+          ],
+          evidenceLinks: true
+        }
+      ]
+    },
+    {
+      key: "srgEvidence",
+      name: "Compelling Evidence and Standards-Referenced Grading (SRG)",
+      short: "Credibility. Multiple measures. Grades that tell the truth.",
+      desc: "SRG works when grades reflect standards mastery, evidence is collected over time, and students understand how to improve.",
+      cards: [
+        {
+          id: "srg_daily",
+          title: "Daily Look-Fors",
+          badge: "1",
+          intro: "If grading language is points-first, SRG becomes a label, not a practice.",
+          checks: [
+            { id:"srg_d1", k:"Feedback references standards and proficiency.", s:"Teacher language emphasizes mastery and next steps."},
+            { id:"srg_d2", k:"Evidence is gathered over time.", s:"Multiple data points show growth, not just one event."},
+            { id:"srg_d3", k:"Students have opportunities to revise or reassess.", s:"The system rewards learning, not timing."},
+            { id:"srg_d4", k:"Students can explain their grade.", s:"Students can point to evidence tied to standards."}
+          ]
+        },
+        {
+          id: "srg_evidence",
+          title: "Evidence and Validation",
+          badge: "2",
+          intro: "Validation means you can trace a grade back to standards-based evidence without squinting.",
+          checks: [
+            { id:"srg_e1", k:"Gradebook is standards-organized.", s:"Assignments map to standards, not categories like homework/participation."},
+            { id:"srg_e2", k:"Evidence set exists per standard.", s:"Student work samples show progress and final demonstrated level."},
+            { id:"srg_e3", k:"Product, process, and progress are not blended.", s:"Reported mastery is not diluted by compliance behaviors."},
+            { id:"srg_e4", k:"Transparent reporting is available.", s:"Families can see what standards mean and what evidence supports results."}
+          ],
+          evidenceLinks: true
+        }
+      ]
+    }
+  ];
+
+  // ---------------------------
+  // State
+  // ---------------------------
+  const STORAGE_KEY = "walkthrough_tool_v1";
+  let state = {
+    meta: {
+      walkDate: "",
+      walkSchool: "",
+      walkObserver: ""
+    },
+    activeIndex: 0,
+    sections: {}
+  };
+
+  // Initialize section state structure
+  for (const s of SECTIONS){
+    state.sections[s.key] = {
+      ratings: {},
+      notes: {},
+      evidenceLinks: {},
+      checks: {}
+    };
+    for (const c of s.cards){
+      state.sections[s.key].ratings[c.id] = "";
+      state.sections[s.key].notes[c.id] = "";
+      state.sections[s.key].evidenceLinks[c.id] = "";
+      for (const ch of c.checks){
+        state.sections[s.key].checks[ch.id] = false;
+      }
+    }
+  }
+
+  // ---------------------------
+  // Helpers
+  // ---------------------------
+  const $ = (id) => document.getElementById(id);
+
+  function load(){
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return;
+    try{
+      const saved = JSON.parse(raw);
+      if (saved && saved.sections) state = saved;
+    }catch(e){}
+  }
+
+  function save(){
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  }
+
+  function download(filename, text){
+    const el = document.createElement("a");
+    el.setAttribute("href", "data:text/plain;charset=utf-8," + encodeURIComponent(text));
+    el.setAttribute("download", filename);
+    el.style.display = "none";
+    document.body.appendChild(el);
+    el.click();
+    document.body.removeChild(el);
+  }
+
+  function clamp(n, min, max){ return Math.max(min, Math.min(max, n)); }
+
+  function sectionCompletion(secKey){
+    const secDef = SECTIONS.find(s => s.key === secKey);
+    const sec = state.sections[secKey];
+    const allChecks = secDef.cards.flatMap(c => c.checks.map(x => x.id));
+    const checked = allChecks.filter(id => sec.checks[id]).length;
+    const total = allChecks.length;
+
+    // notes/ratings not required for completion %, but included as signal
+    const ratingCount = secDef.cards.length;
+    const rated = secDef.cards.filter(c => (sec.ratings[c.id] || "").trim() !== "").length;
+
+    const pctChecks = total ? (checked / total) : 0;
+    const pctRated = ratingCount ? (rated / ratingCount) : 0;
+
+    // Weighted: checks 80%, ratings 20%
+    const pct = (pctChecks * 0.8) + (pctRated * 0.2);
+    return Math.round(pct * 100);
+  }
+
+  function overallProgress(){
+    const idx = clamp(state.activeIndex, 0, SECTIONS.length - 1);
+    const done = SECTIONS.map(s => sectionCompletion(s.key)).filter(p => p >= 70).length;
+    return { idx, done };
+  }
+
+  // ---------------------------
+  // Render
+  // ---------------------------
+  function renderNav(){
+    const nav = $("nav");
+    nav.innerHTML = "";
+
+    SECTIONS.forEach((s, i) => {
+      const pct = sectionCompletion(s.key);
+      const btn = document.createElement("button");
+      btn.className = "navbtn" + (i === state.activeIndex ? " active" : "");
+      btn.type = "button";
+      btn.onclick = () => { state.activeIndex = i; save(); render(); };
+
+      btn.innerHTML = `
+        <div class="tag"></div>
+        <div class="navtext">
+          <div class="name">${s.name}</div>
+          <div class="desc">${s.short}</div>
+        </div>
+        <div class="chip">${pct}%</div>
+      `;
+      nav.appendChild(btn);
+    });
+  }
+
+  function renderSection(){
+    const def = SECTIONS[state.activeIndex];
+    const sec = state.sections[def.key];
+
+    $("sectionTitle").textContent = def.name;
+    $("sectionDesc").textContent = def.desc;
+    $("sectionChip").textContent = `Section ${state.activeIndex + 1} of ${SECTIONS.length}`;
+
+    const pct = sectionCompletion(def.key);
+    $("completionChip").textContent = `${pct}% complete`;
+
+    const content = $("content");
+    content.innerHTML = "";
+
+    def.cards.forEach((card, cardIndex) => {
+      const cardEl = document.createElement("div");
+      cardEl.className = "card";
+      const expanded = true; // default expanded; user can collapse all
+
+      cardEl.innerHTML = `
+        <div class="card-h">
+          <div class="left">
+            <div class="badge">${card.badge}</div>
+            <div>
+              <h3>${card.title}</h3>
+              <div class="small">${card.intro}</div>
+            </div>
+          </div>
+          <div class="toggle" data-toggle="${card.id}">Hide</div>
+        </div>
+
+        <div class="card-b" id="body_${card.id}">
+          <div class="grid-2">
+            <div class="subbox">
+              <h4>Checks (Observed / Not Observed)</h4>
+              <p>Mark what you actually saw. If you are not sure, leave it unchecked and write a note about what you would need to verify.</p>
+              <div class="checks" id="checks_${card.id}"></div>
+            </div>
+
+            <div class="subbox">
+              <h4>Evidence, Rating, Notes</h4>
+              <p>Use tight language. Name the evidence. Avoid adjectives without examples.</p>
+
+              <div class="rating-row">
+                <div class="rating">
+                  <label for="rating_${card.id}">Rating</label>
+                  <select id="rating_${card.id}">
+                    <option value="">Select...</option>
+                    <option value="Strong">Strong</option>
+                    <option value="Developing">Developing</option>
+                    <option value="Not Yet">Not Yet</option>
+                    <option value="Not Observed">Not Observed</option>
+                  </select>
+                  <div class="small" style="margin-top:8px;">
+                    Strong: consistent and student-owned<br/>
+                    Developing: present, inconsistent, teacher-driven<br/>
+                    Not Yet: missing or unclear<br/>
+                    Not Observed: not seen today
+                  </div>
+                </div>
+
+                <div class="notes">
+                  <label style="font-size:11px;color:#4b4f57;font-weight:800;display:block;margin-bottom:6px;" for="notes_${card.id}">
+                    Notes (What I saw + what it means)
+                  </label>
+                  <textarea id="notes_${card.id}" placeholder="Example: Students explained the purpose using their own words. Two groups chose different products but used the same success criteria. Next: verify reflection is tied to proficiency scale."></textarea>
+                </div>
+              </div>
+
+              <div class="evidence" style="margin-top:10px;">
+                ${card.evidenceLinks ? `
+                  <div class="ev-pill">
+                    Evidence link / location
+                    <input id="ev_${card.id}" type="text" placeholder="Paste URL, folder path, doc title..." />
+                  </div>
+                ` : `
+                  <div class="ev-pill">
+                    Evidence note
+                    <input id="ev_${card.id}" type="text" placeholder="Optional: what evidence would validate this?" />
+                  </div>
+                `}
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+
+      content.appendChild(cardEl);
+
+      // Render checks
+      const checksWrap = document.getElementById(`checks_${card.id}`);
+      card.checks.forEach(ch => {
+        const row = document.createElement("label");
+        row.className = "check";
+        row.innerHTML = `
+          <input type="checkbox" id="${ch.id}" />
+          <div class="t">
+            <div class="k">${ch.k}</div>
+            <div class="s">${ch.s}</div>
+          </div>
+        `;
+        checksWrap.appendChild(row);
+
+        const cb = document.getElementById(ch.id);
+        cb.checked = !!sec.checks[ch.id];
+        cb.addEventListener("change", () => {
+          sec.checks[ch.id] = cb.checked;
+          save();
+          renderProgressOnly();
+          renderNav(); // update % on sidebar
+          $("completionChip").textContent = `${sectionCompletion(def.key)}% complete`;
+        });
+      });
+
+      // Bind rating + notes + evidence
+      const ratingEl = document.getElementById(`rating_${card.id}`);
+      ratingEl.value = sec.ratings[card.id] || "";
+      ratingEl.addEventListener("change", () => {
+        sec.ratings[card.id] = ratingEl.value;
+        save();
+        renderNav();
+        $("completionChip").textContent = `${sectionCompletion(def.key)}% complete`;
+      });
+
+      const notesEl = document.getElementById(`notes_${card.id}`);
+      notesEl.value = sec.notes[card.id] || "";
+      notesEl.addEventListener("input", () => {
+        sec.notes[card.id] = notesEl.value;
+        save();
+      });
+
+      const evEl = document.getElementById(`ev_${card.id}`);
+      evEl.value = sec.evidenceLinks[card.id] || "";
+      evEl.addEventListener("input", () => {
+        sec.evidenceLinks[card.id] = evEl.value;
+        save();
+      });
+
+      // Toggle show/hide card body
+      const toggleBtn = cardEl.querySelector(`[data-toggle="${card.id}"]`);
+      toggleBtn.addEventListener("click", () => {
+        const body = document.getElementById(`body_${card.id}`);
+        const isHidden = body.classList.toggle("hidden");
+        toggleBtn.textContent = isHidden ? "Show" : "Hide";
+      });
+    });
+  }
+
+  function renderMeta(){
+    $("walkDate").value = state.meta.walkDate || "";
+    $("walkSchool").value = state.meta.walkSchool || "";
+    $("walkObserver").value = state.meta.walkObserver || "";
+
+    $("walkDate").addEventListener("change", e => { state.meta.walkDate = e.target.value; save(); });
+    $("walkSchool").addEventListener("input", e => { state.meta.walkSchool = e.target.value; save(); });
+    $("walkObserver").addEventListener("input", e => { state.meta.walkObserver = e.target.value; save(); });
+  }
+
+  function renderProgressOnly(){
+    const { done } = overallProgress();
+    const fillPct = Math.round((done / SECTIONS.length) * 100);
+    $("progressFill").style.width = fillPct + "%";
+    $("progressText").textContent = `${state.activeIndex + 1} of ${SECTIONS.length}`;
+  }
+
+  function render(){
+    renderNav();
+    renderMeta();
+    renderSection();
+    renderProgressOnly();
+
+    // Buttons enabled state
+    $("btnBack").style.opacity = (state.activeIndex === 0) ? "0.5" : "1";
+    $("btnNext").textContent = (state.activeIndex === SECTIONS.length - 1) ? "Finish" : "Next";
+  }
+
+  // ---------------------------
+  // Actions
+  // ---------------------------
+  function expandOrCollapseAll(expand){
+    const def = SECTIONS[state.activeIndex];
+    def.cards.forEach(card => {
+      const body = document.getElementById(`body_${card.id}`);
+      const toggleBtn = document.querySelector(`[data-toggle="${card.id}"]`);
+      if (!body || !toggleBtn) return;
+      body.classList.toggle("hidden", !expand);
+      toggleBtn.textContent = expand ? "Hide" : "Show";
+    });
+  }
+
+  function exportJSON(){
+    const timestamp = new Date().toISOString().replaceAll(":", "-");
+    const name = `walkthrough-export-${timestamp}.json`;
+    download(name, JSON.stringify(state, null, 2));
+  }
+
+  // Wire global buttons
+  $("btnBack").addEventListener("click", () => {
+    if (state.activeIndex === 0) return;
+    state.activeIndex -= 1;
+    save(); render();
+    window.scrollTo({top:0, behavior:"smooth"});
+  });
+
+  $("btnNext").addEventListener("click", () => {
+    if (state.activeIndex < SECTIONS.length - 1){
+      state.activeIndex += 1;
+      save(); render();
+      window.scrollTo({top:0, behavior:"smooth"});
+    } else {
+      // Finish: simple summary export prompt
+      exportJSON();
+    }
+  });
+
+  $("btnExpandAll").addEventListener("click", () => expandOrCollapseAll(true));
+  $("btnCollapseAll").addEventListener("click", () => expandOrCollapseAll(false));
+
+  $("btnSave").addEventListener("click", () => {
+    save();
+    const old = $("btnSave").textContent;
+    $("btnSave").textContent = "Saved";
+    setTimeout(() => $("btnSave").textContent = old, 900);
+  });
+
+  $("btnExport").addEventListener("click", exportJSON);
+  $("btnPrint").addEventListener("click", () => window.print());
+
+  // ---------------------------
+  // Init
+  // ---------------------------
+  load();
+  // Default date to today if blank
+  if (!state.meta.walkDate){
+    const d = new Date();
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth()+1).padStart(2,"0");
+    const dd = String(d.getDate()).padStart(2,"0");
+    state.meta.walkDate = `${yyyy}-${mm}-${dd}`;
+    save();
+  }
+  render();
+</script>
+</body>
+</html>
