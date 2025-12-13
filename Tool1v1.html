@@ -2,330 +2,398 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-  <title>Vibrant Accountability Weekly Tool | Home + Weekly Capture + Dashboard</title>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Weekly Executive Walkthrough and Check-In Tool</title>
   <style>
     :root{
-      --black:#0b0b0c;
-      --gray:#8a8f98;
-      --gray2:#f2f3f5;
+      --black:#111111;
+      --gray:#6b7280;
       --white:#ffffff;
       --gold:#dbd59b;
-
-      --shadow: 0 18px 40px rgba(0,0,0,.14);
-      --shadow2: 0 10px 22px rgba(0,0,0,.10);
-      --radius: 24px;
-      --radius2: 18px;
-      --line: rgba(0,0,0,.10);
-
-      --good:#1f7a6d;
-      --warn:#b26a1d;
-      --risk:#b42318;
+      --bg:#f5f5f7;
+      --shadow: 0 14px 36px rgba(0,0,0,0.14);
+      --shadow-soft: 0 10px 22px rgba(0,0,0,0.10);
+      --radius: 22px;
+      --radius-sm: 16px;
+      --border: 1px solid rgba(0,0,0,0.12);
     }
-    *{box-sizing:border-box}
+
+    *{ box-sizing:border-box; }
+    html{ scroll-behavior:smooth; }
     body{
       margin:0;
       font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background: var(--bg);
       color: var(--black);
-      background: linear-gradient(180deg, #ffffff 0%, #f4f5f7 55%, #ffffff 100%);
+      padding-top: 86px;
     }
 
-    /* Topbar */
+    /* Top bar */
     .topbar{
-      position: sticky;
-      top:0;
-      z-index:50;
-      background: rgba(255,255,255,.92);
-      backdrop-filter: blur(10px);
-      border-bottom: 1px solid var(--line);
-      padding: 12px 14px;
-      box-shadow: 0 10px 22px rgba(0,0,0,.06);
+      position: fixed;
+      top:0; left:0; right:0;
+      z-index:1000;
+      background: var(--white);
+      border-bottom: var(--border);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.08);
     }
     .topbarInner{
       max-width: 1260px;
       margin: 0 auto;
+      padding: 14px 18px;
       display:flex;
-      gap: 10px;
+      gap:12px;
       align-items:center;
       justify-content: space-between;
-      flex-wrap: wrap;
-    }
-    .brand{display:flex; gap:12px; align-items:center;}
-    .mark{
-      width:44px;height:44px;border-radius:16px;
-      background: radial-gradient(circle at 30% 30%, var(--gold), #fff 38%, #d9dbe0 85%);
-      border: 1px solid rgba(0,0,0,.10);
-      box-shadow: var(--shadow2);
-    }
-    .brand h1{margin:0;font-size:15px;letter-spacing:.2px}
-    .brand p{margin:2px 0 0 0;font-size:12px;color:var(--gray)}
-    .navPills{display:flex; gap:8px; flex-wrap:wrap;}
-    button{
-      border:1px solid rgba(0,0,0,.14);
-      background: var(--white);
-      border-radius: 999px;
-      padding: 10px 12px;
-      font-weight: 900;
-      font-size: 12px;
-      cursor: pointer;
-      box-shadow: 0 8px 18px rgba(0,0,0,.06);
-      color: var(--black);
-    }
-    button.primary{background: var(--black); color: var(--white); border-color: transparent;}
-    button.gold{background: var(--gold); border-color: rgba(0,0,0,.14);}
-    button.danger{color: var(--risk); border-color: rgba(180,35,24,.22);}
-    button:active{transform: translateY(1px)}
-
-    /* Layout */
-    .wrap{max-width:1260px;margin:16px auto 42px;padding:0 14px}
-    .view{display:none}
-    .view.active{display:block}
-
-    /* Panels */
-    .panel{
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      border: 1px solid rgba(0,0,0,.10);
-      overflow:hidden;
-      background: var(--white);
-    }
-    .panelHeader{
-      padding: 14px 16px;
-      display:flex;
-      align-items:flex-start;
-      justify-content: space-between;
-      gap: 12px;
-      border-bottom: 1px solid rgba(0,0,0,.08);
-    }
-    .panelHeader h2{margin:0;font-size:13px;letter-spacing:.2px}
-    .hint{margin-top:4px;font-size:12px;color:var(--gray);line-height:1.35}
-    .chip{
-      display:inline-flex; align-items:center; gap:8px;
-      border-radius: 999px;
-      padding: 7px 10px;
-      border: 1px solid rgba(0,0,0,.12);
-      background: var(--gray2);
-      font-size: 12px;
-      font-weight: 900;
-      white-space: nowrap;
-    }
-    .dot{width:9px;height:9px;border-radius:99px;background:var(--gold);display:inline-block}
-    .panelBody{padding: 14px 16px}
-
-    .theme-black .panelHeader{background: linear-gradient(90deg, rgba(0,0,0,.92), rgba(0,0,0,.86)); color:#fff}
-    .theme-black .hint{color: rgba(255,255,255,.78)}
-    .theme-gold  .panelHeader{background: linear-gradient(90deg, rgba(219,213,155,.95), rgba(219,213,155,.75)); color:#000}
-    .theme-gray  .panelHeader{background: linear-gradient(90deg, #f2f3f5, #ffffff); color:#000}
-
-    /* Waffle home */
-    .waffle{
-      display:grid;
-      grid-template-columns: repeat(12, 1fr);
-      gap: 12px;
-    }
-    .tile{
-      grid-column: span 4;
-      border-radius: var(--radius);
-      border: 1px solid rgba(0,0,0,.12);
-      box-shadow: var(--shadow2);
-      padding: 14px;
-      background: linear-gradient(180deg, rgba(242,243,245,.95), rgba(255,255,255,.96));
-      cursor:pointer;
-      position:relative;
-      overflow:hidden;
-      min-height: 120px;
-    }
-    .tile.gold{background: linear-gradient(180deg, rgba(219,213,155,.38), rgba(255,255,255,.96));}
-    .tile.black{background: linear-gradient(180deg, rgba(0,0,0,.92), rgba(18,18,20,.96)); color:#fff;}
-    .tile.black .tDesc{color: rgba(255,255,255,.78)}
-    .tile:hover{filter:brightness(.99)}
-    .tTitle{margin:0;font-size:13px;font-weight:1000;letter-spacing:.2px}
-    .tDesc{margin:6px 0 0 0;font-size:12px;color:var(--gray);line-height:1.35}
-    .tMeta{
-      margin-top: 12px;
-      display:flex;
-      gap:8px;
       flex-wrap:wrap;
     }
-    .pill{
-      border-radius:999px;
-      padding:6px 10px;
-      border:1px solid rgba(0,0,0,.12);
-      background:#fff;
-      font-size:11px;
-      font-weight:900;
+    .brand{
+      display:flex;
+      gap:12px;
+      align-items:center;
+      min-width: 280px;
     }
-    .tile.black .pill{background: rgba(255,255,255,.92); color:#000; border-color: transparent;}
-    @media(max-width:980px){ .tile{grid-column: span 6} }
-    @media(max-width:640px){ .tile{grid-column: span 12} }
-
-    /* Weekly grid */
-    .grid{
-      display:grid;
-      grid-template-columns: 1.2fr .8fr;
-      gap: 12px;
-    }
-    @media(max-width:980px){ .grid{grid-template-columns: 1fr} }
-
-    /* Blocks */
-    .blocks{display:grid;grid-template-columns: repeat(12, 1fr);gap: 12px;}
-    .block{
-      grid-column: span 12;
-      border-radius: var(--radius2);
-      border: 1px solid rgba(0,0,0,.10);
-      box-shadow: 0 14px 26px rgba(0,0,0,.10);
-      background: var(--white);
-      padding: 12px;
-    }
-    .block.gold{background: linear-gradient(180deg, rgba(219,213,155,.35), rgba(255,255,255,.92))}
-    .block.gray{background: linear-gradient(180deg, rgba(242,243,245,.95), rgba(255,255,255,.92))}
-    .span-6{grid-column: span 6}
-    .span-4{grid-column: span 4}
-    .span-8{grid-column: span 8}
-    @media(max-width:900px){ .span-6,.span-4,.span-8{grid-column: span 12} }
-
-    .k{font-size:12px;font-weight:1000;letter-spacing:.2px;margin:0 0 6px 0}
-    .q{margin:0 0 10px 0;font-size:12px;color:var(--gray);line-height:1.35}
-
-    label{display:block;font-size:12px;color:var(--gray);margin:0 0 6px 2px;font-weight:900}
-    input[type="text"], input[type="date"], input[type="number"], select, textarea{
-      width:100%;
+    .brandMark{
+      width:42px; height:42px;
       border-radius: 14px;
-      border: 1px solid rgba(0,0,0,.14);
-      padding: 10px 10px;
-      font-size: 13px;
-      outline:none;
-      background: var(--white);
+      background: var(--black);
+      box-shadow: var(--shadow-soft);
     }
-    textarea{min-height: 92px; resize: vertical}
-    .small{min-height: 70px}
-
-    /* Focus selector */
-    .focusRow{display:flex; gap:10px; flex-wrap:wrap}
-    .focusChip{
-      display:flex; gap:8px; align-items:flex-start;
-      border-radius: 16px;
-      border: 1px solid rgba(0,0,0,.12);
-      background:#fff;
-      box-shadow: 0 12px 20px rgba(0,0,0,.08);
-      padding: 10px 10px;
-      min-width: 260px;
-      flex: 1 1 280px;
+    .brandTitle{
+      line-height: 1.1;
     }
-    .focusChip.gold{background: linear-gradient(180deg, rgba(219,213,155,.30), rgba(255,255,255,.95));}
-    .focusChip b{display:block;font-size:12px}
-    .focusChip small{display:block;font-size:11px;color:var(--gray);line-height:1.25;margin-top:2px}
+    .brandTitle h1{
+      font-size: 15px;
+      margin:0;
+      letter-spacing: 0.2px;
+    }
+    .brandTitle p{
+      margin:4px 0 0 0;
+      font-size: 12px;
+      color: rgba(0,0,0,0.65);
+    }
 
-    /* Module accordion */
-    details{
-      border-radius: 18px;
-      border: 1px solid rgba(0,0,0,.12);
-      background: #fff;
-      box-shadow: 0 12px 22px rgba(0,0,0,.08);
+    .topControls{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+
+    .pill{
+      display:flex;
+      gap:8px;
+      align-items:center;
+      background: #f3f4f6;
+      border: var(--border);
+      border-radius: 999px;
+      padding: 8px 10px;
+      box-shadow: 0 6px 14px rgba(0,0,0,0.06);
+    }
+    .pill label{
+      font-size: 12px;
+      font-weight: 800;
+      color: rgba(0,0,0,0.75);
+      white-space: nowrap;
+    }
+    .pill select, .pill input{
+      border: none;
+      outline: none;
+      background: transparent;
+      font-size: 12px;
+      padding: 4px 6px;
+      color: var(--black);
+      min-width: 180px;
+    }
+    .pill input{ min-width: 150px; }
+
+    .btn{
+      border: none;
+      border-radius: 14px;
       padding: 10px 12px;
+      font-weight: 900;
+      cursor: pointer;
+      box-shadow: var(--shadow-soft);
+      font-size: 12px;
     }
-    details + details{margin-top:10px}
-    summary{
+    .btnPrimary{
+      background: var(--black);
+      color: var(--white);
+    }
+    .btnGhost{
+      background: var(--white);
+      color: var(--black);
+      border: var(--border);
+      box-shadow: none;
+    }
+
+    /* Layout */
+    .wrap{
+      max-width: 1260px;
+      margin: 0 auto;
+      padding: 18px;
+    }
+
+    .introCard{
+      background: var(--white);
+      border: var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 16px 16px;
+      margin-bottom: 16px;
+    }
+    .introCard h2{
+      margin:0;
+      font-size: 16px;
+      letter-spacing: 0.2px;
+    }
+    .introCard p{
+      margin:8px 0 0 0;
+      color: rgba(0,0,0,0.75);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    /* Waffle (start page) */
+    .waffle{
+      display:grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap:14px;
+      margin-top: 14px;
+    }
+    @media (max-width: 980px){
+      .waffle{ grid-template-columns: 1fr; }
+      body{ padding-top: 116px; }
+      .pill select, .pill input{ min-width: 150px; }
+    }
+
+    .tile{
+      background: var(--white);
+      border: var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 14px;
       cursor:pointer;
-      font-weight:1000;
-      font-size:12px;
-      list-style:none;
-      outline:none;
+      transition: transform .12s ease, box-shadow .12s ease;
+      position: relative;
+      min-height: 110px;
+    }
+    .tile:hover{
+      transform: translateY(-2px);
+      box-shadow: 0 18px 44px rgba(0,0,0,0.16);
+    }
+    .tileGold{ background: var(--gold); }
+    .tileBlack{ background: var(--black); color: var(--white); }
+    .tileGray{ background: #efefef; }
+    .tileTitle{
       display:flex;
       align-items:center;
-      justify-content: space-between;
+      justify-content:space-between;
       gap:10px;
+      margin-bottom:8px;
     }
-    summary::-webkit-details-marker{display:none}
-    .sumHint{font-size:11px;color:var(--gray);font-weight:900}
-    .detailBody{margin-top:10px;font-size:12px;line-height:1.4}
-    .detailBody .muted{color:var(--gray)}
-    ul{margin:8px 0 0 18px; padding:0}
-    li{margin:4px 0}
+    .tileTitle h3{
+      margin:0;
+      font-size: 14px;
+      letter-spacing: 0.2px;
+    }
+    .tileTag{
+      font-size: 11px;
+      font-weight: 900;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(0,0,0,0.16);
+      background: rgba(255,255,255,0.70);
+      color: var(--black);
+      white-space:nowrap;
+    }
+    .tileBlack .tileTag{
+      border-color: rgba(255,255,255,0.22);
+      background: rgba(255,255,255,0.10);
+      color: var(--white);
+    }
+    .tileDesc{
+      margin:0;
+      font-size: 12px;
+      line-height: 1.45;
+      color: rgba(0,0,0,0.75);
+    }
+    .tileBlack .tileDesc{ color: rgba(255,255,255,0.78); }
 
-    /* Look-fors */
-    .checks{
-      display:grid;
-      grid-template-columns: repeat(12, 1fr);
-      gap:10px;
+    /* Module view */
+    .moduleView{
+      display:none;
+      margin-top: 16px;
     }
-    .check{
-      grid-column: span 6;
-      border-radius: 16px;
-      border: 1px solid rgba(0,0,0,.12);
-      background: #fff;
-      box-shadow: 0 12px 20px rgba(0,0,0,.08);
+    .moduleGrid{
+      display:grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 14px;
+      align-items:start;
+    }
+    @media (max-width: 980px){
+      .moduleGrid{ grid-template-columns: 1fr; }
+    }
+
+    .card{
+      background: var(--white);
+      border: var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 16px;
+    }
+    .cardGold{ background: var(--gold); }
+    .cardGray{ background: #efefef; }
+    .cardBlack{ background: var(--black); color: var(--white); }
+    .card h2{
+      margin:0 0 6px 0;
+      font-size: 16px;
+      letter-spacing: 0.2px;
+    }
+    .sub{
+      margin:0 0 12px 0;
+      font-size: 13px;
+      color: rgba(0,0,0,0.75);
+      line-height: 1.45;
+    }
+    .cardBlack .sub{ color: rgba(255,255,255,0.76); }
+
+    .divider{
+      height: 1px;
+      background: rgba(0,0,0,0.16);
+      margin: 12px 0;
+    }
+    .cardBlack .divider{ background: rgba(255,255,255,0.18); }
+
+    .field{
+      margin-bottom: 12px;
+    }
+    .field label{
+      display:block;
+      font-size: 12px;
+      font-weight: 900;
+      margin-bottom: 6px;
+      color: rgba(0,0,0,0.85);
+    }
+    .cardBlack .field label{ color: rgba(255,255,255,0.85); }
+
+    .field input, .field select, .field textarea{
+      width: 100%;
+      border-radius: 14px;
+      border: 1px solid rgba(0,0,0,0.20);
+      padding: 10px 12px;
+      background: var(--white);
+      color: var(--black);
+      outline: none;
+      font-size: 13px;
+      box-shadow: inset 0 1px 0 rgba(0,0,0,0.06);
+    }
+    .field textarea{ resize: vertical; }
+    .cardGold .field input, .cardGold .field select, .cardGold .field textarea{
+      border-color: rgba(0,0,0,0.22);
+    }
+
+    .twoCol{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    @media (max-width: 980px){
+      .twoCol{ grid-template-columns: 1fr; }
+    }
+
+    .qBlock{
+      background: rgba(255,255,255,0.60);
+      border: 1px solid rgba(0,0,0,0.12);
+      border-radius: 18px;
+      padding: 12px;
+      margin-top: 12px;
+    }
+    .qBlock h3{
+      margin:0 0 6px 0;
+      font-size: 14px;
+    }
+    .qPrompt{
+      margin:0 0 10px 0;
+      color: rgba(0,0,0,0.78);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+    .ratingHelp{
+      margin-top: 8px;
+      background: rgba(17,17,17,0.08);
+      border-radius: 12px;
       padding: 10px;
+      font-size: 12px;
+      color: var(--black);
+      min-height: 44px;
+    }
+
+    .keyBox{
+      background: var(--white);
+      border: 1px solid rgba(0,0,0,0.12);
+      border-radius: 18px;
+      padding: 12px;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+    }
+    .keyRow{
       display:flex;
       gap:10px;
       align-items:flex-start;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(0,0,0,0.08);
     }
-    .check b{display:block;font-size:12px}
-    .check small{display:block;font-size:11px;color:var(--gray);line-height:1.25;margin-top:2px}
-    @media(max-width:900px){ .check{grid-column: span 12} }
+    .keyRow:last-child{ border-bottom:none; }
+    .keyNum{
+      width:28px; height:28px;
+      border-radius: 10px;
+      background: var(--black);
+      color: var(--white);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight: 950;
+      flex:0 0 auto;
+    }
+    .muted{ color: rgba(0,0,0,0.65); font-size: 12px; }
 
-    /* Ratings: Transactional / Traditional / Transitional / Transformational */
-    .ratingRow{display:flex; gap:8px; flex-wrap:wrap}
-    .rateBtn{
-      flex: 1 1 210px;
-      min-width: 210px;
-      border-radius: 16px;
-      border: 1px solid rgba(0,0,0,.14);
-      background:#fff;
-      box-shadow: 0 10px 18px rgba(0,0,0,.07);
-      padding: 10px 10px;
+    .actionsRow{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      flex-wrap:wrap;
+      margin-top: 10px;
+    }
+    .status{
+      font-size: 12px;
+      font-weight: 900;
+      color: rgba(0,0,0,0.80);
+    }
+
+    /* Bottom nav buttons inside module view */
+    .moduleNav{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      justify-content:space-between;
+      margin-top: 14px;
+    }
+
+    .smallBtn{
+      border:none;
+      border-radius: 14px;
+      padding: 10px 12px;
+      font-weight: 950;
       cursor:pointer;
-      user-select:none;
+      font-size: 12px;
+      box-shadow: var(--shadow-soft);
     }
-    .rateBtn .rTitle{font-weight:1000;font-size:12px;letter-spacing:.2px}
-    .rateBtn .rDesc{margin-top:6px;color:var(--gray);font-size:11px;line-height:1.25;font-weight:800}
-    .rateBtn.active{
-      background: var(--gold);
-      border-color: rgba(0,0,0,.18);
-      box-shadow: 0 16px 26px rgba(0,0,0,.12);
-    }
-    .rateLegend{
-      margin-top:8px;
-      padding:10px;
-      border-radius: 16px;
-      border: 1px solid rgba(0,0,0,.10);
-      background: linear-gradient(180deg, rgba(242,243,245,.95), rgba(255,255,255,.95));
-      box-shadow: 0 12px 20px rgba(0,0,0,.06);
-    }
-    .rateLegend b{font-size:12px}
-    .rateLegend ul{margin-top:8px}
+    .smallBtnBlack{ background: var(--black); color: var(--white); }
+    .smallBtnWhite{ background: var(--white); color: var(--black); border: var(--border); box-shadow:none; }
 
-    /* Status tags */
-    .tag{
-      display:inline-block;
-      border-radius:999px;
-      padding:6px 10px;
-      border:1px solid rgba(0,0,0,.12);
-      background:#fff;
-      font-size:11px;
-      font-weight:1000;
-      margin-right:6px;
-      margin-top:6px;
-    }
-    .tag.good{color: var(--good)}
-    .tag.warn{color: var(--warn)}
-    .tag.risk{color: var(--risk)}
-
-    /* Table */
-    table{width:100%;border-collapse:separate;border-spacing:0;overflow:hidden;border-radius:18px;border:1px solid rgba(0,0,0,.10);box-shadow:0 14px 26px rgba(0,0,0,.10)}
-    th,td{padding:10px 10px;font-size:12px;border-bottom:1px solid rgba(0,0,0,.08);vertical-align:top;background:#fff}
-    th{background: linear-gradient(90deg, rgba(219,213,155,.35), rgba(255,255,255,.96));text-align:left;font-weight:1000}
-    tr:last-child td{border-bottom:none}
-    .clickRow{cursor:pointer}
-    .muted{color:var(--gray)}
-    .foot{font-size:11px;color:var(--gray);margin-top:10px;line-height:1.35}
-
-    /* Sticky right panel tools */
-    .sticky{
-      position: sticky;
-      top: 86px;
-    }
+    /* Hide/Show */
+    .hidden{ display:none !important; }
   </style>
 </head>
 
@@ -333,1625 +401,574 @@
   <div class="topbar">
     <div class="topbarInner">
       <div class="brand">
-        <div class="mark" aria-hidden="true"></div>
-        <div>
-          <h1>Vibrant Accountability Weekly Tool</h1>
-          <p>Clarity. Coherence. Evidence. A simple routine that makes the invisible visible.</p>
+        <div class="brandMark"></div>
+        <div class="brandTitle">
+          <h1>Weekly Executive Walkthrough and Check-In Tool</h1>
+          <p>Clarity. Alignment. Coherence. Evidence. Weekly signals that make the invisible visible.</p>
         </div>
       </div>
-      <div class="navPills">
-        <button class="gold" data-nav="homeView">Home</button>
-        <button class="primary" data-nav="weeklyView">Weekly Tool</button>
-        <button data-nav="dashboardView">Dashboard</button>
-        <button id="exportCsvBtn">Export CSV</button>
-        <button id="exportJsonBtn">Export JSON</button>
-        <button class="danger" id="clearBtn">Clear All</button>
+
+      <div class="topControls">
+        <div class="pill">
+          <label for="schoolSelect">School</label>
+          <select id="schoolSelect">
+            <option value="">Select...</option>
+            <option>Ewing ES</option>
+            <option>Flemingsburg ES</option>
+            <option>Hillsboro ES</option>
+            <option>Simons MS</option>
+            <option>Fleming County HS</option>
+          </select>
+        </div>
+
+        <div class="pill">
+          <label for="weekOf">Week Of</label>
+          <input id="weekOf" type="date"/>
+        </div>
+
+        <button class="btn btnGhost" id="homeBtn" title="Return to start">Home</button>
+        <button class="btn btnPrimary" id="printBtn" title="Print this page">Print</button>
       </div>
     </div>
   </div>
 
   <div class="wrap">
+    <div class="introCard">
+      <h2>System Tightening Note</h2>
+      <p>
+        This is a strong moment to pause and tighten the system. You already have the right architecture.
+        What you are really doing here is making the invisible visible. Daily practice, clear signals, and
+        credible evidence all lining up.
+      </p>
 
-    <!-- HOME (Waffle 9) -->
-    <div class="view active" id="homeView">
-      <div class="panel theme-gold">
-        <div class="panelHeader">
-          <div>
-            <h2>Start Here</h2>
-            <div class="hint">
-              Pick the priority for this week. The goal is to keep the discussion focused on what matters most,
-              while still capturing evidence and next moves.
-            </div>
+      <div class="waffle" id="waffle">
+        <div class="tile tileGold" data-module="bpi">
+          <div class="tileTitle">
+            <h3>BRIDGE Performance Indicators (BPIs)</h3>
+            <span class="tileTag">Student Portfolio Review</span>
           </div>
-          <div class="chip"><span class="dot"></span><span id="homeChip">0 entries saved</span></div>
+          <p class="tileDesc">Interview 2 students weekly. Review BPI websites to verify priority, ownership, and mastery evidence across classes.</p>
         </div>
-        <div class="panelBody">
-          <div class="block gold">
-            <div class="k">System Tightening Moment</div>
-            <p class="q" style="color:var(--black);margin-bottom:8px;">
-              <b>This is a strong moment to pause and tighten the system.</b> You already have the right architecture.
-              What you are really doing here is making the invisible visible. Daily practice, clear signals, and credible evidence all lining up.
-            </p>
-            <p class="q" style="margin:0;color:var(--black);">
-              This tool intentionally separates <b>what can be observed daily</b> from <b>what can be validated through artifacts</b>.
-              That distinction is where most systems lose clarity.
-            </p>
-          </div>
 
-          <div style="height:12px"></div>
-          <div class="waffle" id="waffle"></div>
-
-          <div class="foot">
-            Tip: If a week gets messy, pick just one focus area and use the Agenda Builder inside the Weekly Tool.
-            That forces prioritization and keeps the work coherent.
+        <div class="tile tileGray" data-module="vl">
+          <div class="tileTitle">
+            <h3>Vibrant Learning</h3>
+            <span class="tileTag">Learner Experience</span>
           </div>
+          <p class="tileDesc">Look for student agency, real-world context, interdisciplinary learning, and Writing Across the Content showing up daily.</p>
+        </div>
+
+        <div class="tile tileGray" data-module="ps">
+          <div class="tileTitle">
+            <h3>Priority Standards and Proficiency Scales</h3>
+            <span class="tileTag">Clarity and Focus</span>
+          </div>
+          <p class="tileDesc">Verify focus on depth. Students and teachers using proficiency language, targets, and evidence aligned to standards.</p>
+        </div>
+
+        <div class="tile tileGray" data-module="bim">
+          <div class="tileTitle">
+            <h3>BRIDGE Instructional Model</h3>
+            <span class="tileTag">Workshop Practice</span>
+          </div>
+          <p class="tileDesc">Confirm most time is spent doing learning, not watching learning. Conferencing, feedback, routines, and purposeful work time.</p>
+        </div>
+
+        <div class="tile tileGray" data-module="bpa">
+          <div class="tileTitle">
+            <h3>BRIDGE Performance Assessments (BPAs)</h3>
+            <span class="tileTag">Meaningful Demonstration</span>
+          </div>
+          <p class="tileDesc">Observe students applying knowledge in authentic scenarios. Check for rubrics, success criteria, and feedback cycles.</p>
+        </div>
+
+        <div class="tile tileGray" data-module="srg">
+          <div class="tileTitle">
+            <h3>Compelling Evidence and SRG</h3>
+            <span class="tileTag">Credibility and Trust</span>
+          </div>
+          <p class="tileDesc">Confirm grades reflect mastery, evidence over time, and transparency for students and families.</p>
+        </div>
+
+        <div class="tile tileBlack" data-module="notes">
+          <div class="tileTitle">
+            <h3>Weekly Executive Notes</h3>
+            <span class="tileTag">Synthesis</span>
+          </div>
+          <p class="tileDesc">Capture patterns, coherence gaps, and next actions. Convert observations into clear signals and support.</p>
+        </div>
+
+        <div class="tile tileGray" data-module="evidence">
+          <div class="tileTitle">
+            <h3>Evidence Curation</h3>
+            <span class="tileTag">Artifacts</span>
+          </div>
+          <p class="tileDesc">Document evidence points collected this week. Tie evidence to focus areas and next moves.</p>
+        </div>
+
+        <div class="tile tileGray" data-module="followup">
+          <div class="tileTitle">
+            <h3>Follow-Up and Support</h3>
+            <span class="tileTag">Next Moves</span>
+          </div>
+          <p class="tileDesc">Assign coaching actions, supports, and timelines. Keep work prioritized and doable.</p>
         </div>
       </div>
     </div>
 
-    <!-- WEEKLY TOOL -->
-    <div class="view" id="weeklyView">
-      <div class="grid">
+    <!-- MODULE VIEW (only BPI built out fully here, others are placeholders for your next iterations) -->
+    <div class="moduleView" id="moduleView">
+      <div class="moduleGrid">
+        <!-- LEFT -->
+        <div class="card cardGold" id="moduleLeft">
+          <h2 id="moduleTitle">Module</h2>
+          <p class="sub" id="moduleSub">Select a module from Home to begin.</p>
 
-        <!-- LEFT: Weekly capture -->
-        <div class="panel theme-black">
-          <div class="panelHeader">
-            <div>
-              <h2>Weekly Capture</h2>
-              <div class="hint">Truth first. Then improvement. Every focus area selected will appear below.</div>
+          <div id="moduleBody"></div>
+
+          <div class="moduleNav">
+            <button class="smallBtn smallBtnWhite" id="backHomeBtn">Back to Home</button>
+            <div style="display:flex; gap:10px; align-items:center;">
+              <button class="smallBtn smallBtnBlack" id="saveLocalBtn">Save Locally</button>
             </div>
-            <div class="chip"><span class="dot"></span><span id="entryCountChip">0 entries</span></div>
-          </div>
-          <div class="panelBody">
-
-            <div class="blocks">
-              <div class="block gold span-6">
-                <div class="k">Identity</div>
-                <p class="q">Who, where, and when?</p>
-                <label for="entryDate">Date</label>
-                <input type="date" id="entryDate"/>
-                <div style="height:8px"></div>
-                <label for="entryType">Entry type</label>
-                <select id="entryType">
-                  <option value="Weekly Check-In">Weekly Check-In</option>
-                  <option value="Walkthrough">Walkthrough</option>
-                  <option value="Leadership Round">Leadership Round</option>
-                  <option value="Data Review">Data Review</option>
-                  <option value="Support Visit">Support Visit</option>
-                </select>
-              </div>
-
-              <div class="block gray span-6">
-                <div class="k">Context</div>
-                <p class="q">Keep it grounded and specific.</p>
-                <label for="school">School</label>
-                <select id="school">
-                  <option value="">Select...</option>
-                  <option>Ewing ES</option>
-                  <option>Flemingsburg ES</option>
-                  <option>Hillsboro ES</option>
-                  <option>Simons MS</option>
-                  <option>Fleming County HS</option>
-                </select>
-                <div style="height:8px"></div>
-                <label for="who">Primary contact</label>
-                <select id="who">
-                  <option>Principal</option>
-                  <option>Assistant Principal</option>
-                  <option>Instructional Coach</option>
-                  <option>Teacher Team</option>
-                  <option>Student Group</option>
-                  <option>Other</option>
-                </select>
-              </div>
-
-              <div class="block gray span-12">
-                <div class="k">Executive signals</div>
-                <p class="q">This is the “Monday meeting” view. Short, direct, and evidence-minded.</p>
-                <div class="blocks" style="gap:10px">
-                  <div class="block gold span-4" style="box-shadow:none">
-                    <label for="overallStatus">Overall status (R/Y/G)</label>
-                    <select id="overallStatus">
-                      <option value="Green">Green (On plan)</option>
-                      <option value="Yellow">Yellow (Uneven, recovery in motion)</option>
-                      <option value="Red">Red (Off plan, needs help)</option>
-                    </select>
-                    <div>
-                      <span class="tag good">Green</span>
-                      <span class="tag warn">Yellow</span>
-                      <span class="tag risk">Red</span>
-                    </div>
-                  </div>
-                  <div class="block gray span-8" style="box-shadow:none">
-                    <label for="weekTheme">Week theme (optional)</label>
-                    <input type="text" id="weekTheme" placeholder="Example: Tighten CFUs. Increase on-track % for Priority Standard X."/>
-                    <div style="height:10px"></div>
-                    <label for="whatChanged">What changed since last week?</label>
-                    <textarea id="whatChanged" class="small" placeholder="Numbers or observable differences. What moved? What did you see?"></textarea>
-                  </div>
-                  <div class="block gray span-6" style="box-shadow:none">
-                    <label for="topIssues">Top issue (root cause, one sentence)</label>
-                    <textarea id="topIssues" class="small" placeholder="What is the constraint holding the system back?"></textarea>
-                  </div>
-                  <div class="block gray span-6" style="box-shadow:none">
-                    <label for="helpNeeded">Help needed (who removes the barrier?)</label>
-                    <textarea id="helpNeeded" class="small" placeholder="Curriculum, Student Services, HR, Transportation, Tech, Ops, etc."></textarea>
-                  </div>
-                  <div class="block gold span-6" style="box-shadow:none">
-                    <label for="owner">Owner (single accountable person)</label>
-                    <input type="text" id="owner" placeholder="Name"/>
-                  </div>
-                  <div class="block gold span-6" style="box-shadow:none">
-                    <label for="dueDate">Due date (next check)</label>
-                    <input type="date" id="dueDate"/>
-                  </div>
-                </div>
-              </div>
-
-              <div class="block gold span-12">
-                <div class="k">Select weekly focus areas (keep it to 1–2 when possible)</div>
-                <p class="q">Every focus area you select will render a full module below. No missing sections.</p>
-                <div class="focusRow" id="focusRow"></div>
-              </div>
-
-              <div class="block gray span-6">
-                <div class="k">Wins (Top 3)</div>
-                <p class="q">What should we protect because it is working?</p>
-                <textarea id="generalGlows" class="small" placeholder="Short, specific, evidence-backed wins."></textarea>
-              </div>
-              <div class="block gray span-6">
-                <div class="k">Gaps (Top 3)</div>
-                <p class="q">What is the next inch? What is drifting off plan?</p>
-                <textarea id="generalGrows" class="small" placeholder="Short, specific problems we will solve."></textarea>
-              </div>
-
-              <div class="block gray span-12">
-                <div class="k">Focus modules</div>
-                <p class="q">Guiding questions, daily look-fors, evidence validation, and signals for each selected focus area.</p>
-                <div id="modulesHost"></div>
-              </div>
-
-              <div class="block gold span-6">
-                <div class="k">Next moves (1–3)</div>
-                <p class="q">Name actions that change the learner experience, not just paperwork.</p>
-                <textarea id="nextMoves" placeholder="Action 1 (owner, due). Action 2 (owner, due). Action 3 (owner, due)."></textarea>
-              </div>
-              <div class="block gold span-6">
-                <div class="k">Proof point for next Monday</div>
-                <p class="q">Exactly what artifact and what number will you show?</p>
-                <textarea id="proofNextWeek" placeholder="Example: 3 labeled student work samples + on-track % movement for Priority Standard X."></textarea>
-              </div>
-
-              <div class="block gray span-12">
-                <button class="primary" id="saveBtn">Save Entry</button>
-                <button class="gold" id="summaryBtn" style="margin-left:8px;">Agenda Summary</button>
-                <span class="foot" style="display:inline-block;margin-left:10px;">
-                  Agenda Summary creates a one-page “Monday meeting” view from what you entered.
-                </span>
-              </div>
-            </div>
-
           </div>
         </div>
 
-        <!-- RIGHT: Priorities + Evidence + Trend + Recent -->
-        <div class="sticky">
-          <div class="panel theme-gold">
-            <div class="panelHeader">
+        <!-- RIGHT -->
+        <div class="card" id="moduleRight">
+          <h2>Rating Key</h2>
+          <p class="sub">Use Transactional to Transformational to track progress. Notes are the evidence.</p>
+
+          <div class="keyBox">
+            <div class="keyRow">
+              <div class="keyNum">1</div>
               <div>
-                <h2>Priorities and Evidence</h2>
-                <div class="hint">This side is your meeting guide. It keeps the focus on priorities, coherence, and proof.</div>
+                <b>Transactional</b><br>
+                <span class="muted">Compliance-driven. Add-on behavior. Evidence is minimal and inconsistent. Ownership is adult-centered.</span>
               </div>
-              <div class="chip"><span class="dot"></span><span id="rightChip">Ready</span></div>
             </div>
-            <div class="panelBody">
-
-              <div class="blocks">
-                <div class="block gray span-12">
-                  <div class="k">Agenda Builder</div>
-                  <p class="q">Auto-generated from selected focus areas. Use it to prioritize the discussion.</p>
-                  <div id="agendaList" class="detailBody muted">Select focus areas to build the agenda.</div>
-                </div>
-
-                <div class="block gray span-12">
-                  <div class="k">Evidence Checklist</div>
-                  <p class="q">If it cannot be validated, it is only a belief. This keeps the system credible.</p>
-                  <div id="evidenceChecklist" class="detailBody muted">Select focus areas to populate the evidence checklist.</div>
-                </div>
-
-                <div class="block span-12">
-                  <div class="k">Overall status trend</div>
-                  <p class="q">Red=1, Yellow=2, Green=3. The goal is visibility and steady improvement.</p>
-                  <canvas id="statusChart" height="150"></canvas>
-                </div>
-
-                <div class="block span-12">
-                  <div class="k">Signal trend</div>
-                  <p class="q">Choose one numeric signal to chart. Only charts what you actually enter.</p>
-                  <label for="metricPick">Numeric signal</label>
-                  <select id="metricPick"></select>
-                  <div style="height:10px"></div>
-                  <canvas id="metricChart" height="150"></canvas>
-                </div>
-
-                <div class="block gray span-12">
-                  <div class="k">Most recent entries</div>
-                  <p class="q">Click a row to load it for updating.</p>
-                  <div style="overflow:auto; max-height: 320px;">
-                    <table id="entriesTable">
-                      <thead>
-                        <tr>
-                          <th>Date</th>
-                          <th>School</th>
-                          <th>Status</th>
-                          <th>Focus</th>
-                        </tr>
-                      </thead>
-                      <tbody></tbody>
-                    </table>
-                  </div>
-                  <div class="foot">Exports move this into Google Sheets or your district dashboard.</div>
-                </div>
-
+            <div class="keyRow">
+              <div class="keyNum">2</div>
+              <div>
+                <b>Traditional</b><br>
+                <span class="muted">Mostly assignment completion. Some routines exist, but purpose and mastery are not consistently visible to students.</span>
               </div>
-
+            </div>
+            <div class="keyRow">
+              <div class="keyNum">3</div>
+              <div>
+                <b>Transitional</b><br>
+                <span class="muted">Purpose and mastery are emerging. Evidence is collected across settings. Student reflection and alignment are developing.</span>
+              </div>
+            </div>
+            <div class="keyRow">
+              <div class="keyNum">4</div>
+              <div>
+                <b>Transformational</b><br>
+                <span class="muted">Student-owned mastery evidence. Daily practice and artifacts align. System is coherent and visible across classrooms.</span>
+              </div>
             </div>
           </div>
-        </div>
 
-      </div>
-    </div>
+          <div class="divider"></div>
 
-    <!-- DASHBOARD -->
-    <div class="view" id="dashboardView">
-      <div class="panel theme-gray">
-        <div class="panelHeader">
-          <div>
-            <h2>Dashboard</h2>
-            <div class="hint">A higher-level view. Filter by school. Spot patterns across time.</div>
-          </div>
-          <div class="chip"><span class="dot"></span><span id="dashChip">0 entries</span></div>
-        </div>
-        <div class="panelBody">
-          <div class="blocks">
-            <div class="block gray span-6">
-              <div class="k">Filter</div>
-              <label for="filterSchool">School</label>
-              <select id="filterSchool">
-                <option value="ALL">All Schools</option>
-              </select>
-            </div>
-            <div class="block gray span-6">
-              <div class="k">Chart signal</div>
-              <label for="dashMetricPick">Numeric signal</label>
-              <select id="dashMetricPick"></select>
-            </div>
-            <div class="block span-12">
-              <div class="k">Overall status trend</div>
-              <canvas id="dashStatusChart" height="140"></canvas>
-            </div>
-            <div class="block span-12">
-              <div class="k">Signal trend</div>
-              <canvas id="dashMetricChart" height="140"></canvas>
-            </div>
-            <div class="block gray span-12">
-              <div class="k">Entry list</div>
-              <div style="overflow:auto; max-height: 520px;">
-                <table id="dashTable">
-                  <thead>
-                    <tr>
-                      <th>Date</th>
-                      <th>School</th>
-                      <th>Status</th>
-                      <th>Owner</th>
-                      <th>Due</th>
-                      <th>Focus</th>
-                    </tr>
-                  </thead>
-                  <tbody></tbody>
-                </table>
-              </div>
-              <div class="foot">Click a row to open it in Weekly Tool for edits.</div>
-            </div>
-          </div>
+          <h2 style="margin-top:0;">Quick Reminders</h2>
+          <p class="sub">
+            Keep the weekly focus tight. 1 to 2 focus areas is enough when evidence is credible and follow-up is clear.
+            Use ratings to spot patterns. Use notes to prove them.
+          </p>
         </div>
       </div>
     </div>
-
   </div>
 
-<script>
-  // ---------------- STORAGE ----------------
-  const STORAGE_KEY = "vibrant_accountability_weekly_tool_v4";
-  let entries = [];
-  let statusChart, metricChart, dashStatusChart, dashMetricChart;
-
-  // ---------------- UTIL ----------------
-  const $ = (id)=>document.getElementById(id);
-  const pad = (n)=>String(n).padStart(2,"0");
-  function todayISO(){
-    const d=new Date();
-    return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
-  }
-  function safeId(s){ return String(s).replace(/[^a-zA-Z0-9_]+/g, "_"); }
-  function newId(){ return "e_" + Math.random().toString(16).slice(2) + "_" + Date.now().toString(16); }
-  function loadEntries(){
-    try{ entries = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]"); if(!Array.isArray(entries)) entries=[]; }
-    catch(e){ entries=[]; }
-  }
-  function saveEntries(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(entries)); }
-  function tagHTML(status){
-    if(status==="Green") return `<span class="tag good">Green</span>`;
-    if(status==="Yellow") return `<span class="tag warn">Yellow</span>`;
-    return `<span class="tag risk">Red</span>`;
-  }
-  function listHTML(arr){ return `<ul>${arr.map(x=>`<li>${x}</li>`).join("")}</ul>`; }
-
-  // ---------------- RATING LEVELS (Transactional / Traditional / Transitional / Transformational) ----------------
-  // These are system-level descriptors aligned to your earlier framing:
-  // - Transactional: compliance/points/completion, teacher-owned learning
-  // - Traditional: conventional instruction and grading routines, teacher-led, limited transfer
-  // - Transitional: standards clarity + workshop moves + emerging performance evidence
-  // - Transformational: vibrant learning + authentic performance + durable skills + credible evidence
-  const RATING_LEVELS = [
-    {
-      key: "Transactional",
-      num: 1,
-      desc: "Compliance-driven. Work is mainly completion and directions-following. Evidence is thin and often point-based."
-    },
-    {
-      key: "Traditional",
-      num: 2,
-      desc: "Conventional routines. Teacher-led instruction with consistent expectations, but limited agency, relevance, or authentic application."
-    },
-    {
-      key: "Transitional",
-      num: 3,
-      desc: "Standards and proficiency are clearer. Workshop practices appear. Students do more thinking and revising. Evidence is growing across time."
-    },
-    {
-      key: "Transformational",
-      num: 4,
-      desc: "Vibrant by design. Students own meaningful work, often interdisciplinary and real-world. Evidence is compelling, curated, and standards-referenced."
-    }
-  ];
-  function stageToNum(stage){
-    const hit = RATING_LEVELS.find(x=>x.key===stage);
-    return hit ? hit.num : null;
-  }
-
-  // ---------------- FOCUS MODEL ----------------
-  const FOCUS = [
-    {
-      key: "Vibrant Learning",
-      theme: "gold",
-      tagline: "The learner experience. The why behind everything else.",
-      majorComponents: [
-        "Student agency and voice",
-        "Purposeful, contextual, real-world learning",
-        "Interdisciplinary connections",
-        "Writing Across the Content",
-        "Engagement, relevance, and ownership"
-      ],
-      keyIndicators: [
-        "Students understand the purpose of the learning",
-        "Students make choices in process, product, or pathway",
-        "Learning connects to real-world contexts or problems",
-        "Students communicate thinking through writing, speaking, or creating",
-        "Students reflect on learning and growth"
-      ],
-      observedDaily: [
-        "Students explaining why they are learning something",
-        "Multiple pathways or products visible in the room",
-        "Students asking questions, not just answering them",
-        "Writing, discussion, or creation embedded in lessons",
-        "Students referencing real-world examples or applications"
-      ],
-      validatedEvidence: [
-        "Student reflections tied to learning goals",
-        "Interdisciplinary task descriptions or unit plans",
-        "Writing samples across content areas",
-        "Project briefs showing real-world context",
-        "Student-created artifacts demonstrating choice and ownership"
-      ],
-      pushQuestion: "If a visitor walked into a classroom for ten minutes, would they know who owns the learning? The teacher or the students?",
-      subareas: [
-        { key:"Interdisciplinary Learning", desc:"Students connect learning across subjects to create, solve, or explain something meaningful." },
-        { key:"Writing Across the Content", desc:"Writing is used to think, explain, argue, and create in all subjects." },
-        { key:"Real-world Learning", desc:"Tasks have authentic purpose, audience, constraints, and application." },
-        { key:"Student Agency", desc:"Students have voice, choice, ownership, and can articulate goals and growth." }
-      ],
-      lookFors: [
-        {id:"student_why", title:"Students can explain the why", desc:"Purpose and relevance are understood by learners."},
-        {id:"choice_real", title:"Choice is meaningful", desc:"Product, process, topic, audience, or tools are student-influenced."},
-        {id:"thinking_visible", title:"Thinking is visible", desc:"Reasoning, drafts, revisions, reflection, and problem-solving steps appear."},
-        {id:"audience", title:"Authentic audience/purpose", desc:"Work is designed to matter beyond the classroom."},
-        {id:"integrated", title:"Integrated learning", desc:"Two or more disciplines are connected in a real way."}
-      ],
-      ratings: [
-        {key:"relevance", label:"Relevance", hint:"Do students understand the purpose and value of the work?"},
-        {key:"agency", label:"Agency", hint:"Are students making meaningful choices and owning the learning?"},
-        {key:"transfer", label:"Thinking/Transfer", hint:"Does the work require reasoning, application, and problem-solving?"},
-        {key:"evidence", label:"Evidence Quality", hint:"Would a skeptic see credible proof of growth/mastery/readiness?"}
-      ],
-      signals: [
-        {key:"artifacts_added", label:"# new artifacts captured this week"},
-        {key:"student_voice_samples", label:"# student voice proof points"},
-        {key:"real_world_tasks", label:"# authentic tasks observed (est.)"}
-      ],
-      evidenceRule: "Attach 1 artifact link (work sample/photo) plus 1 student quote that proves relevance or agency."
-    },
-    {
-      key: "Priority Standards and Proficiency Scales",
-      theme: "gray",
-      tagline: "Clarity about what matters most.",
-      majorComponents: [
-        "Identified priority standards",
-        "Student-friendly learning targets",
-        "Proficiency scales (1–4 or continuum-based)",
-        "Alignment between instruction, assessment, and reporting"
-      ],
-      keyIndicators: [
-        "Focus on depth over coverage",
-        "Clear descriptions of what proficiency looks like",
-        "Consistent language across classrooms and schools",
-        "Students tracking their own progress"
-      ],
-      observedDaily: [
-        "Learning targets posted and referenced",
-        "Teachers using proficiency language during instruction",
-        "Students discussing where they are on a scale",
-        "Feedback aligned to specific standards"
-      ],
-      validatedEvidence: [
-        "Documented priority standards by grade/course",
-        "Proficiency scales with clear descriptors",
-        "Student self-assessments",
-        "Standards-aligned formative assessments",
-        "Lesson plans intentionally aligned to priority standards"
-      ],
-      pushQuestion: "Are proficiency scales tools for learning or just compliance documents?",
-      subareas: [
-        { key:"Priority Standard Clarity", desc:"Staff can name priority outcomes and unpack what they mean." },
-        { key:"Scale Quality and Use", desc:"Scales are accurate and actively used to plan and give feedback." },
-        { key:"Monitoring and Response", desc:"Teams track movement and adjust teaching based on evidence." }
-      ],
-      lookFors: [
-        {id:"target_explicit", title:"Priority target is explicit", desc:"Priority standard is named and unpacked."},
-        {id:"scale_used", title:"Scale language is used", desc:"Teacher and students reference what levels look like."},
-        {id:"task_match", title:"Tasks match intent", desc:"Work aligns to the level of thinking expected."},
-        {id:"on_off_track", title:"On/off-track picture is clear", desc:"Teams can name who is on track and who is not."},
-        {id:"response", title:"Response is evidence-based", desc:"Reteach/enrich decisions match what evidence shows."}
-      ],
-      ratings: [
-        {key:"clarity", label:"Clarity", hint:"Are priority outcomes consistently understood and referenced?"},
-        {key:"scale_use", label:"Scale Use", hint:"Are proficiency scales guiding instruction and feedback (not sitting on paper)?"},
-        {key:"alignment", label:"Alignment", hint:"Do tasks and checks match the intended rigor of the standard?"},
-        {key:"response", label:"Response", hint:"Are teams adjusting instruction quickly based on evidence?"}
-      ],
-      signals: [
-        {key:"pct_on_track", label:"% students on track (priority outcome)"},
-        {key:"scale_used_pct", label:"% classrooms using scale language (est.)"},
-        {key:"stuck_point_count", label:"# students stuck at a level (est.)"}
-      ],
-      evidenceRule: "Attach the scale used this week and one labeled student work sample tied to a level."
-    },
-    {
-      key: "BRIDGE Instructional Model: Workshop Model",
-      theme: "gold",
-      tagline: "How learning is designed and facilitated.",
-      majorComponents: [
-        "Mini-lesson",
-        "Guided practice or workshop time",
-        "Independent or collaborative work",
-        "Conferencing and feedback",
-        "Reflection and closure"
-      ],
-      keyIndicators: [
-        "Gradual release of responsibility",
-        "Differentiation based on student need",
-        "Active student work time",
-        "Feedback driving improvement"
-      ],
-      observedDaily: [
-        "Short, focused instruction followed by student work",
-        "Teacher conferring with individuals or small groups",
-        "Students engaged in purposeful tasks",
-        "Flexible grouping",
-        "Clear routines and transitions"
-      ],
-      validatedEvidence: [
-        "Lesson plans aligned to the workshop structure",
-        "Conferencing notes or feedback logs",
-        "Student work in progress",
-        "Differentiation plans or grouping strategies",
-        "Reflection prompts used consistently"
-      ],
-      pushQuestion: "Is most class time spent watching learning or doing learning?",
-      subareas: [
-        { key:"Mini-lesson Precision", desc:"Clear teaching point, modeling, and purpose." },
-        { key:"Work Time Quality", desc:"Conferencing, small groups, differentiation, engagement." },
-        { key:"Reflection, Closure, and CFUs", desc:"Checks for understanding and next steps." }
-      ],
-      lookFors: [
-        {id:"teach_point", title:"Teaching point is tight", desc:"One clear focus, not a list."},
-        {id:"modeling", title:"Modeling includes thinking", desc:"Reasoning is shown, not just answers."},
-        {id:"work_time", title:"Students do the heavy lifting", desc:"High cognitive engagement during work time."},
-        {id:"conferencing", title:"Conferencing is purposeful", desc:"Teacher uses evidence to coach and adjust."},
-        {id:"cfu", title:"CFUs drive adjustments", desc:"Checks lead to instructional moves."},
-        {id:"closure", title:"Closure consolidates learning", desc:"Students reflect and set next steps."}
-      ],
-      ratings: [
-        {key:"clarity", label:"Clarity", hint:"Is the teaching point clear and standards-connected?"},
-        {key:"task_quality", label:"Task Quality", hint:"Are students doing meaningful work during work time?"},
-        {key:"responsive", label:"Responsive Teaching", hint:"Are CFUs and conferencing driving adjustments?"},
-        {key:"culture", label:"Learning Culture", hint:"Do routines, pacing, and relationships support learning?"}
-      ],
-      signals: [
-        {key:"walkthroughs_count", label:"# walkthroughs completed this week"},
-        {key:"cfu_avg", label:"avg CFUs per class (est.)"},
-        {key:"pct_meeting_core", label:"% classrooms meeting core expectations (est.)"}
-      ],
-      evidenceRule: "Attach one CFU sample (exit ticket/photo) and one conferring or small-group plan note."
-    },
-    {
-      key: "BRIDGE Performance Assessments (BPAs)",
-      theme: "gray",
-      tagline: "Where students demonstrate learning in meaningful ways.",
-      majorComponents: [
-        "Performance-based tasks",
-        "Real-world or authentic scenarios",
-        "Interdisciplinary connections",
-        "Durable skills embedded by design",
-        "Reflection on learning and process"
-      ],
-      keyIndicators: [
-        "Students applying knowledge, not recalling it",
-        "Multiple ways to demonstrate mastery",
-        "Clear criteria for success",
-        "Student choice and creativity"
-      ],
-      observedDaily: [
-        "Students working on extended tasks or projects",
-        "Problem-solving, collaboration, and communication",
-        "Teachers coaching rather than directing",
-        "Use of rubrics or success criteria during work time"
-      ],
-      validatedEvidence: [
-        "BPA task descriptions and prompts",
-        "Rubrics aligned to standards and durable skills",
-        "Student products and presentations",
-        "Reflection responses",
-        "Feedback cycles tied to improvement"
-      ],
-      pushQuestion: "Would this assessment exist outside of school and still make sense?",
-      subareas: [
-        { key:"Assessment Quality", desc:"Aligned, rigorous, authentic, worth doing." },
-        { key:"Implementation", desc:"Students create, revise, present, and reflect." },
-        { key:"Calibration and Use", desc:"Scoring is consistent and results change instruction." }
-      ],
-      lookFors: [
-        {id:"prompt", title:"Prompt is aligned and authentic", desc:"Task requires application and demonstrates mastery."},
-        {id:"rubric", title:"Rubric is usable", desc:"Students can use it to improve quality."},
-        {id:"process", title:"Process supports quality", desc:"Feedback and revision are built in."},
-        {id:"reflection", title:"Reflection is real", desc:"Students explain growth and next steps."},
-        {id:"calibration", title:"Calibration occurs", desc:"Adults score together using anchors."}
-      ],
-      ratings: [
-        {key:"quality", label:"BPA Quality", hint:"Is the task authentic, aligned, and rigorous enough to be credible?"},
-        {key:"implementation", label:"Implementation", hint:"Are students supported to produce quality (feedback, revision, coaching)?"},
-        {key:"calibration", label:"Calibration", hint:"Are adults scoring with anchors and consistency?"},
-        {key:"use", label:"Use of Results", hint:"Do results change instruction and supports?"}
-      ],
-      signals: [
-        {key:"bpa_active_count", label:"# BPAs active this week"},
-        {key:"bpa_completion_pct", label:"% completion (cycle)"},
-        {key:"calibration_sessions", label:"# calibration sessions completed"}
-      ],
-      evidenceRule: "Attach BPA prompt + rubric + one student product (draft/final) + reflection note."
-    },
-    {
-      key: "BRIDGE Performance Indicators (BPIs): Portrait of a Learner",
-      theme: "gold",
-      tagline: "Who the student is becoming.",
-      majorComponents: [
-        "Communication",
-        "Problem-solving",
-        "Collaboration",
-        "Creativity and innovation",
-        "Growth and learning resilience"
-      ],
-      keyIndicators: [
-        "Students demonstrating skills across contexts",
-        "Skills embedded in academic work",
-        "Language of the Portrait used consistently",
-        "Students reflecting on skill development"
-      ],
-      observedDaily: [
-        "Students working together intentionally",
-        "Presentations, discussions, and explanations",
-        "Students revising work based on feedback",
-        "Teachers naming durable skills during instruction"
-      ],
-      validatedEvidence: [
-        "BPI websites or digital portfolios",
-        "Reflections tied to specific indicators",
-        "Performance rubrics aligned to Portrait skills",
-        "Artifacts collected across time and content",
-        "Student-led conferences or presentations"
-      ],
-      pushQuestion: "Are BPIs add-ons, or are they visible inside core learning?",
-      subareas: [
-        { key:"Communication", desc:"Students explain, present, write, and communicate thinking across contexts." },
-        { key:"Problem-Solving", desc:"Students identify constraints, test solutions, and reflect on results." },
-        { key:"Collaboration / Innovation / Resilience", desc:"Students work with others, create, iterate, and persist through difficulty." }
-      ],
-      lookFors: [
-        {id:"named_skills", title:"Durable skills are named", desc:"Adults and students use shared Portrait language."},
-        {id:"embedded", title:"Skills are embedded", desc:"Skills show up in core learning, not side activities."},
-        {id:"feedback", title:"Feedback drives growth", desc:"Students revise and improve based on feedback."},
-        {id:"reflection", title:"Reflection is tied to skills", desc:"Students can describe growth in a specific indicator."},
-        {id:"portfolio", title:"Evidence is curated", desc:"Students capture artifacts across time and content."}
-      ],
-      ratings: [
-        {key:"visibility", label:"Visibility", hint:"Are Portrait skills visible inside core learning?"},
-        {key:"language", label:"Shared Language", hint:"Are teachers and students using consistent Portrait language?"},
-        {key:"student_ownership", label:"Student Ownership", hint:"Are students curating evidence and explaining growth?"},
-        {key:"quality", label:"Evidence Quality", hint:"Would artifacts convince an outside reviewer?"}
-      ],
-      signals: [
-        {key:"portfolio_updates", label:"# portfolio/BPI website updates this week"},
-        {key:"student_led_moments", label:"# student-led moments (conferences/presentations)"},
-        {key:"revision_cycles", label:"# revision cycles observed (est.)"}
-      ],
-      evidenceRule: "Attach a portfolio link and one reflection tied to a specific Portrait indicator."
-    },
-    {
-      key: "Compelling Evidence and SRG",
-      theme: "gray",
-      tagline: "How learning is documented, validated, and communicated.",
-      majorComponents: [
-        "Multiple measures of evidence",
-        "Standards-referenced reporting",
-        "Separation of product, process, and progress",
-        "Transparency for students and families"
-      ],
-      keyIndicators: [
-        "Grades reflect mastery of standards",
-        "Evidence gathered over time",
-        "Clear connection between evidence and reporting",
-        "Students understand how grades are determined"
-      ],
-      observedDaily: [
-        "Teachers referencing evidence during feedback",
-        "Students revising work to improve mastery",
-        "Conversations focused on learning, not points",
-        "Use of formative evidence to guide instruction"
-      ],
-      validatedEvidence: [
-        "Gradebooks aligned to standards",
-        "Collections of student evidence over time",
-        "Documentation of reassessment or revision",
-        "Clear reporting tools for families",
-        "Alignment between BPAs, BPIs, and grades"
-      ],
-      pushQuestion: "Does the grade tell the story of learning or just the final snapshot?",
-      subareas: [
-        { key:"Evidence Rules", desc:"Shared expectations for what counts and what does not." },
-        { key:"Grade Integrity", desc:"Grades reflect standards performance, not averages or compliance." },
-        { key:"Transparency and Understanding", desc:"Students and families understand how grades are determined." }
-      ],
-      lookFors: [
-        {id:"evidence_std", title:"Evidence is standards-based", desc:"Artifacts tie to standards, not points."},
-        {id:"recency", title:"Recency matters", desc:"Recent evidence is prioritized over old averages."},
-        {id:"separate", title:"Behaviors are separated", desc:"Work habits are not mixed into mastery."},
-        {id:"reassess", title:"Reassess/revise exists", desc:"Students can improve with new evidence."},
-        {id:"student", title:"Student can explain level", desc:"Learners know where they are and what to do next."}
-      ],
-      ratings: [
-        {key:"integrity", label:"Grade Integrity", hint:"Do grades reflect standards mastery rather than points/averages?"},
-        {key:"consistency", label:"Consistency", hint:"Are expectations consistent across classrooms?"},
-        {key:"clarity", label:"Student Clarity", hint:"Can students explain their level and next steps?"},
-        {key:"evidence", label:"Evidence Quality", hint:"Is evidence current, compelling, and connected to standards?"}
-      ],
-      signals: [
-        {key:"evidence_audits", label:"# evidence spot-checks this week"},
-        {key:"srg_alignment_pct", label:"% gradebook alignment (est.)"},
-        {key:"reassessment_count", label:"# reassessments/revisions completed"}
-      ],
-      evidenceRule: "Attach a gradebook slice and one student evidence trail showing growth over time."
-    }
-  ];
-
-  // ---------------- NAV ----------------
-  function showView(id){
-    document.querySelectorAll(".view").forEach(v=>v.classList.remove("active"));
-    $(id).classList.add("active");
-    if(id==="weeklyView"){ window.scrollTo({top:0,behavior:"smooth"}); }
-    refreshAll();
-  }
-  document.querySelectorAll("[data-nav]").forEach(btn=>{
-    btn.addEventListener("click", ()=> showView(btn.getAttribute("data-nav")));
-  });
-
-  // ---------------- HOME WAFFLE ----------------
-  function renderWaffle(){
-    const host = $("waffle");
-    host.innerHTML = "";
-    const tiles = [
-      { title:"Weekly Tool", desc:"Do the check-in. Prioritize. Capture evidence. Set proof points.", color:"black", action:()=>showView("weeklyView") },
-      { title:"Dashboard", desc:"Spot patterns across time. Filter by school. Keep the conversation honest.", color:"gold", action:()=>showView("dashboardView") },
-      { title:"Vibrant Learning", desc:"Interdisciplinary learning, WAC, real-world learning, student agency.", color:"gold", action:()=>jumpWeeklyWithFocus("Vibrant Learning") },
-      { title:"Priority Standards + Scales", desc:"Clarity about what matters. Proficiency language, monitoring, response.", color:"gray", action:()=>jumpWeeklyWithFocus("Priority Standards and Proficiency Scales") },
-      { title:"BRIDGE Instructional Model", desc:"Workshop model. CFUs. Conferring. Students doing the heavy lifting.", color:"gold", action:()=>jumpWeeklyWithFocus("BRIDGE Instructional Model: Workshop Model") },
-      { title:"BRIDGE Performance Assessments", desc:"Authentic tasks, rubrics, revision cycles, calibration, use of results.", color:"gray", action:()=>jumpWeeklyWithFocus("BRIDGE Performance Assessments (BPAs)") },
-      { title:"BRIDGE Performance Indicators", desc:"Portrait of a Learner. Evidence across contexts and time.", color:"gold", action:()=>jumpWeeklyWithFocus("BRIDGE Performance Indicators (BPIs): Portrait of a Learner") },
-      { title:"Compelling Evidence + SRG", desc:"Credibility and trust. Standards-based evidence. Transparency.", color:"gray", action:()=>jumpWeeklyWithFocus("Compelling Evidence and SRG") },
-      { title:"Tighten the System", desc:"A quick routine: focus, look-fors, evidence, owners, proof point.", color:"gold", action:()=>{ showView("weeklyView"); $("weekTheme").value="Tighten the system: align daily practice and validated evidence."; } }
-    ];
-    tiles.forEach(t=>{
-      const div = document.createElement("div");
-      div.className = `tile ${t.color==="gold" ? "gold" : (t.color==="black" ? "black" : "")}`;
-      div.innerHTML = `
-        <h3 class="tTitle">${t.title}</h3>
-        <p class="tDesc">${t.desc}</p>
-        <div class="tMeta">
-          <span class="pill">${t.color==="black" ? "Start" : "Open"}</span>
-          <span class="pill">Prioritize</span>
-          <span class="pill">Evidence</span>
-        </div>
-      `;
-      div.addEventListener("click", t.action);
-      host.appendChild(div);
-    });
-  }
-
-  function jumpWeeklyWithFocus(focusKey){
-    showView("weeklyView");
-    FOCUS.forEach(f=>{
-      const cb = document.getElementById(`focus_${safeId(f.key)}`);
-      if(cb) cb.checked = (f.key===focusKey);
-    });
-    renderModulesAndRightPanel();
-    window.scrollTo({top:0,behavior:"smooth"});
-  }
-
-  // ---------------- WEEKLY FOCUS SELECTOR ----------------
-  function renderFocusRow(){
-    const host = $("focusRow");
-    host.innerHTML = "";
-    FOCUS.forEach(f=>{
-      const div = document.createElement("div");
-      div.className = `focusChip ${f.theme==="gold" ? "gold" : ""}`;
-      div.innerHTML = `
-        <input type="checkbox" id="focus_${safeId(f.key)}" data-focus="${f.key}">
-        <div>
-          <b>${f.key}</b>
-          <small>${f.tagline}</small>
-        </div>
-      `;
-      div.querySelector("input").addEventListener("change", renderModulesAndRightPanel);
-      host.appendChild(div);
-    });
-  }
-  function selectedFocusKeys(){
-    return FOCUS.filter(f => $(`focus_${safeId(f.key)}`)?.checked).map(f=>f.key);
-  }
-
-  // ---------------- MODULE RENDER ----------------
-  function renderModulesAndRightPanel(){
-    renderModules();
-    buildAgendaAndEvidence();
-    refreshMetricPickers();
-    refreshCharts();
-  }
-
-  function renderModules(){
-    const host = $("modulesHost");
-    host.innerHTML = "";
-    const picks = selectedFocusKeys();
-    if(!picks.length){
-      host.innerHTML = `<div class="foot">Select one or more focus areas above. Modules will appear here.</div>`;
-      return;
-    }
-
-    picks.forEach(key=>{
-      const f = FOCUS.find(x=>x.key===key);
-      const sid = safeId(key);
-
-      const wrap = document.createElement("div");
-      wrap.style.marginBottom = "12px";
-
-      wrap.innerHTML = `
-        <details open>
-          <summary>
-            <span>${f.key}</span>
-            <span class="sumHint">daily vs evidence</span>
-          </summary>
-          <div class="detailBody">
-            <div class="blocks" style="margin-top:10px;">
-              <div class="block ${f.theme==="gold" ? "gold" : "gray"} span-12">
-                <div class="k">Component Map</div>
-                <p class="q">Major components and indicators, plus what you can observe daily vs validate through artifacts.</p>
-
-                <details>
-                  <summary><span>Major Components + Key Indicators</span><span class="sumHint">architecture and signals</span></summary>
-                  <div class="detailBody">
-                    <b>Major Components</b>${listHTML(f.majorComponents)}
-                    <div style="height:8px"></div>
-                    <b>Key Indicators</b>${listHTML(f.keyIndicators)}
-                  </div>
-                </details>
-
-                <details>
-                  <summary><span>What Can Be Observed Daily</span><span class="sumHint">walkthrough look-fors</span></summary>
-                  <div class="detailBody">${listHTML(f.observedDaily)}</div>
-                </details>
-
-                <details>
-                  <summary><span>What Can Be Validated Through Evidence</span><span class="sumHint">artifacts and proof</span></summary>
-                  <div class="detailBody">${listHTML(f.validatedEvidence)}</div>
-                </details>
-
-                <details>
-                  <summary><span>Precision Push Question</span><span class="sumHint">where clarity matters</span></summary>
-                  <div class="detailBody">
-                    <b>${f.pushQuestion}</b>
-                    <div class="muted" style="margin-top:6px;">Use this question to sharpen coaching notes and your proof point.</div>
-                  </div>
-                </details>
-              </div>
-
-              <div class="block ${f.theme==="gold" ? "gold" : "gray"} span-6">
-                <div class="k">Weekly sub-area</div>
-                <p class="q">Pick one sub-area to keep the week focused.</p>
-                <label for="sub_${sid}">Sub-area</label>
-                <select id="sub_${sid}">
-                  ${f.subareas.map(sa=>`<option value="${sa.key}">${sa.key}</option>`).join("")}
-                </select>
-                <div class="foot" id="subDesc_${sid}"></div>
-              </div>
-
-              <div class="block gray span-6">
-                <div class="k">Module status</div>
-                <p class="q">Truth first. Then improvement.</p>
-                <label for="mstatus_${sid}">R/Y/G</label>
-                <select id="mstatus_${sid}">
-                  <option value="Green">Green (On plan)</option>
-                  <option value="Yellow">Yellow (Uneven)</option>
-                  <option value="Red">Red (Off plan)</option>
-                </select>
-                <div>${tagHTML("Green")} ${tagHTML("Yellow")} ${tagHTML("Red")}</div>
-              </div>
-
-              <div class="block gray span-6">
-                <div class="k">What changed since last week?</div>
-                <p class="q">Name what moved. If nothing moved, say that clearly.</p>
-                <textarea id="mchanged_${sid}" class="small" placeholder="Numbers or observable differences."></textarea>
-              </div>
-
-              <div class="block gray span-6">
-                <div class="k">Main barrier (root cause, 1 sentence)</div>
-                <p class="q">What is the real constraint holding this back?</p>
-                <textarea id="mbarrier_${sid}" class="small"></textarea>
-              </div>
-
-              <div class="block gray span-6">
-                <div class="k">Help needed</div>
-                <p class="q">Who removes the barrier, and what do you need?</p>
-                <textarea id="mhelp_${sid}" class="small"></textarea>
-              </div>
-
-              <div class="block ${f.theme==="gold" ? "gold" : "gray"} span-12">
-                <div class="k">Walkthrough look-fors (checkbox)</div>
-                <p class="q">Check only what you actually saw.</p>
-                <div class="checks" id="checks_${sid}"></div>
-              </div>
-
-              <div class="block ${f.theme==="gold" ? "gold" : "gray"} span-12">
-                <div class="k">Ratings: Transactional to Transformational</div>
-                <p class="q">This is not a judgment. It is a shared language for where practice currently lives.</p>
-                <div class="rateLegend">
-                  <b>Level meanings (district-wide, consistent)</b>
-                  <ul>
-                    <li><b>Transactional:</b> compliance and completion dominate. Evidence is thin and point-based.</li>
-                    <li><b>Traditional:</b> conventional teacher-led routines. Limited relevance, agency, or transfer.</li>
-                    <li><b>Transitional:</b> clearer standards and workshop moves. Evidence is growing across time.</li>
-                    <li><b>Transformational:</b> vibrant learning with authentic application. Evidence is compelling, curated, and SRG-aligned.</li>
-                  </ul>
-                </div>
-                <div id="ratings_${sid}" style="margin-top:10px;"></div>
-              </div>
-
-              <div class="block gray span-6">
-                <div class="k">Numeric signals (optional)</div>
-                <p class="q">Only track what you actually track.</p>
-                <div id="signals_${sid}"></div>
-              </div>
-
-              <div class="block ${f.theme==="gold" ? "gold" : "gray"} span-6">
-                <div class="k">Evidence and artifacts</div>
-                <p class="q"><b>Evidence rule:</b> ${f.evidenceRule}</p>
-                <label for="mevidence_${sid}">Evidence link(s)</label>
-                <input type="text" id="mevidence_${sid}" placeholder="Paste link to folder, doc, photo, student work, or dashboard"/>
-                <div style="height:10px"></div>
-                <label for="mfile_${sid}">Upload (file name stored)</label>
-                <input type="file" id="mfile_${sid}"/>
-                <div class="foot" id="mfileNote_${sid}">No file selected.</div>
-              </div>
-
-              <div class="block gray span-6">
-                <div class="k">Module wins</div>
-                <textarea id="mglows_${sid}" class="small"></textarea>
-              </div>
-
-              <div class="block gray span-6">
-                <div class="k">Module gaps</div>
-                <textarea id="mgrows_${sid}" class="small"></textarea>
-              </div>
-
-            </div>
-          </div>
-        </details>
-      `;
-      host.appendChild(wrap);
-
-      // sub-area description
-      const subSel = $(`sub_${sid}`);
-      const subDesc = $(`subDesc_${sid}`);
-      const updateDesc = ()=>{
-        const sa = f.subareas.find(x=>x.key===subSel.value);
-        subDesc.textContent = sa ? sa.desc : "";
-      };
-      subSel.addEventListener("change", ()=>{ updateDesc(); buildAgendaAndEvidence(); });
-      updateDesc();
-
-      // look-fors
-      const checksHost = $(`checks_${sid}`);
-      checksHost.innerHTML = "";
-      f.lookFors.forEach(lf=>{
-        const c = document.createElement("div");
-        c.className = "check";
-        c.innerHTML = `
-          <input type="checkbox" id="lf_${sid}_${lf.id}">
-          <div>
-            <b>${lf.title}</b>
-            <small>${lf.desc}</small>
-          </div>
-        `;
-        checksHost.appendChild(c);
-      });
-
-      // ratings (Transactional/Traditional/Transitional/Transformational)
-      const ratingsHost = $(`ratings_${sid}`);
-      ratingsHost.innerHTML = "";
-      f.ratings.forEach(r=>{
-        const row = document.createElement("div");
-        row.style.marginBottom = "12px";
-        row.innerHTML = `
-          <label>${r.label}</label>
-          <div class="ratingRow" data-focus="${key}" data-rating="${r.key}" data-value="" data-stage=""></div>
-          <div class="foot">${r.hint}</div>
-        `;
-        ratingsHost.appendChild(row);
-
-        const group = row.querySelector(".ratingRow");
-
-        RATING_LEVELS.forEach(level=>{
-          const b = document.createElement("div");
-          b.className = "rateBtn";
-          b.setAttribute("data-stage", level.key);
-          b.setAttribute("data-num", String(level.num));
-          b.innerHTML = `
-            <div class="rTitle">${level.key}</div>
-            <div class="rDesc">${level.desc}</div>
-          `;
-          b.addEventListener("click", ()=>{
-            group.querySelectorAll(".rateBtn").forEach(x=>x.classList.remove("active"));
-            b.classList.add("active");
-            group.setAttribute("data-value", String(level.num));   // keeps internal 1-4 compatibility
-            group.setAttribute("data-stage", level.key);           // stores the actual stage label
-          });
-          group.appendChild(b);
-        });
-      });
-
-      // signals
-      const sigHost = $(`signals_${sid}`);
-      sigHost.innerHTML = "";
-      f.signals.forEach(s=>{
-        const div = document.createElement("div");
-        div.style.marginBottom = "10px";
-        div.innerHTML = `
-          <label for="sig_${sid}_${s.key}">${s.label}</label>
-          <input type="number" id="sig_${sid}_${s.key}" placeholder="(optional)"/>
-        `;
-        sigHost.appendChild(div);
-        div.querySelector("input").addEventListener("input", refreshCharts);
-      });
-
-      // file note
-      const fileInput = $(`mfile_${sid}`);
-      fileInput.addEventListener("change", ()=>{
-        const f0 = fileInput.files && fileInput.files[0];
-        $(`mfileNote_${sid}`).textContent = f0 ? `Selected: ${f0.name}` : "No file selected.";
-        buildAgendaAndEvidence();
-      });
-
-      $(`mevidence_${sid}`).addEventListener("input", buildAgendaAndEvidence);
-      $(`mstatus_${sid}`).addEventListener("change", buildAgendaAndEvidence);
-    });
-  }
-
-  // ---------------- RIGHT PANEL: AGENDA + EVIDENCE ----------------
-  function buildAgendaAndEvidence(){
-    const picks = selectedFocusKeys();
-    if(!picks.length){
-      $("agendaList").innerHTML = `<span class="muted">Select focus areas to build the agenda.</span>`;
-      $("evidenceChecklist").innerHTML = `<span class="muted">Select focus areas to populate the evidence checklist.</span>`;
-      return;
-    }
-
-    const agendaItems = [];
-    picks.forEach(key=>{
-      const f = FOCUS.find(x=>x.key===key);
-      const sid = safeId(key);
-      const status = $(`mstatus_${sid}`)?.value || "Green";
-      const sub = $(`sub_${sid}`)?.value || "";
-      const severity = status==="Red" ? 0 : (status==="Yellow" ? 1 : 2);
-      agendaItems.push({ key, status, sub, severity, tagline:f.tagline });
-    });
-    agendaItems.sort((a,b)=> a.severity - b.severity);
-
-    const agendaHTML = `
-      <ol style="margin:0;padding-left:18px;">
-        ${agendaItems.map(a=>`
-          <li style="margin:6px 0;">
-            <b>${a.key}</b> (${a.sub}) - ${tagHTML(a.status)}
-            <div class="muted" style="font-size:11px;margin-top:2px;">${a.tagline}</div>
-            <div class="muted" style="font-size:11px;margin-top:2px;">Decision: What will we tighten by next Monday? What proof will we bring?</div>
-          </li>
-        `).join("")}
-      </ol>
-    `;
-    $("agendaList").innerHTML = agendaHTML;
-
-    const checks = picks.map(key=>{
-      const f = FOCUS.find(x=>x.key===key);
-      const sid = safeId(key);
-      const link = ($(`mevidence_${sid}`)?.value || "").trim();
-      const fileChosen = ($(`mfile_${sid}`)?.files && $(`mfile_${sid}`)?.files[0]) ? true : false;
-      const status = $(`mstatus_${sid}`)?.value || "Green";
-      const ok = !!link || fileChosen;
-      return { key, rule: f.evidenceRule, ok, status, link, fileChosen };
-    });
-
-    const evHTML = `
-      <ul style="margin:0;padding-left:18px;">
-        ${checks.map(c=>`
-          <li style="margin:6px 0;">
-            <b>${c.key}</b> - ${tagHTML(c.status)}
-            <div class="muted" style="font-size:11px;margin-top:2px;"><b>Evidence rule:</b> ${c.rule}</div>
-            <div style="margin-top:4px;">
-              <span class="tag ${c.ok ? "good" : "risk"}">${c.ok ? "Evidence attached" : "Evidence missing"}</span>
-              <span class="tag">${c.link ? "Link" : "No link"}</span>
-              <span class="tag">${c.fileChosen ? "File selected" : "No file"}</span>
-            </div>
-          </li>
-        `).join("")}
-      </ul>
-      <div class="foot">Rule of thumb: If a focus area is Red or Yellow, it should almost always have a proof artifact attached.</div>
-    `;
-    $("evidenceChecklist").innerHTML = evHTML;
-
-    $("rightChip").textContent = `Focus: ${picks.length}`;
-  }
-
-  // ---------------- COLLECT / SAVE ----------------
-  function collectModules(){
-    const picks = selectedFocusKeys();
-    const out = {};
-    picks.forEach(key=>{
-      const f = FOCUS.find(x=>x.key===key);
-      const sid = safeId(key);
-
-      const mod = {
-        subarea: $(`sub_${sid}`)?.value || "",
-        status: $(`mstatus_${sid}`)?.value || "Green",
-        changed: ($(`mchanged_${sid}`)?.value || "").trim(),
-        barrier: ($(`mbarrier_${sid}`)?.value || "").trim(),
-        help: ($(`mhelp_${sid}`)?.value || "").trim(),
-        evidenceLink: ($(`mevidence_${sid}`)?.value || "").trim(),
-        attachment: null,
-        lookFors: {},
-        ratings: {},        // stores stage label
-        ratingsNum: {},     // stores numeric 1-4 for compatibility/trending
-        signals: {},
-        wins: ($(`mglows_${sid}`)?.value || "").trim(),
-        gaps: ($(`mgrows_${sid}`)?.value || "").trim()
-      };
-
-      f.lookFors.forEach(lf=>{
-        mod.lookFors[lf.id] = !!($(`lf_${sid}_${lf.id}`)?.checked);
-      });
-
-      document.querySelectorAll(`.ratingRow[data-focus="${CSS.escape(key)}"]`).forEach(group=>{
-        const rKey = group.getAttribute("data-rating");
-        const stage = group.getAttribute("data-stage") || "";
-        const num = group.getAttribute("data-value") || "";
-        mod.ratings[rKey] = stage;
-        mod.ratingsNum[rKey] = num ? Number(num) : "";
-      });
-
-      f.signals.forEach(s=>{
-        const el = $(`sig_${sid}_${s.key}`);
-        mod.signals[s.key] = (el && el.value !== "") ? Number(el.value) : "";
-      });
-
-      const fileInput = $(`mfile_${sid}`);
-      const file = fileInput && fileInput.files && fileInput.files[0];
-      mod.attachment = file ? { name:file.name, type:file.type, size:file.size } : null;
-
-      out[key] = mod;
-    });
-    return out;
-  }
-
-  function collectEntry(){
-    return {
-      id: $("saveBtn").getAttribute("data-editing") || newId(),
-      date: $("entryDate").value,
-      entryType: $("entryType").value,
-      school: $("school").value,
-      who: $("who").value,
-
-      overallStatus: $("overallStatus").value,
-      weekTheme: ($("weekTheme").value || "").trim(),
-      whatChanged: ($("whatChanged").value || "").trim(),
-      topIssues: ($("topIssues").value || "").trim(),
-      helpNeeded: ($("helpNeeded").value || "").trim(),
-      owner: ($("owner").value || "").trim(),
-      dueDate: $("dueDate").value,
-
-      focusKeys: selectedFocusKeys(),
-      generalGlows: ($("generalGlows").value || "").trim(),
-      generalGrows: ($("generalGrows").value || "").trim(),
-
-      modules: collectModules(),
-
-      nextMoves: ($("nextMoves").value || "").trim(),
-      proofNextWeek: ($("proofNextWeek").value || "").trim(),
-
-      updatedAt: new Date().toISOString()
-    };
-  }
-
-  function resetForm(){
-    $("entryDate").value = todayISO();
-    $("dueDate").value = todayISO();
-    $("entryType").value = "Weekly Check-In";
-    $("school").value = "";
-    $("who").value = "Principal";
-
-    $("overallStatus").value = "Green";
-    $("weekTheme").value = "";
-    $("whatChanged").value = "";
-    $("topIssues").value = "";
-    $("helpNeeded").value = "";
-    $("owner").value = "";
-
-    $("generalGlows").value = "";
-    $("generalGrows").value = "";
-    $("nextMoves").value = "";
-    $("proofNextWeek").value = "";
-
-    FOCUS.forEach(f=>{
-      const cb = $(`focus_${safeId(f.key)}`);
-      if(cb) cb.checked = false;
-    });
-
-    $("modulesHost").innerHTML = `<div class="foot">Select focus areas to load modules.</div>`;
-    $("saveBtn").removeAttribute("data-editing");
-    $("saveBtn").textContent = "Save Entry";
-    buildAgendaAndEvidence();
-    refreshAll();
-  }
-
-  function loadEntryToForm(id){
-    const e = entries.find(x=>x.id===id);
-    if(!e) return;
-
-    showView("weeklyView");
-
-    $("entryDate").value = e.date || todayISO();
-    $("entryType").value = e.entryType || "Weekly Check-In";
-    $("school").value = e.school || "";
-    $("who").value = e.who || "Principal";
-
-    $("overallStatus").value = e.overallStatus || "Green";
-    $("weekTheme").value = e.weekTheme || "";
-    $("whatChanged").value = e.whatChanged || "";
-    $("topIssues").value = e.topIssues || "";
-    $("helpNeeded").value = e.helpNeeded || "";
-    $("owner").value = e.owner || "";
-    $("dueDate").value = e.dueDate || todayISO();
-
-    $("generalGlows").value = e.generalGlows || "";
-    $("generalGrows").value = e.generalGrows || "";
-    $("nextMoves").value = e.nextMoves || "";
-    $("proofNextWeek").value = e.proofNextWeek || "";
-
-    FOCUS.forEach(f=>{
-      const cb = $(`focus_${safeId(f.key)}`);
-      if(cb) cb.checked = (e.focusKeys || []).includes(f.key);
-    });
-
-    renderModulesAndRightPanel();
-
-    (e.focusKeys || []).forEach(key=>{
-      const f = FOCUS.find(x=>x.key===key);
-      const sid = safeId(key);
-      const m = e.modules && e.modules[key];
-      if(!f || !m) return;
-
-      const sub = $(`sub_${sid}`); if(sub) sub.value = m.subarea || sub.value;
-      const ms  = $(`mstatus_${sid}`); if(ms) ms.value = m.status || "Green";
-      const mc  = $(`mchanged_${sid}`); if(mc) mc.value = m.changed || "";
-      const mb  = $(`mbarrier_${sid}`); if(mb) mb.value = m.barrier || "";
-      const mh  = $(`mhelp_${sid}`); if(mh) mh.value = m.help || "";
-      const ev  = $(`mevidence_${sid}`); if(ev) ev.value = m.evidenceLink || "";
-      const w   = $(`mglows_${sid}`); if(w) w.value = m.wins || "";
-      const g   = $(`mgrows_${sid}`); if(g) g.value = m.gaps || "";
-
-      f.lookFors.forEach(lf=>{
-        const el = $(`lf_${sid}_${lf.id}`);
-        if(el) el.checked = !!(m.lookFors && m.lookFors[lf.id]);
-      });
-
-      // restore stage ratings
-      document.querySelectorAll(`.ratingRow[data-focus="${CSS.escape(key)}"]`).forEach(group=>{
-        const rKey = group.getAttribute("data-rating");
-        const stage = (m.ratings && m.ratings[rKey]) ? m.ratings[rKey] : "";
-        const num = (m.ratingsNum && m.ratingsNum[rKey] !== "" && m.ratingsNum[rKey] !== undefined) ? m.ratingsNum[rKey] : stageToNum(stage);
-
-        group.setAttribute("data-stage", stage || "");
-        group.setAttribute("data-value", (num ? String(num) : ""));
-
-        group.querySelectorAll(".rateBtn").forEach(btn=>{
-          const btnStage = btn.getAttribute("data-stage");
-          btn.classList.toggle("active", stage && btnStage === stage);
-        });
-      });
-
-      f.signals.forEach(s=>{
-        const el = $(`sig_${sid}_${s.key}`);
-        if(el) el.value = (m.signals && m.signals[s.key] !== "" && m.signals[s.key] !== undefined) ? m.signals[s.key] : "";
-      });
-
-      const note = $(`mfileNote_${sid}`);
-      if(note) note.textContent = m.attachment ? `Previously noted: ${m.attachment.name}` : "No file selected.";
-      const fileInput = $(`mfile_${sid}`);
-      if(fileInput) fileInput.value = "";
-    });
-
-    $("saveBtn").setAttribute("data-editing", e.id);
-    $("saveBtn").textContent = "Update Entry";
-    buildAgendaAndEvidence();
-    refreshAll();
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  }
-
-  // ---------------- DASHBOARD DATA ----------------
-  function refreshSchoolFilters(){
-    // Keep filter values tight to your list + any legacy values already in storage
-    const base = ["Ewing ES","Flemingsburg ES","Hillsboro ES","Simons MS","Fleming County HS"];
-    const seen = Array.from(new Set(entries.map(e=>e.school))).filter(Boolean);
-    const schools = Array.from(new Set([...base, ...seen])).filter(Boolean);
-
-    const filter = $("filterSchool");
-    filter.innerHTML = `<option value="ALL">All Schools</option>` + schools.map(s=>`<option>${s}</option>`).join("");
-  }
-  function filteredEntries(){
-    const fs = $("filterSchool").value;
-    if(fs==="ALL") return entries.slice();
-    return entries.filter(e=>e.school===fs);
-  }
-
-  function refreshTables(){
-    const tbody = $("entriesTable").querySelector("tbody");
-    tbody.innerHTML = "";
-    const list = entries.slice().sort((a,b)=>(b.date||"").localeCompare(a.date||"")).slice(0, 12);
-    list.forEach(e=>{
-      const tr = document.createElement("tr");
-      tr.className = "clickRow";
-      tr.innerHTML = `
-        <td>${e.date||""}</td>
-        <td><b>${e.school||""}</b><div class="muted" style="font-size:11px">${e.entryType||""}</div></td>
-        <td>${tagHTML(e.overallStatus||"Green")}</td>
-        <td class="muted">${(e.focusKeys||[]).join(", ")}</td>
-      `;
-      tr.addEventListener("click", ()=>loadEntryToForm(e.id));
-      tbody.appendChild(tr);
-    });
-
-    const dbody = $("dashTable").querySelector("tbody");
-    dbody.innerHTML = "";
-    const dashList = filteredEntries().slice().sort((a,b)=>(b.date||"").localeCompare(a.date||""));
-    dashList.forEach(e=>{
-      const tr = document.createElement("tr");
-      tr.className = "clickRow";
-      tr.innerHTML = `
-        <td>${e.date||""}</td>
-        <td><b>${e.school||""}</b></td>
-        <td>${tagHTML(e.overallStatus||"Green")}</td>
-        <td class="muted">${e.owner||""}</td>
-        <td class="muted">${e.dueDate||""}</td>
-        <td class="muted">${(e.focusKeys||[]).join(", ")}</td>
-      `;
-      tr.addEventListener("click", ()=>loadEntryToForm(e.id));
-      dbody.appendChild(tr);
-    });
-  }
-
-  // ---------------- METRIC PICKERS ----------------
-  function refreshMetricPickers(){
-    const map = new Map();
-    FOCUS.forEach(f=> f.signals.forEach(s=> map.set(s.key, s.label)));
-
-    const pickers = [ $("metricPick"), $("dashMetricPick") ];
-    pickers.forEach(sel=>{
-      const current = sel.value;
-      sel.innerHTML = Array.from(map.entries()).map(([k,label])=>`<option value="${k}">${label}</option>`).join("");
-      if([...sel.options].some(o=>o.value===current)) sel.value = current;
-    });
-  }
-
-  // ---------------- CHARTS ----------------
-  function refreshCharts(){
-    const all = entries.slice().sort((a,b)=>(a.date||"").localeCompare(b.date||""));
-    const labels = all.map(e=>e.date);
-
-    const statusVals = all.map(e=>{
-      const s = e.overallStatus || "Green";
-      if(s==="Green") return 3;
-      if(s==="Yellow") return 2;
-      return 1;
-    });
-
-    const ctx1 = $("statusChart").getContext("2d");
-    if(statusChart) statusChart.destroy();
-    statusChart = new Chart(ctx1,{
-      type:"line",
-      data:{labels, datasets:[{label:"Overall Status (R=1,Y=2,G=3)", data: statusVals, tension:0.25}]},
-      options:{responsive:true, plugins:{legend:{display:true}}, scales:{y:{min:1,max:3,ticks:{stepSize:1}}}}
-    });
-
-    const metricKey = $("metricPick").value;
-    const metricVals = all.map(e=>{
-      const keys = e.focusKeys || [];
-      const found = [];
-      keys.forEach(k=>{
-        const mod = e.modules && e.modules[k];
-        const v = mod && mod.signals ? mod.signals[metricKey] : "";
-        if(v !== "" && v !== undefined && v !== null) found.push(Number(v));
-      });
-      if(!found.length) return null;
-      return Number((found.reduce((a,b)=>a+b,0)/found.length).toFixed(2));
-    });
-
-    const ctx2 = $("metricChart").getContext("2d");
-    if(metricChart) metricChart.destroy();
-    metricChart = new Chart(ctx2,{
-      type:"line",
-      data:{labels, datasets:[{label:`Signal: ${metricKey}`, data: metricVals, tension:0.25}]},
-      options:{responsive:true, plugins:{legend:{display:true}}, scales:{y:{beginAtZero:true}}}
-    });
-
-    const data = filteredEntries().slice().sort((a,b)=>(a.date||"").localeCompare(b.date||""));
-    const dlabels = data.map(e=>e.date);
-    const dStatus = data.map(e=>{
-      const s = e.overallStatus || "Green";
-      if(s==="Green") return 3; if(s==="Yellow") return 2; return 1;
-    });
-
-    const dctx1 = $("dashStatusChart").getContext("2d");
-    if(dashStatusChart) dashStatusChart.destroy();
-    dashStatusChart = new Chart(dctx1,{
-      type:"line",
-      data:{labels:dlabels, datasets:[{label:"Overall Status (R=1,Y=2,G=3)", data:dStatus, tension:0.25}]},
-      options:{responsive:true, plugins:{legend:{display:true}}, scales:{y:{min:1,max:3,ticks:{stepSize:1}}}}
-    });
-
-    const dMetricKey = $("dashMetricPick").value;
-    const dMetricVals = data.map(e=>{
-      const keys = e.focusKeys || [];
-      const found = [];
-      keys.forEach(k=>{
-        const mod = e.modules && e.modules[k];
-        const v = mod && mod.signals ? mod.signals[dMetricKey] : "";
-        if(v !== "" && v !== undefined && v !== null) found.push(Number(v));
-      });
-      if(!found.length) return null;
-      return Number((found.reduce((a,b)=>a+b,0)/found.length).toFixed(2));
-    });
-
-    const dctx2 = $("dashMetricChart").getContext("2d");
-    if(dashMetricChart) dashMetricChart.destroy();
-    dashMetricChart = new Chart(dctx2,{
-      type:"line",
-      data:{labels:dlabels, datasets:[{label:`Signal: ${dMetricKey}`, data:dMetricVals, tension:0.25}]},
-      options:{responsive:true, plugins:{legend:{display:true}}, scales:{y:{beginAtZero:true}}}
-    });
-
-    $("dashChip").textContent = `${filteredEntries().length} entries`;
-    $("homeChip").textContent = `${entries.length} entries saved`;
-    $("entryCountChip").textContent = `${entries.length} entries`;
-  }
-
-  // ---------------- EXPORT ----------------
-  function csvCell(value){
-    const v = value === null || value === undefined ? "" : String(value);
-    if(/[",\n]/.test(v)) return `"${v.replace(/"/g,'""')}"`;
-    return v;
-  }
-  function safeCSV(s){ return String(s).replace(/\r?\n/g, " ").trim(); }
-  function downloadBlob(blob, filename){
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 0);
-  }
-  function exportJSON(){
-    downloadBlob(new Blob([JSON.stringify(entries, null, 2)],{type:"application/json"}), "vibrant-accountability-entries.json");
-  }
-  function exportCSV(){
-    const headers = [
-      "id","date","school","entryType","who","overallStatus","weekTheme","whatChanged",
-      "topIssues","helpNeeded","owner","dueDate","focusKeys","generalGlows","generalGrows",
-      "nextMoves","proofNextWeek","updatedAt","focusStatusSummary","stageSummary"
-    ];
-    const rows = entries.map(e=>{
-      const focusKeys = (e.focusKeys||[]).join("|");
-      const summary = (e.focusKeys||[]).map(k=>{
-        const m = e.modules && e.modules[k];
-        const st = m ? (m.status||"") : "";
-        const sub = m ? (m.subarea||"") : "";
-        return `${k}:${st}:${sub}`;
-      }).join("||");
-
-      const stageSummary = (e.focusKeys||[]).map(k=>{
-        const m = e.modules && e.modules[k];
-        if(!m || !m.ratings) return `${k}:`;
-        const parts = Object.entries(m.ratings).map(([rk,stage])=> `${rk}=${stage||""}`).join(";");
-        return `${k}:{${parts}}`;
-      }).join("||");
-
-      return [
-        e.id, e.date, e.school, e.entryType, e.who,
-        e.overallStatus||"", safeCSV(e.weekTheme||""), safeCSV(e.whatChanged||""),
-        safeCSV(e.topIssues||""), safeCSV(e.helpNeeded||""), safeCSV(e.owner||""), e.dueDate||"",
-        safeCSV(focusKeys), safeCSV(e.generalGlows||""), safeCSV(e.generalGrows||""),
-        safeCSV(e.nextMoves||""), safeCSV(e.proofNextWeek||""), e.updatedAt||"",
-        safeCSV(summary),
-        safeCSV(stageSummary)
-      ];
-    });
-    const csv = [headers.join(","), ...rows.map(r=>r.map(csvCell).join(","))].join("\n");
-    downloadBlob(new Blob([csv],{type:"text/csv;charset=utf-8"}), "vibrant-accountability-entries.csv");
-  }
-
-  // ---------------- SUMMARY ----------------
-  function buildAgendaSummary(e){
-    const lines=[];
-    lines.push("VIBRANT ACCOUNTABILITY AGENDA SUMMARY");
-    lines.push(`Date: ${e.date||""} | School: ${e.school||""} | Type: ${e.entryType||""}`);
-    lines.push(`Overall Status: ${e.overallStatus||""}`);
-    if(e.weekTheme) lines.push(`Week Theme: ${e.weekTheme}`);
-    lines.push("");
-    lines.push(`What changed: ${e.whatChanged||"(not entered)"}`);
-    lines.push(`Top issue: ${e.topIssues||"(not entered)"}`);
-    lines.push(`Help needed: ${e.helpNeeded||"(not entered)"}`);
-    lines.push(`Owner / Due: ${e.owner||"(not entered)"} / ${e.dueDate||"(not entered)"}`);
-    lines.push("");
-    lines.push(`Focus areas: ${(e.focusKeys||[]).join(", ")}`);
-    (e.focusKeys||[]).forEach(k=>{
-      const m = e.modules && e.modules[k];
-      if(!m) return;
-      lines.push(`- ${k} | Status: ${m.status} | Sub-area: ${m.subarea}`);
-      if(m.changed) lines.push(`  Changed: ${m.changed}`);
-      if(m.barrier) lines.push(`  Barrier: ${m.barrier}`);
-      if(m.help) lines.push(`  Help: ${m.help}`);
-      if(m.evidenceLink) lines.push(`  Evidence: ${m.evidenceLink}`);
-      if(m.ratings){
-        const rs = Object.entries(m.ratings).filter(([_,v])=>v).map(([rk,v])=>`${rk}: ${v}`).join(" | ");
-        if(rs) lines.push(`  Ratings: ${rs}`);
+  <script>
+    // Default weekOf to today
+    (function initDate(){
+      const el = document.getElementById("weekOf");
+      if (el && !el.value) {
+        const d = new Date();
+        const yyyy = d.getFullYear();
+        const mm = String(d.getMonth()+1).padStart(2,"0");
+        const dd = String(d.getDate()).padStart(2,"0");
+        el.value = `${yyyy}-${mm}-${dd}`;
       }
-    });
-    lines.push("");
-    lines.push(`Wins: ${e.generalGlows||"(not entered)"}`);
-    lines.push(`Gaps: ${e.generalGrows||"(not entered)"}`);
-    lines.push("");
-    lines.push(`Next Moves: ${e.nextMoves||"(not entered)"}`);
-    lines.push(`Proof next Monday: ${e.proofNextWeek||"(not entered)"}`);
-    return lines.join("\n");
-  }
+    })();
 
-  // ---------------- SAVE / EDIT ----------------
-  $("saveBtn").addEventListener("click", ()=>{
-    const e = collectEntry();
-    if(!e.date){ alert("Add a date."); return; }
-    if(!e.school){ alert("Select a school."); return; }
-    if(!e.focusKeys.length){ alert("Select at least one focus area."); return; }
+    // Print
+    document.getElementById("printBtn").addEventListener("click", () => window.print());
 
-    const idx = entries.findIndex(x=>x.id===e.id);
-    if(idx>=0) entries[idx]=e; else entries.push(e);
+    // Home button
+    document.getElementById("homeBtn").addEventListener("click", () => showHome());
+    document.getElementById("backHomeBtn").addEventListener("click", () => showHome());
 
-    saveEntries();
-    refreshAll();
-    resetForm();
-    showView("homeView");
-  });
-
-  $("summaryBtn").addEventListener("click", ()=>{
-    const e = collectEntry();
-    if(!e.date || !e.school || !e.focusKeys.length){
-      alert("Fill date, school, and at least one focus area, then click Agenda Summary again.");
-      return;
+    function showHome(){
+      document.getElementById("moduleView").style.display = "none";
+      document.getElementById("waffle").style.display = "grid";
+      window.scrollTo({top:0, behavior:"smooth"});
     }
-    const summary = buildAgendaSummary(e);
-    const w = window.open("", "_blank");
-    w.document.write(`<pre style="white-space:pre-wrap;font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace; padding:16px;">${summary.replace(/</g,"&lt;")}</pre>`);
-    w.document.title = "Agenda Summary";
-  });
 
-  $("exportJsonBtn").addEventListener("click", exportJSON);
-  $("exportCsvBtn").addEventListener("click", exportCSV);
+    // Tile click
+    document.querySelectorAll(".tile").forEach(tile => {
+      tile.addEventListener("click", () => {
+        const mod = tile.getAttribute("data-module");
+        openModule(mod);
+      });
+    });
 
-  $("clearBtn").addEventListener("click", ()=>{
-    const ok = confirm("This will remove all saved entries from this browser. Continue?");
-    if(!ok) return;
-    entries = [];
-    saveEntries();
-    refreshAll();
-    resetForm();
-    showView("homeView");
-  });
+    function openModule(moduleKey){
+      document.getElementById("waffle").style.display = "none";
+      document.getElementById("moduleView").style.display = "block";
 
-  // ---------------- DASHBOARD EVENTS ----------------
-  $("filterSchool").addEventListener("change", ()=>{ refreshTables(); refreshCharts(); });
-  $("metricPick").addEventListener("change", refreshCharts);
-  $("dashMetricPick").addEventListener("change", refreshCharts);
+      const title = document.getElementById("moduleTitle");
+      const sub = document.getElementById("moduleSub");
+      const body = document.getElementById("moduleBody");
 
-  // ---------------- REFRESH ALL ----------------
-  function refreshAll(){
-    refreshSchoolFilters();
-    refreshMetricPickers();
-    refreshTables();
-    refreshCharts();
-  }
+      // Reset
+      body.innerHTML = "";
 
-  // ---------------- INIT ----------------
-  (function init(){
-    $("entryDate").value = todayISO();
-    $("dueDate").value = todayISO();
-    renderWaffle();
-    renderFocusRow();
-    loadEntries();
-    refreshAll();
-    $("modulesHost").innerHTML = `<div class="foot">Select focus areas to load modules.</div>`;
-    buildAgendaAndEvidence();
-  })();
+      if (moduleKey === "bpi"){
+        title.textContent = "BRIDGE Performance Indicators (BPIs)";
+        sub.textContent = "Student interview protocol. Review BPI websites to verify priority, ownership, evidence across classes, and instructional opportunity.";
 
-  // ---------------- SMALL HELPERS ----------------
-  // (These were referenced earlier in the file.)
-  function renderModulesAndRightPanel(){
-    renderModules();
-    buildAgendaAndEvidence();
-    refreshMetricPickers();
-    refreshCharts();
-  }
-</script>
+        body.innerHTML = getBpiStudentInterviewHTML();
+        wireBpiHelpers();
+        return;
+      }
+
+      // Placeholders for other modules (you can expand next)
+      const map = {
+        vl: ["Vibrant Learning", "Daily look-fors and evidence checks for agency, relevance, interdisciplinary learning, and Writing Across the Content."],
+        ps: ["Priority Standards and Proficiency Scales", "Weekly checks for clarity, alignment, proficiency language, and standards-based evidence."],
+        bim: ["BRIDGE Instructional Model (Workshop Model)", "Observation prompts for mini-lesson, work time, conferencing, feedback, routines, and closure."],
+        bpa: ["BRIDGE Performance Assessments (BPAs)", "Prompts to verify authentic tasks, success criteria, durable skills, and reflection cycles."],
+        srg: ["Compelling Evidence and Standards-Referenced Grading (SRG)", "Checks for mastery-based reporting, evidence over time, and transparency."],
+        notes: ["Weekly Executive Notes", "Synthesize patterns. Identify coherence gaps. Capture clear next actions."],
+        evidence: ["Evidence Curation", "Log artifacts, links, and evidence points to support claims and follow-up."],
+        followup: ["Follow-Up and Support", "Assign coaching actions, supports, owners, and timelines."]
+      };
+
+      if (map[moduleKey]){
+        title.textContent = map[moduleKey][0];
+        sub.textContent = map[moduleKey][1];
+      } else {
+        title.textContent = "Module";
+        sub.textContent = "Select a module from Home to begin.";
+      }
+
+      body.innerHTML = `
+        <div class="qBlock">
+          <h3>Coming Next</h3>
+          <p class="qPrompt">
+            This module is staged for your next build. The BPI Student Interview module is fully embedded now.
+            When you are ready, tell me which module to build next and we will mirror the same clarity, rating,
+            evidence, and weekly priority structure.
+          </p>
+        </div>
+      `;
+
+      window.scrollTo({top:0, behavior:"smooth"});
+    }
+
+    // Local save (simple)
+    document.getElementById("saveLocalBtn").addEventListener("click", () => {
+      const payload = collectAllInputs();
+      const key = "FCS_WeeklyTool_" + (document.getElementById("weekOf").value || "week");
+      localStorage.setItem(key, JSON.stringify(payload));
+      alert("Saved locally in this browser as: " + key);
+    });
+
+    function collectAllInputs(){
+      const inputs = Array.from(document.querySelectorAll("input, select, textarea"));
+      const out = {};
+      inputs.forEach(el => {
+        if (!el.id) return;
+        out[el.id] = el.value;
+      });
+      return out;
+    }
+
+    // --- BPI Student Interview Module ---
+    function getBpiStudentInterviewHTML(){
+      return `
+        <div class="twoCol">
+          <div class="field">
+            <label>Interview Date</label>
+            <input id="bpiDate" type="date"/>
+          </div>
+          <div class="field">
+            <label>School (auto from top, editable here)</label>
+            <select id="bpiSchool">
+              <option value="">Select...</option>
+              <option>Ewing ES</option>
+              <option>Flemingsburg ES</option>
+              <option>Hillsboro ES</option>
+              <option>Simons MS</option>
+              <option>Fleming County HS</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="twoCol">
+          <div class="field">
+            <label>Interviewer</label>
+            <input id="bpiInterviewer" type="text" placeholder="Name"/>
+          </div>
+          <div class="field">
+            <label>Student Grade Band</label>
+            <select id="bpiGradeBand">
+              <option value="">Select...</option>
+              <option>Grades 3-5</option>
+              <option>Grades 6-8</option>
+              <option>Grades 9-12</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="twoCol">
+          <div class="field">
+            <label>Student First Name (optional)</label>
+            <input id="bpiStudentName" type="text" placeholder="First name only"/>
+          </div>
+          <div class="field">
+            <label>Student BPI Website URL</label>
+            <input id="bpiUrl" type="url" placeholder="https://..."/>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="qBlock">
+          <h3>Question 1: Ownership of the BPI Website</h3>
+          <p class="qPrompt">Tell me about your BPI website. What is it for, and how do you use it?</p>
+          <div class="twoCol">
+            <div class="field">
+              <label>Notes</label>
+              <textarea id="q1Notes" rows="3" placeholder="Capture student language, examples, and evidence."></textarea>
+            </div>
+            <div class="field">
+              <label>Rating (Transactional to Transformational)</label>
+              <select id="q1Rating">
+                <option value="">Select...</option>
+                <option value="1">1 - Transactional</option>
+                <option value="2">2 - Traditional</option>
+                <option value="3">3 - Transitional</option>
+                <option value="4">4 - Transformational</option>
+              </select>
+              <div class="ratingHelp" id="q1Help"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="qBlock">
+          <h3>Question 2: Evidence of Mastery Across Classes</h3>
+          <p class="qPrompt">Can you show me examples from different classes that demonstrate what you are good at or have improved in?</p>
+          <div class="twoCol">
+            <div class="field">
+              <label>Notes</label>
+              <textarea id="q2Notes" rows="3"></textarea>
+            </div>
+            <div class="field">
+              <label>Rating</label>
+              <select id="q2Rating">
+                <option value="">Select...</option>
+                <option value="1">1 - Transactional</option>
+                <option value="2">2 - Traditional</option>
+                <option value="3">3 - Transitional</option>
+                <option value="4">4 - Transformational</option>
+              </select>
+              <div class="ratingHelp" id="q2Help"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="qBlock">
+          <h3>Question 3: Reflection and Growth</h3>
+          <p class="qPrompt">Pick one piece on your BPI website. How has your learning grown from your first attempt to now?</p>
+          <div class="field">
+            <label>Notes</label>
+            <textarea id="q3Notes" rows="3"></textarea>
+          </div>
+        </div>
+
+        <div class="qBlock">
+          <h3>Question 4: Teacher Expectations and Opportunities</h3>
+          <p class="qPrompt">In your classes, how often do teachers give you opportunities to create, revise, or choose work that can go on your BPI website?</p>
+          <div class="twoCol">
+            <div class="field">
+              <label>Notes</label>
+              <textarea id="q4Notes" rows="3"></textarea>
+            </div>
+            <div class="field">
+              <label>Rating</label>
+              <select id="q4Rating">
+                <option value="">Select...</option>
+                <option value="1">1 - Transactional</option>
+                <option value="2">2 - Traditional</option>
+                <option value="3">3 - Transitional</option>
+                <option value="4">4 - Transformational</option>
+              </select>
+              <div class="ratingHelp" id="q4Help"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="qBlock">
+          <h3>Question 5: Priority, Use, and Future Value</h3>
+          <p class="qPrompt">Why do you think your BPI website matters for you now and in the future?</p>
+          <div class="twoCol">
+            <div class="field">
+              <label>Notes</label>
+              <textarea id="q5Notes" rows="3"></textarea>
+            </div>
+            <div class="field">
+              <label>Rating</label>
+              <select id="q5Rating">
+                <option value="">Select...</option>
+                <option value="1">1 - Transactional</option>
+                <option value="2">2 - Traditional</option>
+                <option value="3">3 - Transitional</option>
+                <option value="4">4 - Transformational</option>
+              </select>
+              <div class="ratingHelp" id="q5Help"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="qBlock">
+          <h3>Optional Coherence Check</h3>
+          <p class="qPrompt">
+            Based on this interview, is the BPI website an add-on or embedded inside core learning across classes?
+            Capture one pattern you would elevate, and one barrier you need to remove.
+          </p>
+          <div class="twoCol">
+            <div class="field">
+              <label>Pattern to Elevate</label>
+              <textarea id="bpiPattern" rows="3" placeholder="What is working and should be scaled?"></textarea>
+            </div>
+            <div class="field">
+              <label>Barrier to Remove</label>
+              <textarea id="bpiBarrier" rows="3" placeholder="What is blocking coherence or ownership?"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <div class="actionsRow">
+          <button class="btn btnPrimary" id="bpiExportBtn">Export Interview Summary</button>
+          <span class="status" id="bpiStatus"></span>
+        </div>
+      `;
+    }
+
+    function wireBpiHelpers(){
+      // set date defaults
+      const today = new Date();
+      const yyyy = today.getFullYear();
+      const mm = String(today.getMonth()+1).padStart(2,"0");
+      const dd = String(today.getDate()).padStart(2,"0");
+
+      const bpiDate = document.getElementById("bpiDate");
+      if (bpiDate && !bpiDate.value) bpiDate.value = `${yyyy}-${mm}-${dd}`;
+
+      // Pull school from top selector if set
+      const topSchool = document.getElementById("schoolSelect").value;
+      const bpiSchool = document.getElementById("bpiSchool");
+      if (bpiSchool && topSchool && !bpiSchool.value) bpiSchool.value = topSchool;
+
+      const ratingText = {
+        1: "Transactional: Compliance-driven. Add-on behavior. Student language reflects requirements. Evidence is minimal or inconsistent.",
+        2: "Traditional: Mostly assignment collection. Some purpose is present, but it is adult-owned and not consistently curated across classes.",
+        3: "Transitional: Purpose and mastery are emerging. Multiple classes contribute. Reflection and curation are developing and becoming more consistent.",
+        4: "Transformational: Student-owned portfolio of mastery. Evidence is curated across contexts and time. The website tells the story of who the student is becoming."
+      };
+
+      function hook(selectId, helpId){
+        const sel = document.getElementById(selectId);
+        const help = document.getElementById(helpId);
+        if (!sel || !help) return;
+        help.textContent = sel.value ? ratingText[sel.value] : "";
+        sel.addEventListener("change", () => {
+          help.textContent = sel.value ? ratingText[sel.value] : "";
+        });
+      }
+
+      hook("q1Rating","q1Help");
+      hook("q2Rating","q2Help");
+      hook("q4Rating","q4Help");
+      hook("q5Rating","q5Help");
+
+      // Export summary (copyable text)
+      const exportBtn = document.getElementById("bpiExportBtn");
+      const status = document.getElementById("bpiStatus");
+
+      exportBtn.addEventListener("click", async () => {
+        const payload = {
+          weekOf: document.getElementById("weekOf").value || "",
+          date: document.getElementById("bpiDate").value || "",
+          school: document.getElementById("bpiSchool").value || "",
+          interviewer: document.getElementById("bpiInterviewer").value || "",
+          gradeBand: document.getElementById("bpiGradeBand").value || "",
+          student: document.getElementById("bpiStudentName").value || "",
+          url: document.getElementById("bpiUrl").value || "",
+          q1Notes: document.getElementById("q1Notes").value || "",
+          q1Rating: document.getElementById("q1Rating").value || "",
+          q2Notes: document.getElementById("q2Notes").value || "",
+          q2Rating: document.getElementById("q2Rating").value || "",
+          q3Notes: document.getElementById("q3Notes").value || "",
+          q4Notes: document.getElementById("q4Notes").value || "",
+          q4Rating: document.getElementById("q4Rating").value || "",
+          q5Notes: document.getElementById("q5Notes").value || "",
+          q5Rating: document.getElementById("q5Rating").value || "",
+          pattern: document.getElementById("bpiPattern").value || "",
+          barrier: document.getElementById("bpiBarrier").value || ""
+        };
+
+        const text =
+`WEEKLY BPI STUDENT INTERVIEW SUMMARY
+Week Of: ${payload.weekOf}
+Interview Date: ${payload.date}
+School: ${payload.school}
+Interviewer: ${payload.interviewer}
+Student Grade Band: ${payload.gradeBand}
+Student First Name: ${payload.student}
+BPI Website URL: ${payload.url}
+
+Q1 Ownership and Purpose (Rating ${payload.q1Rating || "n/a"}):
+${payload.q1Notes}
+
+Q2 Evidence Across Classes (Rating ${payload.q2Rating || "n/a"}):
+${payload.q2Notes}
+
+Q3 Reflection and Growth:
+${payload.q3Notes}
+
+Q4 Teacher Opportunities (Rating ${payload.q4Rating || "n/a"}):
+${payload.q4Notes}
+
+Q5 Future Value (Rating ${payload.q5Rating || "n/a"}):
+${payload.q5Notes}
+
+Pattern to Elevate:
+${payload.pattern}
+
+Barrier to Remove:
+${payload.barrier}
+`;
+
+        try{
+          await navigator.clipboard.writeText(text);
+          status.textContent = "Copied to clipboard.";
+        }catch(e){
+          // fallback: open prompt
+          window.prompt("Copy the text below:", text);
+          status.textContent = "Opened copy box.";
+        }
+      });
+
+      window.scrollTo({top:0, behavior:"smooth"});
+    }
+  </script>
 </body>
 </html>
