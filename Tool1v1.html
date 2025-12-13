@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Weekly Monitoring Tool | Superintendent Check-Ins + Walkthroughs</title>
+
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    :root{
+      --navy:#0a355e;
+      --navy2:#12406b;
+      --teal:#118a9a;
+      --gold:#dbd59b;
+      --bg:#f5f5f7;
+      --card:#ffffff;
+      --text:#111;
+      --muted:#55606e;
+      --border:#e6e8ee;
+      --shadow:0 14px 35px rgba(15, 23, 42, .10);
+      --r:22px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background:var(--bg);
+      color:var(--text);
+    }
+    .topbar{
+      position:sticky; top:0; z-index:50;
+      background:linear-gradient(90deg, #ffffff, #ffffff);
+      border-bottom:1px solid var(--border);
+      box-shadow:0 8px 22px rgba(0,0,0,.06);
+      padding:14px 18px;
+      display:flex; gap:12px; align-items:center; justify-content:space-between;
+    }
+    .brand{
+      display:flex; gap:12px; align-items:center;
+    }
+    .logo{
+      width:42px; height:42px; border-radius:14px;
+      background:conic-gradient(from 180deg, var(--navy), var(--teal), var(--gold), var(--navy));
+      box-shadow:0 10px 18px rgba(0,0,0,.10);
+    }
+    .brand h1{
+      font-size:16px; margin:0; line-height:1.2;
+    }
+    .brand p{
+      margin:0; font-size:12px; color:var(--muted);
+    }
+
+    .actions{display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end;}
+    button{
+      border:1px solid var(--border);
+      background:#fff;
+      padding:10px 12px;
+      border-radius:999px;
+      cursor:pointer;
+      font-weight:650;
+      font-size:12px;
+    }
+    button.primary{
+      background:var(--navy);
+      color:#fff;
+      border-color:transparent;
+    }
+    button.danger{
+      background:#fff;
+      color:#b42318;
+      border-color:#f3c7c1;
+    }
+    button:hover{filter:brightness(.98)}
+    button:active{transform:translateY(1px)}
+
+    .wrap{max-width:1180px; margin:18px auto; padding:0 14px 40px;}
+    .grid{
+      display:grid;
+      grid-template-columns: 1.15fr .85fr;
+      gap:14px;
+    }
+    @media (max-width: 980px){
+      .grid{grid-template-columns:1fr}
+    }
+
+    .card{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:var(--r);
+      box-shadow:var(--shadow);
+      padding:16px;
+    }
+    .card h2{
+      margin:0 0 10px 0;
+      font-size:14px;
+      letter-spacing:.2px;
+    }
+    .sub{
+      margin:0 0 14px 0;
+      font-size:12px; color:var(--muted);
+    }
+
+    .row{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:10px;
+      margin-bottom:10px;
+    }
+    @media (max-width: 640px){
+      .row{grid-template-columns:1fr}
+    }
+
+    label{
+      display:block;
+      font-size:12px;
+      color:var(--muted);
+      margin:0 0 6px 2px;
+      font-weight:650;
+    }
+    input[type="text"], input[type="date"], select, textarea{
+      width:100%;
+      padding:10px 10px;
+      border-radius:14px;
+      border:1px solid var(--border);
+      outline:none;
+      font-size:13px;
+      background:#fff;
+    }
+    textarea{min-height:92px; resize:vertical;}
+    .small{min-height:64px}
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:7px 10px;
+      border-radius:999px;
+      border:1px solid var(--border);
+      background:#fff;
+      font-size:12px;
+      font-weight:650;
+      color:var(--navy);
+    }
+    .pill span.dot{
+      width:8px; height:8px; border-radius:99px;
+      background:var(--teal);
+      display:inline-block;
+    }
+
+    .sectionTitle{
+      display:flex; align-items:center; justify-content:space-between;
+      gap:10px;
+      margin-top:8px;
+      padding-top:8px;
+      border-top:1px dashed var(--border);
+    }
+
+    .checks{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:8px;
+      margin-top:8px;
+    }
+    @media (max-width: 640px){
+      .checks{grid-template-columns:1fr}
+    }
+    .checkItem{
+      display:flex; gap:8px; align-items:flex-start;
+      border:1px solid var(--border);
+      padding:10px;
+      border-radius:14px;
+      background:#fff;
+    }
+    .checkItem input{margin-top:2px}
+    .checkItem b{display:block; font-size:12px}
+    .checkItem small{display:block; color:var(--muted); font-size:11px; line-height:1.25}
+
+    .ratings{
+      display:grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap:8px;
+    }
+    .rateBtn{
+      border-radius:14px;
+      padding:10px 8px;
+      border:1px solid var(--border);
+      background:#fff;
+      text-align:center;
+      cursor:pointer;
+      font-weight:750;
+      user-select:none;
+    }
+    .rateBtn.active{
+      border-color: rgba(17,138,154,.35);
+      box-shadow:0 10px 22px rgba(17,138,154,.12);
+      background:rgba(17,138,154,.06);
+    }
+    .rateHint{font-size:11px;color:var(--muted);margin-top:6px}
+
+    .table{
+      width:100%;
+      border-collapse:separate;
+      border-spacing:0;
+      overflow:hidden;
+      border:1px solid var(--border);
+      border-radius:18px;
+      background:#fff;
+    }
+    .table th, .table td{
+      padding:10px 10px;
+      font-size:12px;
+      border-bottom:1px solid var(--border);
+      vertical-align:top;
+    }
+    .table th{
+      background:linear-gradient(90deg, rgba(10,53,94,.06), rgba(17,138,154,.06));
+      text-align:left;
+      color:var(--navy);
+      font-size:12px;
+    }
+    .table tr:last-child td{border-bottom:none}
+    .tag{
+      display:inline-block;
+      padding:6px 10px;
+      border-radius:999px;
+      font-size:11px;
+      font-weight:750;
+      border:1px solid var(--border);
+      background:#fff;
+    }
+    .tag.good{border-color:rgba(17,138,154,.35); color:var(--teal); background:rgba(17,138,154,.06)}
+    .tag.warn{border-color:rgba(180,83,9,.25); color:#b45309; background:rgba(180,83,9,.06)}
+    .tag.risk{border-color:rgba(180,35,24,.25); color:#b42318; background:rgba(180,35,24,.06)}
+    .muted{color:var(--muted)}
+    .twoCol{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:10px;
+    }
+    @media (max-width: 640px){
+      .twoCol{grid-template-columns:1fr}
+    }
+    .footerNote{
+      margin-top:10px;
+      font-size:11px;
+      color:var(--muted);
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="brand">
+      <div class="logo" aria-hidden="true"></div>
+      <div>
+        <h1>Weekly Monitoring Tool</h1>
+        <p>Check-Ins + Walkthroughs. Save entries, see trends, export data.</p>
+      </div>
+    </div>
+    <div class="actions">
+      <button class="primary" id="saveBtn">Save Entry</button>
+      <button id="exportCsvBtn">Export CSV</button>
+      <button id="exportJsonBtn">Export JSON</button>
+      <button class="danger" id="clearBtn">Clear All</button>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <div class="grid">
+      <!-- LEFT: FORM -->
+      <div class="card">
+        <div style="display:flex; gap:10px; align-items:center; justify-content:space-between; flex-wrap:wrap;">
+          <div>
+            <h2>New Entry</h2>
+            <p class="sub">Use this for weekly principal check-ins, school visits, walkthroughs, or leadership rounds.</p>
+          </div>
+          <div class="pill"><span class="dot"></span><span id="storageStatus">Local save enabled</span></div>
+        </div>
+
+        <div class="row">
+          <div>
+            <label for="entryDate">Date</label>
+            <input type="date" id="entryDate"/>
+          </div>
+          <div>
+            <label for="entryType">Entry Type</label>
+            <select id="entryType">
+              <option value="Weekly Check-In">Weekly Check-In</option>
+              <option value="Walkthrough">Walkthrough</option>
+              <option value="Leadership Round">Leadership Round</option>
+              <option value="Data Review">Data Review</option>
+              <option value="Support Visit">Support Visit</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="row">
+          <div>
+            <label for="school">School</label>
+            <select id="school">
+              <option value="(Select)">Select...</option>
+              <option>District Office</option>
+              <option>Elementary School</option>
+              <option>Middle School</option>
+              <option>High School</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div>
+            <label for="who">Primary Contact</label>
+            <select id="who">
+              <option>Principal</option>
+              <option>Assistant Principal</option>
+              <option>Instructional Coach</option>
+              <option>Teacher Team</option>
+              <option>Student Group</option>
+              <option>Other</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="row">
+          <div>
+            <label for="focusArea">Focus Area</label>
+            <select id="focusArea">
+              <option value="Instruction">Instruction</option>
+              <option value="Student Learning Evidence">Student Learning Evidence</option>
+              <option value="Culture and Climate">Culture and Climate</option>
+              <option value="Attendance and Engagement">Attendance and Engagement</option>
+              <option value="Interventions and Support">Interventions and Support</option>
+              <option value="Data Use and Continuous Improvement">Data Use and Continuous Improvement</option>
+              <option value="Operations and Systems">Operations and Systems</option>
+            </select>
+          </div>
+          <div>
+            <label for="priority">Priority Level</label>
+            <select id="priority">
+              <option value="Maintain">Maintain</option>
+              <option value="Improve">Improve</option>
+              <option value="Urgent">Urgent</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="sectionTitle">
+          <h2 style="margin:0; font-size:13px;">Look-Fors</h2>
+          <span class="muted" style="font-size:12px;">Check what you observed</span>
+        </div>
+
+        <div class="checks" id="lookFors">
+          <!-- Injected by JS -->
+        </div>
+
+        <div class="sectionTitle">
+          <h2 style="margin:0; font-size:13px;">Quick Ratings</h2>
+          <span class="muted" style="font-size:12px;">1 = Limited, 4 = Strong</span>
+        </div>
+
+        <div class="twoCol" style="margin-top:10px;">
+          <div>
+            <label>Instructional Clarity</label>
+            <div class="ratings" data-rating="clarity"></div>
+            <div class="rateHint">Are expectations and success criteria clear to learners?</div>
+          </div>
+          <div>
+            <label>Student Engagement</label>
+            <div class="ratings" data-rating="engagement"></div>
+            <div class="rateHint">Are students cognitively engaged, not just compliant?</div>
+          </div>
+          <div>
+            <label>Evidence of Learning</label>
+            <div class="ratings" data-rating="evidence"></div>
+            <div class="rateHint">Is there visible evidence of thinking, progress, or mastery?</div>
+          </div>
+          <div>
+            <label>Team Follow-Through</label>
+            <div class="ratings" data-rating="followThrough"></div>
+            <div class="rateHint">Are next steps clear, owned, and scheduled?</div>
+          </div>
+        </div>
+
+        <div class="sectionTitle">
+          <h2 style="margin:0; font-size:13px;">Notes</h2>
+          <span class="muted" style="font-size:12px;">Short and long form</span>
+        </div>
+
+        <div class="row" style="margin-top:10px;">
+          <div>
+            <label for="glows">Glows (What is working?)</label>
+            <textarea id="glows" class="small" placeholder="What should they keep doing?"></textarea>
+          </div>
+          <div>
+            <label for="grows">Grows (What needs tightening?)</label>
+            <textarea id="grows" class="small" placeholder="Where is the next inch?"></textarea>
+          </div>
+        </div>
+
+        <div class="row">
+          <div>
+            <label for="nextMoves">Concrete Next Moves (1-3)</label>
+            <textarea id="nextMoves" placeholder="Name the next actions, who owns them, and the timeline."></textarea>
+          </div>
+          <div>
+            <label for="supportNeeded">Support Needed (District role)</label>
+            <textarea id="supportNeeded" placeholder="What support, resources, coaching, or time is needed?"></textarea>
+          </div>
+        </div>
+
+        <div class="row">
+          <div>
+            <label for="evidenceLink">Evidence Link (optional)</label>
+            <input type="text" id="evidenceLink" placeholder="Paste a link (doc, folder, dashboard, photos, etc.)"/>
+          </div>
+          <div>
+            <label for="attachFile">Upload (stores file name + note)</label>
+            <input type="file" id="attachFile" />
+            <div class="footerNote" id="fileNote">No file selected.</div>
+          </div>
+        </div>
+
+        <div class="footerNote">
+          Tip: Save entries weekly. This tool will build a trendline so you can coach for improvement, not just report what happened.
+        </div>
+      </div>
+
+      <!-- RIGHT: DASHBOARD -->
+      <div class="card">
+        <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:10px; flex-wrap:wrap;">
+          <div>
+            <h2>Trend Dashboard</h2>
+            <p class="sub">A quick view of your monitoring data over time (saved in your browser).</p>
+          </div>
+          <div class="pill"><span class="dot" style="background:var(--gold)"></span><span id="entryCount">0 entries</span></div>
+        </div>
+
+        <div style="margin-top:10px;">
+          <label for="filterSchool">Filter by School</label>
+          <select id="filterSchool">
+            <option value="ALL">All Schools</option>
+          </select>
+        </div>
+
+        <div style="margin-top:12px;">
+          <canvas id="trendChart" height="170"></canvas>
+        </div>
+
+        <div class="sectionTitle" style="margin-top:14px;">
+          <h2 style="margin:0; font-size:13px;">Most Recent Entries</h2>
+          <span class="muted" style="font-size:12px;">Click a row to load</span>
+        </div>
+
+        <div style="margin-top:10px; overflow:auto; max-height:380px;">
+          <table class="table" id="entriesTable">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>School</th>
+                <th>Type</th>
+                <th>Priority</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+
+        <div class="footerNote">
+          Next step: we can add a “Principal Weekly Check-In” mode with branching prompts based on what they select (attendance concerns, behavior spikes, pacing gaps, etc.).
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+  // ---------- CONFIG ----------
+  const STORAGE_KEY = "weekly_monitor_entries_v1";
+
+  const LOOK_FORS = [
+    { id:"targets", title:"Clear learning target", desc:"Students can explain what they are learning and why it matters." },
+    { id:"success", title:"Success criteria visible", desc:"Students know what quality looks like and how it will be assessed." },
+    { id:"thinking", title:"Student thinking on display", desc:"Work shows reasoning, drafts, revisions, or problem-solving steps." },
+    { id:"checks", title:"Checks for understanding", desc:"Teacher uses quick checks and adjusts in real time." },
+    { id:"feedback", title:"Feedback moves learning", desc:"Students receive actionable feedback and use it." },
+    { id:"culture", title:"Strong learning culture", desc:"Respectful, safe, purposeful learning environment." },
+    { id:"intervention", title:"Supports targeted", desc:"Interventions match the need and are tracked for impact." },
+    { id:"data", title:"Data used to decide", desc:"Team uses evidence to choose next steps, not just to report." }
+  ];
+
+  // ---------- STATE ----------
+  let entries = [];
+  let chart;
+
+  // ---------- HELPERS ----------
+  const $ = (id) => document.getElementById(id);
+
+  function todayISO(){
+    const d = new Date();
+    const pad = (n)=> String(n).padStart(2,"0");
+    return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+  }
+
+  function loadEntries(){
+    try{
+      entries = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+      if(!Array.isArray(entries)) entries = [];
+    } catch(e){
+      entries = [];
+    }
+  }
+
+  function saveEntries(){
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
+  }
+
+  function severityTag(priority){
+    if(priority === "Maintain") return `<span class="tag good">Maintain</span>`;
+    if(priority === "Improve") return `<span class="tag warn">Improve</span>`;
+    return `<span class="tag risk">Urgent</span>`;
+  }
+
+  function avgRating(e){
+    const vals = [e.ratings.clarity, e.ratings.engagement, e.ratings.evidence, e.ratings.followThrough]
+      .map(v => Number(v) || 0)
+      .filter(v => v>0);
+    if(!vals.length) return 0;
+    return vals.reduce((a,b)=>a+b,0) / vals.length;
+  }
+
+  function filteredEntries(){
+    const fs = $("filterSchool").value;
+    if(fs === "ALL") return entries.slice();
+    return entries.filter(e => e.school === fs);
+  }
+
+  // ---------- UI BUILD ----------
+  function buildLookFors(){
+    const wrap = $("lookFors");
+    wrap.innerHTML = "";
+    LOOK_FORS.forEach(item=>{
+      const div = document.createElement("div");
+      div.className = "checkItem";
+      div.innerHTML = `
+        <input type="checkbox" id="lf_${item.id}">
+        <div>
+          <b>${item.title}</b>
+          <small>${item.desc}</small>
+        </div>
+      `;
+      wrap.appendChild(div);
+    });
+  }
+
+  function buildRatingGroups(){
+    document.querySelectorAll(".ratings").forEach(group=>{
+      const key = group.getAttribute("data-rating");
+      group.innerHTML = "";
+      [1,2,3,4].forEach(n=>{
+        const b = document.createElement("div");
+        b.className = "rateBtn";
+        b.textContent = n;
+        b.addEventListener("click", ()=>{
+          group.querySelectorAll(".rateBtn").forEach(x=>x.classList.remove("active"));
+          b.classList.add("active");
+          group.setAttribute("data-value", String(n));
+        });
+        group.appendChild(b);
+      });
+      group.setAttribute("data-value", ""); // none selected
+      group.setAttribute("data-key", key);
+    });
+  }
+
+  function refreshFilterOptions(){
+    const sel = $("filterSchool");
+    const current = sel.value;
+    const schools = Array.from(new Set(entries.map(e=>e.school))).filter(Boolean);
+    sel.innerHTML = `<option value="ALL">All Schools</option>` + schools.map(s=>`<option>${s}</option>`).join("");
+    if([...sel.options].some(o=>o.value===current)) sel.value = current;
+  }
+
+  function refreshTable(){
+    const tbody = $("entriesTable").querySelector("tbody");
+    tbody.innerHTML = "";
+    const list = filteredEntries()
+      .sort((a,b)=> (b.date||"").localeCompare(a.date||""))
+      .slice(0, 18);
+
+    list.forEach(e=>{
+      const tr = document.createElement("tr");
+      tr.style.cursor = "pointer";
+      tr.innerHTML = `
+        <td>${e.date || ""}</td>
+        <td><b>${e.school || ""}</b></td>
+        <td class="muted">${e.entryType || ""}</td>
+        <td>${severityTag(e.priority || "")}</td>
+      `;
+      tr.addEventListener("click", ()=> loadEntryToForm(e.id));
+      tbody.appendChild(tr);
+    });
+
+    $("entryCount").textContent = `${filteredEntries().length} entries`;
+  }
+
+  function refreshChart(){
+    const data = filteredEntries()
+      .slice()
+      .sort((a,b)=> (a.date||"").localeCompare(b.date||""));
+
+    const labels = data.map(e=>e.date);
+    const values = data.map(e=> Number(avgRating(e).toFixed(2)));
+
+    const ctx = $("trendChart").getContext("2d");
+    if(chart) chart.destroy();
+
+    chart = new Chart(ctx, {
+      type: "line",
+      data: {
+        labels,
+        datasets: [{
+          label: "Average Rating (1–4)",
+          data: values,
+          tension: 0.25
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { display: true }
+        },
+        scales: {
+          y: { min: 0, max: 4, ticks: { stepSize: 1 } }
+        }
+      }
+    });
+  }
+
+  function refreshAll(){
+    refreshFilterOptions();
+    refreshTable();
+    refreshChart();
+  }
+
+  // ---------- FORM IO ----------
+  function readLookFors(){
+    const obj = {};
+    LOOK_FORS.forEach(i=>{
+      obj[i.id] = !!$("lf_"+i.id).checked;
+    });
+    return obj;
+  }
+
+  function setLookFors(values){
+    LOOK_FORS.forEach(i=>{
+      $("lf_"+i.id).checked = !!(values && values[i.id]);
+    });
+  }
+
+  function readRatings(){
+    const ratings = {};
+    document.querySelectorAll(".ratings").forEach(g=>{
+      const k = g.getAttribute("data-key");
+      const v = g.getAttribute("data-value");
+      ratings[k] = v ? Number(v) : "";
+    });
+    return ratings;
+  }
+
+  function setRatings(r){
+    document.querySelectorAll(".ratings").forEach(g=>{
+      const k = g.getAttribute("data-key");
+      const v = r ? r[k] : "";
+      g.setAttribute("data-value", v ? String(v) : "");
+      g.querySelectorAll(".rateBtn").forEach(btn=>{
+        btn.classList.toggle("active", btn.textContent === String(v));
+      });
+    });
+  }
+
+  function newId(){
+    return "e_" + Math.random().toString(16).slice(2) + "_" + Date.now().toString(16);
+  }
+
+  function collectForm(){
+    const file = $("attachFile").files && $("attachFile").files[0];
+    return {
+      id: $("saveBtn").getAttribute("data-editing") || newId(),
+      date: $("entryDate").value,
+      entryType: $("entryType").value,
+      school: $("school").value,
+      who: $("who").value,
+      focusArea: $("focusArea").value,
+      priority: $("priority").value,
+      lookFors: readLookFors(),
+      ratings: readRatings(),
+      notes: {
+        glows: $("glows").value.trim(),
+        grows: $("grows").value.trim(),
+        nextMoves: $("nextMoves").value.trim(),
+        supportNeeded: $("supportNeeded").value.trim()
+      },
+      evidenceLink: $("evidenceLink").value.trim(),
+      attachment: file ? { name: file.name, type: file.type, size: file.size } : null,
+      updatedAt: new Date().toISOString()
+    };
+  }
+
+  function setForm(e){
+    $("entryDate").value = e.date || todayISO();
+    $("entryType").value = e.entryType || "Weekly Check-In";
+    $("school").value = e.school || "(Select)";
+    $("who").value = e.who || "Principal";
+    $("focusArea").value = e.focusArea || "Instruction";
+    $("priority").value = e.priority || "Maintain";
+    setLookFors(e.lookFors || {});
+    setRatings(e.ratings || {});
+    $("glows").value = (e.notes && e.notes.glows) || "";
+    $("grows").value = (e.notes && e.notes.grows) || "";
+    $("nextMoves").value = (e.notes && e.notes.nextMoves) || "";
+    $("supportNeeded").value = (e.notes && e.notes.supportNeeded) || "";
+    $("evidenceLink").value = e.evidenceLink || "";
+
+    // File input cannot be programmatically set (browser security)
+    $("attachFile").value = "";
+    $("fileNote").textContent = e.attachment ? `Previously noted: ${e.attachment.name}` : "No file selected.";
+
+    $("saveBtn").setAttribute("data-editing", e.id);
+    $("saveBtn").textContent = "Update Entry";
+  }
+
+  function resetForm(){
+    $("entryDate").value = todayISO();
+    $("entryType").value = "Weekly Check-In";
+    $("school").value = "(Select)";
+    $("who").value = "Principal";
+    $("focusArea").value = "Instruction";
+    $("priority").value = "Maintain";
+    setLookFors({});
+    setRatings({});
+    $("glows").value = "";
+    $("grows").value = "";
+    $("nextMoves").value = "";
+    $("supportNeeded").value = "";
+    $("evidenceLink").value = "";
+    $("attachFile").value = "";
+    $("fileNote").textContent = "No file selected.";
+    $("saveBtn").removeAttribute("data-editing");
+    $("saveBtn").textContent = "Save Entry";
+  }
+
+  function loadEntryToForm(id){
+    const e = entries.find(x=>x.id===id);
+    if(!e) return;
+    setForm(e);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  // ---------- EXPORT ----------
+  function exportJSON(){
+    const blob = new Blob([JSON.stringify(entries, null, 2)], { type:"application/json" });
+    downloadBlob(blob, "weekly-monitor-entries.json");
+  }
+
+  function exportCSV(){
+    // Flatten a subset for practical export
+    const headers = [
+      "id","date","school","entryType","priority","focusArea","who",
+      "clarity","engagement","evidence","followThrough",
+      "glows","grows","nextMoves","supportNeeded","evidenceLink",
+      "lookFors_selected","attachment_name","updatedAt"
+    ];
+
+    const rows = entries.map(e=>{
+      const lfSelected = Object.entries(e.lookFors || {})
+        .filter(([k,v])=>v)
+        .map(([k])=>k)
+        .join("|");
+
+      return [
+        e.id, e.date, e.school, e.entryType, e.priority, e.focusArea, e.who,
+        e.ratings?.clarity ?? "", e.ratings?.engagement ?? "", e.ratings?.evidence ?? "", e.ratings?.followThrough ?? "",
+        safeCSV(e.notes?.glows ?? ""), safeCSV(e.notes?.grows ?? ""), safeCSV(e.notes?.nextMoves ?? ""), safeCSV(e.notes?.supportNeeded ?? ""),
+        e.evidenceLink ?? "",
+        lfSelected,
+        e.attachment?.name ?? "",
+        e.updatedAt ?? ""
+      ];
+    });
+
+    const csv = [headers.join(","), ...rows.map(r=>r.map(csvCell).join(","))].join("\n");
+    const blob = new Blob([csv], { type:"text/csv;charset=utf-8" });
+    downloadBlob(blob, "weekly-monitor-entries.csv");
+  }
+
+  function safeCSV(s){
+    return String(s).replace(/\r?\n/g, " ").trim();
+  }
+
+  function csvCell(value){
+    const v = value === null || value === undefined ? "" : String(value);
+    if(/[",\n]/.test(v)) return `"${v.replace(/"/g,'""')}"`;
+    return v;
+  }
+
+  function downloadBlob(blob, filename){
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 0);
+  }
+
+  // ---------- EVENTS ----------
+  $("saveBtn").addEventListener("click", ()=>{
+    const e = collectForm();
+    if(!e.date){ alert("Add a date."); return; }
+    if(!e.school || e.school==="(Select)"){ alert("Select a school."); return; }
+
+    const existingIndex = entries.findIndex(x=>x.id===e.id);
+    if(existingIndex >= 0) entries[existingIndex] = e;
+    else entries.push(e);
+
+    saveEntries();
+    refreshAll();
+    resetForm();
+  });
+
+  $("exportJsonBtn").addEventListener("click", exportJSON);
+  $("exportCsvBtn").addEventListener("click", exportCSV);
+
+  $("clearBtn").addEventListener("click", ()=>{
+    const ok = confirm("This will remove all saved entries from this browser. Continue?");
+    if(!ok) return;
+    entries = [];
+    saveEntries();
+    refreshAll();
+    resetForm();
+  });
+
+  $("filterSchool").addEventListener("change", ()=>{
+    refreshTable();
+    refreshChart();
+  });
+
+  $("attachFile").addEventListener("change", ()=>{
+    const f = $("attachFile").files && $("attachFile").files[0];
+    $("fileNote").textContent = f ? `Selected: ${f.name}` : "No file selected.";
+  });
+
+  // ---------- INIT ----------
+  (function init(){
+    $("entryDate").value = todayISO();
+    buildLookFors();
+    buildRatingGroups();
+    loadEntries();
+    refreshAll();
+  })();
+</script>
+</body>
+</html>
