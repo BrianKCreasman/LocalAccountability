@@ -201,7 +201,7 @@
     textarea{min-height: 92px; resize: vertical}
     .small{min-height: 70px}
 
-    /* Focus selector (simple, not overwhelming) */
+    /* Focus selector */
     .focusRow{display:flex; gap:10px; flex-wrap:wrap}
     .focusChip{
       display:flex; gap:8px; align-items:flex-start;
@@ -265,22 +265,36 @@
     .check small{display:block;font-size:11px;color:var(--gray);line-height:1.25;margin-top:2px}
     @media(max-width:900px){ .check{grid-column: span 12} }
 
-    /* Ratings */
+    /* Ratings: Transactional / Traditional / Transitional / Transformational */
     .ratingRow{display:flex; gap:8px; flex-wrap:wrap}
     .rateBtn{
-      width:42px;height:42px;border-radius: 14px;
+      flex: 1 1 210px;
+      min-width: 210px;
+      border-radius: 16px;
       border: 1px solid rgba(0,0,0,.14);
       background:#fff;
       box-shadow: 0 10px 18px rgba(0,0,0,.07);
-      display:flex; align-items:center; justify-content:center;
-      font-weight:1000; cursor:pointer;
+      padding: 10px 10px;
+      cursor:pointer;
       user-select:none;
     }
+    .rateBtn .rTitle{font-weight:1000;font-size:12px;letter-spacing:.2px}
+    .rateBtn .rDesc{margin-top:6px;color:var(--gray);font-size:11px;line-height:1.25;font-weight:800}
     .rateBtn.active{
       background: var(--gold);
       border-color: rgba(0,0,0,.18);
       box-shadow: 0 16px 26px rgba(0,0,0,.12);
     }
+    .rateLegend{
+      margin-top:8px;
+      padding:10px;
+      border-radius: 16px;
+      border: 1px solid rgba(0,0,0,.10);
+      background: linear-gradient(180deg, rgba(242,243,245,.95), rgba(255,255,255,.95));
+      box-shadow: 0 12px 20px rgba(0,0,0,.06);
+    }
+    .rateLegend b{font-size:12px}
+    .rateLegend ul{margin-top:8px}
 
     /* Status tags */
     .tag{
@@ -365,7 +379,6 @@
           </div>
 
           <div style="height:12px"></div>
-
           <div class="waffle" id="waffle"></div>
 
           <div class="foot">
@@ -414,11 +427,11 @@
                 <label for="school">School</label>
                 <select id="school">
                   <option value="">Select...</option>
-                  <option>District Office</option>
-                  <option>Elementary School</option>
-                  <option>Middle School</option>
-                  <option>High School</option>
-                  <option>Other</option>
+                  <option>Ewing ES</option>
+                  <option>Flemingsburg ES</option>
+                  <option>Hillsboro ES</option>
+                  <option>Simons MS</option>
+                  <option>Fleming County HS</option>
                 </select>
                 <div style="height:8px"></div>
                 <label for="who">Primary contact</label>
@@ -521,7 +534,7 @@
           </div>
         </div>
 
-        <!-- RIGHT: Use the space (Agenda + Evidence + Trend + Recent) -->
+        <!-- RIGHT: Priorities + Evidence + Trend + Recent -->
         <div class="sticky">
           <div class="panel theme-gold">
             <div class="panelHeader">
@@ -589,7 +602,7 @@
       </div>
     </div>
 
-    <!-- DASHBOARD (separate view) -->
+    <!-- DASHBOARD -->
     <div class="view" id="dashboardView">
       <div class="panel theme-gray">
         <div class="panelHeader">
@@ -674,7 +687,40 @@
   }
   function listHTML(arr){ return `<ul>${arr.map(x=>`<li>${x}</li>`).join("")}</ul>`; }
 
-  // ---------------- FOCUS MODEL (same 6 areas) ----------------
+  // ---------------- RATING LEVELS (Transactional / Traditional / Transitional / Transformational) ----------------
+  // These are system-level descriptors aligned to your earlier framing:
+  // - Transactional: compliance/points/completion, teacher-owned learning
+  // - Traditional: conventional instruction and grading routines, teacher-led, limited transfer
+  // - Transitional: standards clarity + workshop moves + emerging performance evidence
+  // - Transformational: vibrant learning + authentic performance + durable skills + credible evidence
+  const RATING_LEVELS = [
+    {
+      key: "Transactional",
+      num: 1,
+      desc: "Compliance-driven. Work is mainly completion and directions-following. Evidence is thin and often point-based."
+    },
+    {
+      key: "Traditional",
+      num: 2,
+      desc: "Conventional routines. Teacher-led instruction with consistent expectations, but limited agency, relevance, or authentic application."
+    },
+    {
+      key: "Transitional",
+      num: 3,
+      desc: "Standards and proficiency are clearer. Workshop practices appear. Students do more thinking and revising. Evidence is growing across time."
+    },
+    {
+      key: "Transformational",
+      num: 4,
+      desc: "Vibrant by design. Students own meaningful work, often interdisciplinary and real-world. Evidence is compelling, curated, and standards-referenced."
+    }
+  ];
+  function stageToNum(stage){
+    const hit = RATING_LEVELS.find(x=>x.key===stage);
+    return hit ? hit.num : null;
+  }
+
+  // ---------------- FOCUS MODEL ----------------
   const FOCUS = [
     {
       key: "Vibrant Learning",
@@ -723,10 +769,10 @@
         {id:"integrated", title:"Integrated learning", desc:"Two or more disciplines are connected in a real way."}
       ],
       ratings: [
-        {key:"relevance", label:"Relevance", hint:"Learners see value and purpose."},
-        {key:"agency", label:"Agency", hint:"Students make decisions and own the work."},
-        {key:"transfer", label:"Thinking/Transfer", hint:"Work requires reasoning and application."},
-        {key:"evidence", label:"Evidence Quality", hint:"Artifacts prove learning, not just completion."}
+        {key:"relevance", label:"Relevance", hint:"Do students understand the purpose and value of the work?"},
+        {key:"agency", label:"Agency", hint:"Are students making meaningful choices and owning the learning?"},
+        {key:"transfer", label:"Thinking/Transfer", hint:"Does the work require reasoning, application, and problem-solving?"},
+        {key:"evidence", label:"Evidence Quality", hint:"Would a skeptic see credible proof of growth/mastery/readiness?"}
       ],
       signals: [
         {key:"artifacts_added", label:"# new artifacts captured this week"},
@@ -778,10 +824,10 @@
         {id:"response", title:"Response is evidence-based", desc:"Reteach/enrich decisions match what evidence shows."}
       ],
       ratings: [
-        {key:"clarity", label:"Clarity", hint:"Priority outcomes are consistently understood."},
-        {key:"scale_use", label:"Scale Use", hint:"Scales guide instruction and feedback."},
-        {key:"alignment", label:"Alignment", hint:"Tasks and evidence match outcomes."},
-        {key:"response", label:"Response", hint:"Teams respond quickly and specifically."}
+        {key:"clarity", label:"Clarity", hint:"Are priority outcomes consistently understood and referenced?"},
+        {key:"scale_use", label:"Scale Use", hint:"Are proficiency scales guiding instruction and feedback (not sitting on paper)?"},
+        {key:"alignment", label:"Alignment", hint:"Do tasks and checks match the intended rigor of the standard?"},
+        {key:"response", label:"Response", hint:"Are teams adjusting instruction quickly based on evidence?"}
       ],
       signals: [
         {key:"pct_on_track", label:"% students on track (priority outcome)"},
@@ -836,10 +882,10 @@
         {id:"closure", title:"Closure consolidates learning", desc:"Students reflect and set next steps."}
       ],
       ratings: [
-        {key:"clarity", label:"Clarity", hint:"Targets and teaching point are understood."},
-        {key:"task_quality", label:"Task Quality", hint:"Work requires thinking, not just completion."},
-        {key:"responsive", label:"Responsive Teaching", hint:"Instruction adjusts based on evidence."},
-        {key:"culture", label:"Learning Culture", hint:"Routines and tone support learning."}
+        {key:"clarity", label:"Clarity", hint:"Is the teaching point clear and standards-connected?"},
+        {key:"task_quality", label:"Task Quality", hint:"Are students doing meaningful work during work time?"},
+        {key:"responsive", label:"Responsive Teaching", hint:"Are CFUs and conferencing driving adjustments?"},
+        {key:"culture", label:"Learning Culture", hint:"Do routines, pacing, and relationships support learning?"}
       ],
       signals: [
         {key:"walkthroughs_count", label:"# walkthroughs completed this week"},
@@ -892,10 +938,10 @@
         {id:"calibration", title:"Calibration occurs", desc:"Adults score together using anchors."}
       ],
       ratings: [
-        {key:"quality", label:"BPA Quality", hint:"Task and rubric create credible evidence."},
-        {key:"implementation", label:"Implementation", hint:"Students are supported to produce quality."},
-        {key:"calibration", label:"Calibration", hint:"Scoring is consistent and anchored."},
-        {key:"use", label:"Use of Results", hint:"Results drive next instructional moves."}
+        {key:"quality", label:"BPA Quality", hint:"Is the task authentic, aligned, and rigorous enough to be credible?"},
+        {key:"implementation", label:"Implementation", hint:"Are students supported to produce quality (feedback, revision, coaching)?"},
+        {key:"calibration", label:"Calibration", hint:"Are adults scoring with anchors and consistency?"},
+        {key:"use", label:"Use of Results", hint:"Do results change instruction and supports?"}
       ],
       signals: [
         {key:"bpa_active_count", label:"# BPAs active this week"},
@@ -948,10 +994,10 @@
         {id:"portfolio", title:"Evidence is curated", desc:"Students capture artifacts across time and content."}
       ],
       ratings: [
-        {key:"visibility", label:"Visibility", hint:"Skills are visible in daily learning."},
-        {key:"language", label:"Shared Language", hint:"Portrait terms are used consistently."},
-        {key:"student_ownership", label:"Student Ownership", hint:"Students curate and explain their evidence."},
-        {key:"quality", label:"Evidence Quality", hint:"Artifacts credibly demonstrate durable skills."}
+        {key:"visibility", label:"Visibility", hint:"Are Portrait skills visible inside core learning?"},
+        {key:"language", label:"Shared Language", hint:"Are teachers and students using consistent Portrait language?"},
+        {key:"student_ownership", label:"Student Ownership", hint:"Are students curating evidence and explaining growth?"},
+        {key:"quality", label:"Evidence Quality", hint:"Would artifacts convince an outside reviewer?"}
       ],
       signals: [
         {key:"portfolio_updates", label:"# portfolio/BPI website updates this week"},
@@ -1003,10 +1049,10 @@
         {id:"student", title:"Student can explain level", desc:"Learners know where they are and what to do next."}
       ],
       ratings: [
-        {key:"integrity", label:"Grade Integrity", hint:"Grades match mastery evidence."},
-        {key:"consistency", label:"Consistency", hint:"Expectations are consistent across classrooms."},
-        {key:"clarity", label:"Student Clarity", hint:"Students understand levels and next steps."},
-        {key:"evidence", label:"Evidence Quality", hint:"Evidence is compelling and current."}
+        {key:"integrity", label:"Grade Integrity", hint:"Do grades reflect standards mastery rather than points/averages?"},
+        {key:"consistency", label:"Consistency", hint:"Are expectations consistent across classrooms?"},
+        {key:"clarity", label:"Student Clarity", hint:"Can students explain their level and next steps?"},
+        {key:"evidence", label:"Evidence Quality", hint:"Is evidence current, compelling, and connected to standards?"}
       ],
       signals: [
         {key:"evidence_audits", label:"# evidence spot-checks this week"},
@@ -1028,11 +1074,10 @@
     btn.addEventListener("click", ()=> showView(btn.getAttribute("data-nav")));
   });
 
-  // ---------------- HOME WAFFLE (9 tiles) ----------------
+  // ---------------- HOME WAFFLE ----------------
   function renderWaffle(){
     const host = $("waffle");
     host.innerHTML = "";
-
     const tiles = [
       { title:"Weekly Tool", desc:"Do the check-in. Prioritize. Capture evidence. Set proof points.", color:"black", action:()=>showView("weeklyView") },
       { title:"Dashboard", desc:"Spot patterns across time. Filter by school. Keep the conversation honest.", color:"gold", action:()=>showView("dashboardView") },
@@ -1044,7 +1089,6 @@
       { title:"Compelling Evidence + SRG", desc:"Credibility and trust. Standards-based evidence. Transparency.", color:"gray", action:()=>jumpWeeklyWithFocus("Compelling Evidence and SRG") },
       { title:"Tighten the System", desc:"A quick routine: focus, look-fors, evidence, owners, proof point.", color:"gold", action:()=>{ showView("weeklyView"); $("weekTheme").value="Tighten the system: align daily practice and validated evidence."; } }
     ];
-
     tiles.forEach(t=>{
       const div = document.createElement("div");
       div.className = `tile ${t.color==="gold" ? "gold" : (t.color==="black" ? "black" : "")}`;
@@ -1064,7 +1108,6 @@
 
   function jumpWeeklyWithFocus(focusKey){
     showView("weeklyView");
-    // select focus, render modules, build agenda
     FOCUS.forEach(f=>{
       const cb = document.getElementById(`focus_${safeId(f.key)}`);
       if(cb) cb.checked = (f.key===focusKey);
@@ -1206,9 +1249,18 @@
               </div>
 
               <div class="block ${f.theme==="gold" ? "gold" : "gray"} span-12">
-                <div class="k">Ratings (1–4)</div>
-                <p class="q">Trend visibility. Coaching clarity. Keep the scale consistent.</p>
-                <div id="ratings_${sid}"></div>
+                <div class="k">Ratings: Transactional to Transformational</div>
+                <p class="q">This is not a judgment. It is a shared language for where practice currently lives.</p>
+                <div class="rateLegend">
+                  <b>Level meanings (district-wide, consistent)</b>
+                  <ul>
+                    <li><b>Transactional:</b> compliance and completion dominate. Evidence is thin and point-based.</li>
+                    <li><b>Traditional:</b> conventional teacher-led routines. Limited relevance, agency, or transfer.</li>
+                    <li><b>Transitional:</b> clearer standards and workshop moves. Evidence is growing across time.</li>
+                    <li><b>Transformational:</b> vibrant learning with authentic application. Evidence is compelling, curated, and SRG-aligned.</li>
+                  </ul>
+                </div>
+                <div id="ratings_${sid}" style="margin-top:10px;"></div>
               </div>
 
               <div class="block gray span-6">
@@ -1270,27 +1322,35 @@
         checksHost.appendChild(c);
       });
 
-      // ratings
+      // ratings (Transactional/Traditional/Transitional/Transformational)
       const ratingsHost = $(`ratings_${sid}`);
       ratingsHost.innerHTML = "";
       f.ratings.forEach(r=>{
         const row = document.createElement("div");
-        row.style.marginBottom = "10px";
+        row.style.marginBottom = "12px";
         row.innerHTML = `
           <label>${r.label}</label>
-          <div class="ratingRow" data-focus="${key}" data-rating="${r.key}" data-value=""></div>
+          <div class="ratingRow" data-focus="${key}" data-rating="${r.key}" data-value="" data-stage=""></div>
           <div class="foot">${r.hint}</div>
         `;
         ratingsHost.appendChild(row);
+
         const group = row.querySelector(".ratingRow");
-        [1,2,3,4].forEach(n=>{
+
+        RATING_LEVELS.forEach(level=>{
           const b = document.createElement("div");
           b.className = "rateBtn";
-          b.textContent = n;
+          b.setAttribute("data-stage", level.key);
+          b.setAttribute("data-num", String(level.num));
+          b.innerHTML = `
+            <div class="rTitle">${level.key}</div>
+            <div class="rDesc">${level.desc}</div>
+          `;
           b.addEventListener("click", ()=>{
             group.querySelectorAll(".rateBtn").forEach(x=>x.classList.remove("active"));
             b.classList.add("active");
-            group.setAttribute("data-value", String(n));
+            group.setAttribute("data-value", String(level.num));   // keeps internal 1-4 compatibility
+            group.setAttribute("data-stage", level.key);           // stores the actual stage label
           });
           group.appendChild(b);
         });
@@ -1318,7 +1378,6 @@
         buildAgendaAndEvidence();
       });
 
-      // evidence link change updates checklist feel
       $(`mevidence_${sid}`).addEventListener("input", buildAgendaAndEvidence);
       $(`mstatus_${sid}`).addEventListener("change", buildAgendaAndEvidence);
     });
@@ -1333,7 +1392,6 @@
       return;
     }
 
-    // Agenda priorities: order by module status severity, then by focus selection order
     const agendaItems = [];
     picks.forEach(key=>{
       const f = FOCUS.find(x=>x.key===key);
@@ -1358,7 +1416,6 @@
     `;
     $("agendaList").innerHTML = agendaHTML;
 
-    // Evidence checklist: require evidence rule + link presence + file presence
     const checks = picks.map(key=>{
       const f = FOCUS.find(x=>x.key===key);
       const sid = safeId(key);
@@ -1407,7 +1464,8 @@
         evidenceLink: ($(`mevidence_${sid}`)?.value || "").trim(),
         attachment: null,
         lookFors: {},
-        ratings: {},
+        ratings: {},        // stores stage label
+        ratingsNum: {},     // stores numeric 1-4 for compatibility/trending
         signals: {},
         wins: ($(`mglows_${sid}`)?.value || "").trim(),
         gaps: ($(`mgrows_${sid}`)?.value || "").trim()
@@ -1419,8 +1477,10 @@
 
       document.querySelectorAll(`.ratingRow[data-focus="${CSS.escape(key)}"]`).forEach(group=>{
         const rKey = group.getAttribute("data-rating");
-        const v = group.getAttribute("data-value");
-        mod.ratings[rKey] = v ? Number(v) : "";
+        const stage = group.getAttribute("data-stage") || "";
+        const num = group.getAttribute("data-value") || "";
+        mod.ratings[rKey] = stage;
+        mod.ratingsNum[rKey] = num ? Number(num) : "";
       });
 
       f.signals.forEach(s=>{
@@ -1521,7 +1581,6 @@
     $("nextMoves").value = e.nextMoves || "";
     $("proofNextWeek").value = e.proofNextWeek || "";
 
-    // focus selection
     FOCUS.forEach(f=>{
       const cb = $(`focus_${safeId(f.key)}`);
       if(cb) cb.checked = (e.focusKeys || []).includes(f.key);
@@ -1529,7 +1588,6 @@
 
     renderModulesAndRightPanel();
 
-    // fill modules
     (e.focusKeys || []).forEach(key=>{
       const f = FOCUS.find(x=>x.key===key);
       const sid = safeId(key);
@@ -1550,12 +1608,18 @@
         if(el) el.checked = !!(m.lookFors && m.lookFors[lf.id]);
       });
 
+      // restore stage ratings
       document.querySelectorAll(`.ratingRow[data-focus="${CSS.escape(key)}"]`).forEach(group=>{
         const rKey = group.getAttribute("data-rating");
-        const v = m.ratings ? m.ratings[rKey] : "";
-        group.setAttribute("data-value", v ? String(v) : "");
+        const stage = (m.ratings && m.ratings[rKey]) ? m.ratings[rKey] : "";
+        const num = (m.ratingsNum && m.ratingsNum[rKey] !== "" && m.ratingsNum[rKey] !== undefined) ? m.ratingsNum[rKey] : stageToNum(stage);
+
+        group.setAttribute("data-stage", stage || "");
+        group.setAttribute("data-value", (num ? String(num) : ""));
+
         group.querySelectorAll(".rateBtn").forEach(btn=>{
-          btn.classList.toggle("active", btn.textContent === String(v));
+          const btnStage = btn.getAttribute("data-stage");
+          btn.classList.toggle("active", stage && btnStage === stage);
         });
       });
 
@@ -1579,7 +1643,11 @@
 
   // ---------------- DASHBOARD DATA ----------------
   function refreshSchoolFilters(){
-    const schools = Array.from(new Set(entries.map(e=>e.school))).filter(Boolean);
+    // Keep filter values tight to your list + any legacy values already in storage
+    const base = ["Ewing ES","Flemingsburg ES","Hillsboro ES","Simons MS","Fleming County HS"];
+    const seen = Array.from(new Set(entries.map(e=>e.school))).filter(Boolean);
+    const schools = Array.from(new Set([...base, ...seen])).filter(Boolean);
+
     const filter = $("filterSchool");
     filter.innerHTML = `<option value="ALL">All Schools</option>` + schools.map(s=>`<option>${s}</option>`).join("");
   }
@@ -1590,7 +1658,6 @@
   }
 
   function refreshTables(){
-    // weekly side recent table
     const tbody = $("entriesTable").querySelector("tbody");
     tbody.innerHTML = "";
     const list = entries.slice().sort((a,b)=>(b.date||"").localeCompare(a.date||"")).slice(0, 12);
@@ -1607,7 +1674,6 @@
       tbody.appendChild(tr);
     });
 
-    // dashboard table
     const dbody = $("dashTable").querySelector("tbody");
     dbody.innerHTML = "";
     const dashList = filteredEntries().slice().sort((a,b)=>(b.date||"").localeCompare(a.date||""));
@@ -1642,7 +1708,6 @@
 
   // ---------------- CHARTS ----------------
   function refreshCharts(){
-    // Weekly right charts use all entries (quick trend)
     const all = entries.slice().sort((a,b)=>(a.date||"").localeCompare(b.date||""));
     const labels = all.map(e=>e.date);
 
@@ -1682,7 +1747,6 @@
       options:{responsive:true, plugins:{legend:{display:true}}, scales:{y:{beginAtZero:true}}}
     });
 
-    // Dashboard charts (filtered)
     const data = filteredEntries().slice().sort((a,b)=>(a.date||"").localeCompare(b.date||""));
     const dlabels = data.map(e=>e.date);
     const dStatus = data.map(e=>{
@@ -1746,7 +1810,7 @@
     const headers = [
       "id","date","school","entryType","who","overallStatus","weekTheme","whatChanged",
       "topIssues","helpNeeded","owner","dueDate","focusKeys","generalGlows","generalGrows",
-      "nextMoves","proofNextWeek","updatedAt","focusStatusSummary"
+      "nextMoves","proofNextWeek","updatedAt","focusStatusSummary","stageSummary"
     ];
     const rows = entries.map(e=>{
       const focusKeys = (e.focusKeys||[]).join("|");
@@ -1756,13 +1820,22 @@
         const sub = m ? (m.subarea||"") : "";
         return `${k}:${st}:${sub}`;
       }).join("||");
+
+      const stageSummary = (e.focusKeys||[]).map(k=>{
+        const m = e.modules && e.modules[k];
+        if(!m || !m.ratings) return `${k}:`;
+        const parts = Object.entries(m.ratings).map(([rk,stage])=> `${rk}=${stage||""}`).join(";");
+        return `${k}:{${parts}}`;
+      }).join("||");
+
       return [
         e.id, e.date, e.school, e.entryType, e.who,
         e.overallStatus||"", safeCSV(e.weekTheme||""), safeCSV(e.whatChanged||""),
         safeCSV(e.topIssues||""), safeCSV(e.helpNeeded||""), safeCSV(e.owner||""), e.dueDate||"",
         safeCSV(focusKeys), safeCSV(e.generalGlows||""), safeCSV(e.generalGrows||""),
         safeCSV(e.nextMoves||""), safeCSV(e.proofNextWeek||""), e.updatedAt||"",
-        safeCSV(summary)
+        safeCSV(summary),
+        safeCSV(stageSummary)
       ];
     });
     const csv = [headers.join(","), ...rows.map(r=>r.map(csvCell).join(","))].join("\n");
@@ -1791,6 +1864,10 @@
       if(m.barrier) lines.push(`  Barrier: ${m.barrier}`);
       if(m.help) lines.push(`  Help: ${m.help}`);
       if(m.evidenceLink) lines.push(`  Evidence: ${m.evidenceLink}`);
+      if(m.ratings){
+        const rs = Object.entries(m.ratings).filter(([_,v])=>v).map(([rk,v])=>`${rk}: ${v}`).join(" | ");
+        if(rs) lines.push(`  Ratings: ${rs}`);
+      }
     });
     lines.push("");
     lines.push(`Wins: ${e.generalGlows||"(not entered)"}`);
@@ -1866,6 +1943,15 @@
     $("modulesHost").innerHTML = `<div class="foot">Select focus areas to load modules.</div>`;
     buildAgendaAndEvidence();
   })();
+
+  // ---------------- SMALL HELPERS ----------------
+  // (These were referenced earlier in the file.)
+  function renderModulesAndRightPanel(){
+    renderModules();
+    buildAgendaAndEvidence();
+    refreshMetricPickers();
+    refreshCharts();
+  }
 </script>
 </body>
 </html>
