@@ -3,194 +3,101 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Weekly Monitoring Tool | Superintendent Check-Ins + Walkthroughs</title>
-
-  <!-- Chart.js CDN -->
+  <title>District Turnaround Executive Tool | Weekly Check-Ins + Walkthroughs</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
   <style>
     :root{
-      --navy:#0a355e;
-      --navy2:#12406b;
-      --teal:#118a9a;
-      --gold:#dbd59b;
-      --bg:#f5f5f7;
-      --card:#ffffff;
-      --text:#111;
-      --muted:#55606e;
-      --border:#e6e8ee;
-      --shadow:0 14px 35px rgba(15, 23, 42, .10);
+      --navy:#0a355e; --navy2:#12406b; --teal:#118a9a; --gold:#dbd59b;
+      --bg:#f5f5f7; --card:#ffffff; --text:#111; --muted:#55606e;
+      --border:#e6e8ee; --shadow:0 14px 35px rgba(15, 23, 42, .10);
       --r:22px;
+      --good:#118a9a; --warn:#b45309; --risk:#b42318;
     }
     *{box-sizing:border-box}
-    body{
-      margin:0;
-      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      background:var(--bg);
-      color:var(--text);
-    }
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--text)}
     .topbar{
-      position:sticky; top:0; z-index:50;
-      background:linear-gradient(90deg, #ffffff, #ffffff);
-      border-bottom:1px solid var(--border);
-      box-shadow:0 8px 22px rgba(0,0,0,.06);
-      padding:14px 18px;
-      display:flex; gap:12px; align-items:center; justify-content:space-between;
+      position:sticky; top:0; z-index:50; background:#fff;
+      border-bottom:1px solid var(--border); box-shadow:0 8px 22px rgba(0,0,0,.06);
+      padding:14px 18px; display:flex; gap:12px; align-items:center; justify-content:space-between;
     }
-    .brand{
-      display:flex; gap:12px; align-items:center;
-    }
-    .logo{
-      width:42px; height:42px; border-radius:14px;
-      background:conic-gradient(from 180deg, var(--navy), var(--teal), var(--gold), var(--navy));
-      box-shadow:0 10px 18px rgba(0,0,0,.10);
-    }
-    .brand h1{
-      font-size:16px; margin:0; line-height:1.2;
-    }
-    .brand p{
-      margin:0; font-size:12px; color:var(--muted);
-    }
-
-    .actions{display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end;}
+    .brand{display:flex; gap:12px; align-items:center}
+    .logo{width:42px;height:42px;border-radius:14px;background:conic-gradient(from 180deg,var(--navy),var(--teal),var(--gold),var(--navy));box-shadow:0 10px 18px rgba(0,0,0,.10)}
+    .brand h1{font-size:16px;margin:0;line-height:1.2}
+    .brand p{margin:0;font-size:12px;color:var(--muted)}
+    .actions{display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end}
     button{
-      border:1px solid var(--border);
-      background:#fff;
-      padding:10px 12px;
-      border-radius:999px;
-      cursor:pointer;
-      font-weight:650;
-      font-size:12px;
+      border:1px solid var(--border); background:#fff; padding:10px 12px; border-radius:999px;
+      cursor:pointer; font-weight:650; font-size:12px;
     }
-    button.primary{
-      background:var(--navy);
-      color:#fff;
-      border-color:transparent;
-    }
-    button.danger{
-      background:#fff;
-      color:#b42318;
-      border-color:#f3c7c1;
-    }
-    button:hover{filter:brightness(.98)}
-    button:active{transform:translateY(1px)}
+    button.primary{background:var(--navy);color:#fff;border-color:transparent}
+    button.danger{background:#fff;color:var(--risk);border-color:#f3c7c1}
+    button:hover{filter:brightness(.98)} button:active{transform:translateY(1px)}
 
-    .wrap{max-width:1180px; margin:18px auto; padding:0 14px 40px;}
-    .grid{
-      display:grid;
-      grid-template-columns: 1.15fr .85fr;
-      gap:14px;
-    }
-    @media (max-width: 980px){
-      .grid{grid-template-columns:1fr}
-    }
+    .wrap{max-width:1240px;margin:18px auto;padding:0 14px 40px}
+    .grid{display:grid;grid-template-columns:1.25fr .75fr;gap:14px}
+    @media(max-width:980px){.grid{grid-template-columns:1fr}}
 
-    .card{
-      background:var(--card);
-      border:1px solid var(--border);
-      border-radius:var(--r);
-      box-shadow:var(--shadow);
-      padding:16px;
-    }
-    .card h2{
-      margin:0 0 10px 0;
-      font-size:14px;
-      letter-spacing:.2px;
-    }
-    .sub{
-      margin:0 0 14px 0;
-      font-size:12px; color:var(--muted);
-    }
+    .card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow);padding:16px}
+    .card h2{margin:0 0 10px 0;font-size:14px;letter-spacing:.2px}
+    .sub{margin:0 0 14px 0;font-size:12px;color:var(--muted)}
 
-    .row{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap:10px;
-      margin-bottom:10px;
-    }
-    @media (max-width: 640px){
-      .row{grid-template-columns:1fr}
-    }
+    .row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+    @media(max-width:640px){.row{grid-template-columns:1fr}}
 
-    label{
-      display:block;
-      font-size:12px;
-      color:var(--muted);
-      margin:0 0 6px 2px;
-      font-weight:650;
+    label{display:block;font-size:12px;color:var(--muted);margin:0 0 6px 2px;font-weight:650}
+    input[type="text"],input[type="date"],input[type="number"],select,textarea{
+      width:100%;padding:10px 10px;border-radius:14px;border:1px solid var(--border);
+      outline:none;font-size:13px;background:#fff
     }
-    input[type="text"], input[type="date"], select, textarea{
-      width:100%;
-      padding:10px 10px;
-      border-radius:14px;
-      border:1px solid var(--border);
-      outline:none;
-      font-size:13px;
-      background:#fff;
-    }
-    textarea{min-height:92px; resize:vertical;}
+    textarea{min-height:92px;resize:vertical}
     .small{min-height:64px}
 
-    .pill{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding:7px 10px;
-      border-radius:999px;
+    .pill{display:inline-flex;align-items:center;gap:8px;padding:7px 10px;border-radius:999px;border:1px solid var(--border);background:#fff;font-size:12px;font-weight:650;color:var(--navy)}
+    .pill span.dot{width:8px;height:8px;border-radius:99px;background:var(--teal);display:inline-block}
+    .muted{color:var(--muted)}
+    .footerNote{margin-top:10px;font-size:11px;color:var(--muted)}
+
+    .sectionTitle{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:10px;padding-top:10px;border-top:1px dashed var(--border)}
+    .tag{
+      display:inline-block; padding:6px 10px; border-radius:999px; font-size:11px; font-weight:750;
+      border:1px solid var(--border); background:#fff;
+    }
+    .tag.good{border-color:rgba(17,138,154,.35); color:var(--good); background:rgba(17,138,154,.06)}
+    .tag.warn{border-color:rgba(180,83,9,.25); color:var(--warn); background:rgba(180,83,9,.06)}
+    .tag.risk{border-color:rgba(180,35,24,.25); color:var(--risk); background:rgba(180,35,24,.06)}
+
+    .module{
+      margin-top:12px;
       border:1px solid var(--border);
-      background:#fff;
-      font-size:12px;
-      font-weight:650;
-      color:var(--navy);
+      border-radius:18px;
+      background:linear-gradient(180deg, rgba(10,53,94,.03), rgba(17,138,154,.03));
+      padding:12px;
     }
-    .pill span.dot{
-      width:8px; height:8px; border-radius:99px;
-      background:var(--teal);
-      display:inline-block;
+    .moduleHeader{
+      display:flex; align-items:flex-start; justify-content:space-between; gap:10px; flex-wrap:wrap;
+      margin-bottom:8px;
     }
-
-    .sectionTitle{
-      display:flex; align-items:center; justify-content:space-between;
-      gap:10px;
-      margin-top:8px;
-      padding-top:8px;
-      border-top:1px dashed var(--border);
+    .moduleTitle b{font-size:13px; color:var(--navy); display:block}
+    .moduleTitle span{font-size:12px; color:var(--muted)}
+    .miniTag{
+      display:inline-block; padding:6px 10px; border-radius:999px; font-size:11px; font-weight:750;
+      border:1px solid var(--border); background:#fff;
     }
 
-    .checks{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap:8px;
-      margin-top:8px;
-    }
-    @media (max-width: 640px){
-      .checks{grid-template-columns:1fr}
-    }
+    .checks{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+    @media(max-width:640px){.checks{grid-template-columns:1fr}}
     .checkItem{
       display:flex; gap:8px; align-items:flex-start;
-      border:1px solid var(--border);
-      padding:10px;
-      border-radius:14px;
-      background:#fff;
+      border:1px solid var(--border); padding:10px; border-radius:14px; background:#fff;
     }
     .checkItem input{margin-top:2px}
-    .checkItem b{display:block; font-size:12px}
-    .checkItem small{display:block; color:var(--muted); font-size:11px; line-height:1.25}
+    .checkItem b{display:block;font-size:12px}
+    .checkItem small{display:block;color:var(--muted);font-size:11px;line-height:1.25}
 
-    .ratings{
-      display:grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap:8px;
-    }
+    .ratings{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
     .rateBtn{
-      border-radius:14px;
-      padding:10px 8px;
-      border:1px solid var(--border);
-      background:#fff;
-      text-align:center;
-      cursor:pointer;
-      font-weight:750;
-      user-select:none;
+      border-radius:14px;padding:10px 8px;border:1px solid var(--border);background:#fff;
+      text-align:center;cursor:pointer;font-weight:750;user-select:none;
     }
     .rateBtn.active{
       border-color: rgba(17,138,154,.35);
@@ -200,52 +107,39 @@
     .rateHint{font-size:11px;color:var(--muted);margin-top:6px}
 
     .table{
-      width:100%;
-      border-collapse:separate;
-      border-spacing:0;
-      overflow:hidden;
+      width:100%; border-collapse:separate; border-spacing:0;
+      border:1px solid var(--border); border-radius:18px; background:#fff; overflow:hidden;
+    }
+    .table th,.table td{padding:10px 10px;font-size:12px;border-bottom:1px solid var(--border);vertical-align:top}
+    .table th{background:linear-gradient(90deg, rgba(10,53,94,.06), rgba(17,138,154,.06));text-align:left;color:var(--navy)}
+    .table tr:last-child td{border-bottom:none}
+
+    .kv{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    @media(max-width:640px){.kv{grid-template-columns:1fr}}
+    .callout{
       border:1px solid var(--border);
       border-radius:18px;
+      padding:12px;
       background:#fff;
     }
-    .table th, .table td{
-      padding:10px 10px;
-      font-size:12px;
-      border-bottom:1px solid var(--border);
-      vertical-align:top;
-    }
-    .table th{
-      background:linear-gradient(90deg, rgba(10,53,94,.06), rgba(17,138,154,.06));
-      text-align:left;
-      color:var(--navy);
-      font-size:12px;
-    }
-    .table tr:last-child td{border-bottom:none}
-    .tag{
-      display:inline-block;
-      padding:6px 10px;
-      border-radius:999px;
-      font-size:11px;
-      font-weight:750;
+    .callout b{display:block;font-size:12px;color:var(--navy);margin-bottom:6px}
+    .callout small{display:block;color:var(--muted);font-size:11px;line-height:1.35}
+
+    .toggleRow{display:flex; gap:8px; flex-wrap:wrap; align-items:center; justify-content:flex-start}
+    .chip{
       border:1px solid var(--border);
       background:#fff;
+      border-radius:999px;
+      padding:8px 10px;
+      font-weight:750;
+      font-size:12px;
+      cursor:pointer;
+      user-select:none;
     }
-    .tag.good{border-color:rgba(17,138,154,.35); color:var(--teal); background:rgba(17,138,154,.06)}
-    .tag.warn{border-color:rgba(180,83,9,.25); color:#b45309; background:rgba(180,83,9,.06)}
-    .tag.risk{border-color:rgba(180,35,24,.25); color:#b42318; background:rgba(180,35,24,.06)}
-    .muted{color:var(--muted)}
-    .twoCol{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap:10px;
-    }
-    @media (max-width: 640px){
-      .twoCol{grid-template-columns:1fr}
-    }
-    .footerNote{
-      margin-top:10px;
-      font-size:11px;
-      color:var(--muted);
+    .chip.active{
+      border-color: rgba(17,138,154,.35);
+      background:rgba(17,138,154,.06);
+      box-shadow:0 10px 22px rgba(17,138,154,.10);
     }
   </style>
 </head>
@@ -254,8 +148,8 @@
     <div class="brand">
       <div class="logo" aria-hidden="true"></div>
       <div>
-        <h1>Weekly Monitoring Tool</h1>
-        <p>Check-Ins + Walkthroughs. Save entries, see trends, export data.</p>
+        <h1>District Turnaround Executive Tool</h1>
+        <p>Weekly check-ins + walkthrough capture. Mulally-style cadence. Save, trend, export.</p>
       </div>
     </div>
     <div class="actions">
@@ -268,12 +162,12 @@
 
   <div class="wrap">
     <div class="grid">
-      <!-- LEFT: FORM -->
+      <!-- LEFT -->
       <div class="card">
         <div style="display:flex; gap:10px; align-items:center; justify-content:space-between; flex-wrap:wrap;">
           <div>
             <h2>New Entry</h2>
-            <p class="sub">Use this for weekly principal check-ins, school visits, walkthroughs, or leadership rounds.</p>
+            <p class="sub">Pick 1–2 focus areas. The tool reveals only the questions, evidence, and look-fors tied to that focus.</p>
           </div>
           <div class="pill"><span class="dot"></span><span id="storageStatus">Local save enabled</span></div>
         </div>
@@ -322,24 +216,485 @@
 
         <div class="row">
           <div>
-            <label for="focusArea">Focus Area</label>
-            <select id="focusArea">
-              <option value="Instruction">Instruction</option>
-              <option value="Student Learning Evidence">Student Learning Evidence</option>
-              <option value="Culture and Climate">Culture and Climate</option>
-              <option value="Attendance and Engagement">Attendance and Engagement</option>
-              <option value="Interventions and Support">Interventions and Support</option>
-              <option value="Data Use and Continuous Improvement">Data Use and Continuous Improvement</option>
-              <option value="Operations and Systems">Operations and Systems</option>
-            </select>
-          </div>
-          <div>
             <label for="priority">Priority Level</label>
             <select id="priority">
               <option value="Maintain">Maintain</option>
               <option value="Improve">Improve</option>
               <option value="Urgent">Urgent</option>
             </select>
+          </div>
+          <div>
+            <label for="weekTheme">Week Theme (optional)</label>
+            <input type="text" id="weekTheme" placeholder="Example: Tighten CFUs. Increase on-track % in Grade 6 math."/>
+          </div>
+        </div>
+
+        <div class="sectionTitle">
+          <h2 style="margin:0; font-size:13px;">Mulally Monday Overlay</h2>
+          <span class="muted" style="font-size:12px;">Truth, clarity, ownership, follow-through</span>
+        </div>
+
+        <div class="row" style="margin-top:10px;">
+          <div>
+            <label for="overallStatus">Overall Status (R/Y/G)</label>
+            <select id="overallStatus">
+              <option value="Green">Green (On plan)</option>
+              <option value="Yellow">Yellow (Off plan, recovery in motion)</option>
+              <option value="Red">Red (Off plan, needs help now)</option>
+            </select>
+            <div class="footerNote">Rule: Yellow and Red are information. Hiding them is the problem.</div>
+          </div>
+          <div>
+            <label for="whatChanged">What changed since last week?</label>
+            <textarea id="whatChanged" class="small" placeholder="Numbers, observable evidence, or a clear difference from last week."></textarea>
+          </div>
+        </div>
+
+        <div class="row">
+          <div>
+            <label for="topIssues">Top issue (root cause in 1 sentence)</label>
+            <textarea id="topIssues" class="small" placeholder="Example: Students stall at Level 2 because tasks rarely require explanation and CFUs are inconsistent."></textarea>
+          </div>
+          <div>
+            <label for="helpNeeded">Help needed (who removes the barrier?)</label>
+            <textarea id="helpNeeded" class="small" placeholder="What do you need from curriculum, student services, HR, transportation, tech, ops, etc.?"></textarea>
+          </div>
+        </div>
+
+        <div class="row">
+          <div>
+            <label for="owner">Owner (single accountable person)</label>
+            <input type="text" id="owner" placeholder="Name"/>
+          </div>
+          <div>
+            <label for="dueDate">Due date (next check)</label>
+            <input type="date" id="dueDate"/>
+          </div>
+        </div>
+
+        <div class="sectionTitle">
+          <h2 style="margin:0; font-size:13px;">Weekly Focus Areas</h2>
+          <span class="muted" style="font-size:12px;">Select 1–2. Add more only when necessary.</span>
+        </div>
+
+        <div class="row" style="margin-top:10px;">
+          <div>
+            <label for="focusPick">Pick focus area(s)</label>
+            <select id="focusPick" multiple size="6" style="min-height:170px;"></select>
+            <div class="footerNote">Tip: Ctrl/Cmd-click to select multiple.</div>
+          </div>
+          <div>
+            <div class="callout">
+              <b>Non-negotiable evidence rule</b>
+              <small>Every selected focus area must produce at least one proof point you can bring to Monday morning. If there is no evidence, the status is Yellow or Red by default.</small>
+            </div>
+            <div style="height:10px"></div>
+            <label for="generalEvidence">General evidence link (optional)</label>
+            <input type="text" id="generalEvidence" placeholder="Folder, dashboard, notes, photos, artifacts..."/>
+            <label for="generalGlows" style="margin-top:10px;">General wins (Top 3)</label>
+            <textarea id="generalGlows" class="small" placeholder="What is working that must be protected?"></textarea>
+            <label for="generalGrows" style="margin-top:10px;">General gaps (Top 3)</label>
+            <textarea id="generalGrows" class="small" placeholder="What is the next inch? What is drifting off plan?"></textarea>
+          </div>
+        </div>
+
+        <div id="modulesHost"></div>
+
+        <div class="sectionTitle">
+          <h2 style="margin:0; font-size:13px;">Concrete Next Moves</h2>
+          <span class="muted" style="font-size:12px;">Who, what, by when, and what proof next week</span>
+        </div>
+
+        <div class="row" style="margin-top:10px;">
+          <div>
+            <label for="nextMoves">Next Moves (1–3)</label>
+            <textarea id="nextMoves" placeholder="Action 1 (owner, due). Action 2 (owner, due). Action 3 (owner, due)."></textarea>
+          </div>
+          <div>
+            <label for="proofNextWeek">Proof point to bring next Monday</label>
+            <textarea id="proofNextWeek" placeholder="Exactly what will you show next week (artifact + metric)?"></textarea>
+          </div>
+        </div>
+
+        <div class="footerNote">
+          Mulally test: Can a leader read this in 60 seconds and know the plan, the issues, the owners, and the next proof point?
+        </div>
+      </div>
+
+      <!-- RIGHT -->
+      <div class="card">
+        <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:10px; flex-wrap:wrap;">
+          <div>
+            <h2>Trend Dashboard</h2>
+            <p class="sub">Trends are built from your saved entries (in this browser). Filter by school.</p>
+          </div>
+          <div class="pill"><span class="dot" style="background:var(--gold)"></span><span id="entryCount">0 entries</span></div>
+        </div>
+
+        <div class="row" style="margin-top:10px;">
+          <div>
+            <label for="filterSchool">Filter by School</label>
+            <select id="filterSchool">
+              <option value="ALL">All Schools</option>
+            </select>
+          </div>
+          <div>
+            <label for="metricPick">Chart a numeric signal</label>
+            <select id="metricPick"></select>
+          </div>
+        </div>
+
+        <div style="margin-top:12px;">
+          <canvas id="statusChart" height="150"></canvas>
+        </div>
+        <div style="margin-top:10px;">
+          <canvas id="metricChart" height="150"></canvas>
+        </div>
+
+        <div class="sectionTitle" style="margin-top:14px;">
+          <h2 style="margin:0; font-size:13px;">Most Recent Entries</h2>
+          <span class="muted" style="font-size:12px;">Click to load and update</span>
+        </div>
+
+        <div style="margin-top:10px; overflow:auto; max-height:420px;">
+          <table class="table" id="entriesTable">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>School</th>
+                <th>Status</th>
+                <th>Focus</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+
+        <div class="footerNote">
+          Export CSV/JSON from the top bar to move this into Sheets, dashboards, or a Monday meeting packet.
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+  // ---------------- STORAGE ----------------
+  const STORAGE_KEY = "district_turnaround_exec_tool_v1";
+
+  // ---------------- DEFINITIONS ----------------
+  // Each focus area includes: 3 sub-areas + dynamic prompts, look-fors, ratings, and numeric signals.
+  // Vibrant Learning includes the 4 sub-focuses you specified (kept intact, and treated as the selectable sub-areas for that focus).
+  const FOCUS = [
+    {
+      key: "Vibrant Learning",
+      title: "Vibrant Learning",
+      subtitle: "Is the learner experience changing in observable, evidence-backed ways?",
+      subareas: [
+        { key:"Interdisciplinary Learning", desc:"Students connect learning across subjects to solve/produce something meaningful." },
+        { key:"Writing Across the Content", desc:"Writing is used to think, explain, argue, and create in all subjects." },
+        { key:"Real-world Learning", desc:"Tasks have authentic purpose, audience, constraints, and application." },
+        { key:"Student Agency", desc:"Students have voice, choice, ownership, and can explain goals and growth." }
+      ],
+      lookFors: [
+        {id:"why", title:"Students can explain the why", desc:"Students can state purpose and relevance."},
+        {id:"quality", title:"Quality is clear", desc:"Criteria or exemplars are used, not just posted."},
+        {id:"choice", title:"Meaningful student choice", desc:"Choice in product, process, topic, audience, or tools."},
+        {id:"thinking", title:"Thinking is visible", desc:"Drafts, reasoning, revisions, reflection, problem-solving steps."},
+        {id:"audience", title:"Authentic audience/purpose", desc:"Work is designed to matter beyond the classroom."},
+        {id:"connection", title:"Cross-content connection", desc:"Two or more disciplines meaningfully integrated."}
+      ],
+      ratings: [
+        {key:"relevance", label:"Relevance", hint:"Learners see value and purpose."},
+        {key:"agency", label:"Agency", hint:"Students make decisions and own their work."},
+        {key:"thinking", label:"Thinking/Transfer", hint:"Work requires reasoning and application."},
+        {key:"evidence", label:"Evidence Quality", hint:"Artifacts prove learning, not just completion."}
+      ],
+      signals: [
+        {key:"artifacts_added", label:"# new artifacts captured this week"},
+        {key:"student_voice_samples", label:"# student voice proof points (quotes/interviews)"},
+        {key:"real_world_tasks", label:"# tasks with authentic audience/purpose (est.)"}
+      ],
+      prompts: {
+        status: "Vibrant Learning status (R/Y/G) for this school this week.",
+        changed: "What visible learner-experience change occurred since last week?",
+        barrier: "What is the main barrier (time, task design, culture, skill, clarity)?",
+        proof: "Attach 1 artifact + 1 student quote that proves relevance/agency/transfer."
+      }
+    },
+    {
+      key: "Priority Standards and Proficiency Scales",
+      title: "Priority Standards and Proficiency Scales",
+      subtitle: "Are we clear on what matters most and what proficiency looks like?",
+      subareas: [
+        { key:"Priority Standard Clarity", desc:"Staff know priority outcomes and the language of the standards." },
+        { key:"Scale Quality and Use", desc:"Proficiency scales are accurate and used in planning and instruction." },
+        { key:"Monitoring and Response", desc:"Teams track movement and adjust teaching based on evidence." }
+      ],
+      lookFors: [
+        {id:"target", title:"Target is explicit", desc:"Priority standard is named and unpacked."},
+        {id:"scale", title:"Scale is used", desc:"Teacher and students reference what level looks like."},
+        {id:"taskmatch", title:"Tasks match the level", desc:"Work aligns to the intended DOK/level of the scale."},
+        {id:"ontrack", title:"On-track evidence exists", desc:"Team has a clear picture of who is on/off track."},
+        {id:"response", title:"Instructional response", desc:"Reteach/enrich decisions are tied to evidence."}
+      ],
+      ratings: [
+        {key:"clarity", label:"Clarity", hint:"Priority outcomes are consistently understood."},
+        {key:"scaleUse", label:"Scale Use", hint:"Scales guide instruction and feedback."},
+        {key:"alignment", label:"Alignment", hint:"Tasks and evidence match the outcomes."},
+        {key:"response", label:"Response", hint:"Teams respond quickly and specifically."}
+      ],
+      signals: [
+        {key:"pct_on_track", label:"% students on track (priority outcome)"},
+        {key:"scale_used_pct", label:"% classrooms using scale language (est.)"},
+        {key:"stuck_point_count", label:"# students stuck at a specific level (est.)"}
+      ],
+      prompts: {
+        status: "Are we on plan with priority outcomes and proficiency definitions?",
+        changed: "What moved (on-track %, level movement, clarity/use) since last week?",
+        barrier: "Where are students or staff getting stuck (which level, which skill)?",
+        proof: "Attach scale + labeled student work sample tied to the scale level."
+      }
+    },
+    {
+      key: "BRIDGE Instructional Model: Workshop Model",
+      title: "BRIDGE Instructional Model: The Workshop Model",
+      subtitle: "Is the daily instructional engine predictable, coherent, and effective?",
+      subareas: [
+        { key:"Mini-lesson Precision", desc:"Clear teaching point, modeling, and purpose." },
+        { key:"Work Time Quality", desc:"Conferencing, small groups, differentiation, engagement." },
+        { key:"Share/Closure and CFUs", desc:"Checks for understanding, reflection, next steps." }
+      ],
+      lookFors: [
+        {id:"teachpoint", title:"Teaching point is tight", desc:"One clear focus, not a list."},
+        {id:"model", title:"Modeling includes thinking", desc:"Reasoning is shown, not just answers."},
+        {id:"worktime", title:"Students do the heavy lifting", desc:"High cognitive engagement during work time."},
+        {id:"conf", title:"Conferencing is purposeful", desc:"Teacher uses evidence to coach and adjust."},
+        {id:"cfu", title:"CFUs drive adjustments", desc:"Checks lead to immediate instructional moves."},
+        {id:"closure", title:"Closure consolidates learning", desc:"Students reflect, summarize, set next steps."}
+      ],
+      ratings: [
+        {key:"clarity", label:"Clarity", hint:"Targets and teaching point are understood."},
+        {key:"task", label:"Task Quality", hint:"Work requires thinking, not just completion."},
+        {key:"responsive", label:"Responsive Teaching", hint:"Instruction adjusts based on evidence."},
+        {key:"culture", label:"Learning Culture", hint:"Routines and tone support learning."}
+      ],
+      signals: [
+        {key:"walkthroughs_count", label:"# walkthroughs completed this week"},
+        {key:"cfu_avg", label:"avg CFUs per class (est.)"},
+        {key:"pct_meeting_core", label:"% classrooms meeting core workshop expectations (est.)"}
+      ],
+      prompts: {
+        status: "Is the workshop model being implemented with fidelity and impact?",
+        changed: "What improved (CFUs, conferencing, task quality) since last week?",
+        barrier: "What is the constraint (time, training, planning, feedback)?",
+        proof: "Attach an exit ticket/CFU sample + conferring notes or small-group plan."
+      }
+    },
+    {
+      key: "BRIDGE Performance Assessments (BPAs)",
+      title: "BRIDGE Performance Assessments (BPAs)",
+      subtitle: "Are students demonstrating mastery through authentic performance and application?",
+      subareas: [
+        { key:"Assessment Quality", desc:"Aligned, rigorous, authentic, worth doing." },
+        { key:"Implementation", desc:"Students create, revise, present, and reflect." },
+        { key:"Calibration", desc:"Scoring is consistent and results change instruction." }
+      ],
+      lookFors: [
+        {id:"prompt", title:"Prompt is aligned and authentic", desc:"Task requires application and demonstrates mastery."},
+        {id:"rubric", title:"Rubric is usable", desc:"Defines quality; students can use it."},
+        {id:"process", title:"Process supports quality", desc:"Drafting, feedback, revision are built in."},
+        {id:"reflection", title:"Reflection is real", desc:"Students explain growth, challenges, next steps."},
+        {id:"calibration", title:"Calibration occurs", desc:"Adults score together and align expectations."}
+      ],
+      ratings: [
+        {key:"quality", label:"BPA Quality", hint:"Task and rubric create valid evidence."},
+        {key:"implementation", label:"Implementation", hint:"Students are supported to produce quality."},
+        {key:"calibration", label:"Calibration", hint:"Scoring is consistent and anchored."},
+        {key:"use", label:"Use of Results", hint:"Results drive next instructional moves."}
+      ],
+      signals: [
+        {key:"bpa_active_count", label:"# BPAs active this week"},
+        {key:"bpa_completion_pct", label:"% BPA completion (in progress cycle)"},
+        {key:"calibration_sessions", label:"# calibration sessions completed"}
+      ],
+      prompts: {
+        status: "Are BPAs producing credible evidence and improving learning?",
+        changed: "What moved (quality, completion, calibration) since last week?",
+        barrier: "What is holding quality back (prompt, time, rubric, feedback, scoring)?",
+        proof: "Attach BPA prompt + rubric + 1 student product (draft/final) + reflection."
+      }
+    },
+    {
+      key: "Compelling Evidence and Standards-Referenced Grading (SRG)",
+      title: "Compelling Evidence and Standards-Referenced Grading (SRG)",
+      subtitle: "Do grades and reports credibly reflect standards mastery, backed by evidence?",
+      subareas: [
+        { key:"Evidence Rules", desc:"Shared expectations for what counts and what does not." },
+        { key:"Grade Integrity", desc:"Grades reflect standards performance, not averages/compliance." },
+        { key:"Student Clarity", desc:"Students can explain current level and next steps." }
+      ],
+      lookFors: [
+        {id:"evidence", title:"Evidence is standards-based", desc:"Artifacts tie to standards, not points."},
+        {id:"recency", title:"Recency matters", desc:"Recent evidence is prioritized over old averages."},
+        {id:"separate", title:"Product vs behavior separated", desc:"Work habits are not mixed into mastery."},
+        {id:"reassess", title:"Reassess/revise exists", desc:"Students can improve with new evidence."},
+        {id:"student", title:"Student can explain level", desc:"Learners know where they are and what to do next."}
+      ],
+      ratings: [
+        {key:"integrity", label:"Grade Integrity", hint:"Grades match mastery evidence."},
+        {key:"consistency", label:"Consistency", hint:"Expectations are consistent across teachers."},
+        {key:"clarity", label:"Student Clarity", hint:"Students understand levels and next steps."},
+        {key:"evidence", label:"Evidence Quality", hint:"Evidence is compelling and current."}
+      ],
+      signals: [
+        {key:"evidence_audits", label:"# evidence audits/spot checks this week"},
+        {key:"srg_alignment_pct", label:"% gradebook alignment to standards evidence (est.)"},
+        {key:"reassessment_count", label:"# reassessments/revisions completed"}
+      ],
+      prompts: {
+        status: "Are we reporting mastery credibly and consistently?",
+        changed: "What improved (alignment, evidence quality, student clarity) since last week?",
+        barrier: "Where is misalignment happening (policy, practice, tools, understanding)?",
+        proof: "Attach gradebook slice + an evidence trail (sequence) showing growth over time."
+      }
+    }
+  ];
+
+  // ---------------- STATE ----------------
+  let entries = [];
+  let statusChart, metricChart;
+
+  // ---------------- UTIL ----------------
+  const $ = (id) => document.getElementById(id);
+
+  function todayISO(){
+    const d = new Date();
+    const pad = (n)=> String(n).padStart(2,"0");
+    return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+  }
+  function safeId(s){ return String(s).replace(/[^a-zA-Z0-9_]+/g, "_"); }
+  function escapeAttr(s){ return String(s).replace(/"/g, "&quot;"); }
+
+  function loadEntries(){
+    try{ entries = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]"); if(!Array.isArray(entries)) entries=[]; }
+    catch(e){ entries=[]; }
+  }
+  function saveEntries(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(entries)); }
+
+  function newId(){
+    return "e_" + Math.random().toString(16).slice(2) + "_" + Date.now().toString(16);
+  }
+
+  function severityTag(priority){
+    if(priority==="Maintain") return `<span class="tag good">Maintain</span>`;
+    if(priority==="Improve") return `<span class="tag warn">Improve</span>`;
+    return `<span class="tag risk">Urgent</span>`;
+  }
+  function statusTag(s){
+    if(s==="Green") return `<span class="tag good">Green</span>`;
+    if(s==="Yellow") return `<span class="tag warn">Yellow</span>`;
+    return `<span class="tag risk">Red</span>`;
+  }
+
+  function filteredEntries(){
+    const fs = $("filterSchool").value;
+    if(fs==="ALL") return entries.slice();
+    return entries.filter(e=>e.school===fs);
+  }
+
+  function getSelectedFocusKeys(){
+    return Array.from($("focusPick").selectedOptions).map(o=>o.value);
+  }
+
+  function focusByKey(k){ return FOCUS.find(f=>f.key===k); }
+
+  function buildFocusPicker(){
+    $("focusPick").innerHTML = FOCUS.map(f => `<option value="${escapeAttr(f.key)}">${f.title}</option>`).join("");
+  }
+
+  function buildMetricPicker(){
+    // Unique numeric signals across all focus areas
+    const map = new Map();
+    FOCUS.forEach(f=>{
+      (f.signals||[]).forEach(s=>{
+        if(!map.has(s.key)) map.set(s.key, `${s.label}`);
+      });
+    });
+    $("metricPick").innerHTML = Array.from(map.entries()).map(([k,label])=>`<option value="${escapeAttr(k)}">${label}</option>`).join("");
+  }
+
+  // ---------------- MODULE RENDER ----------------
+  function renderModules(){
+    const host = $("modulesHost");
+    host.innerHTML = "";
+
+    const selected = getSelectedFocusKeys();
+    if(!selected.length){
+      host.innerHTML = `<div class="footerNote">Select at least one focus area to load its questions, look-fors, and evidence requirements.</div>`;
+      return;
+    }
+
+    selected.forEach(key=>{
+      const f = focusByKey(key);
+      if(!f) return;
+
+      const mod = document.createElement("div");
+      mod.className = "module";
+      mod.setAttribute("data-focus", key);
+
+      mod.innerHTML = `
+        <div class="moduleHeader">
+          <div class="moduleTitle">
+            <b>${f.title}</b>
+            <span>${f.subtitle}</span>
+          </div>
+          <span class="miniTag">Focus Module</span>
+        </div>
+
+        <div class="kv">
+          <div class="callout">
+            <b>Sub-area for this week</b>
+            <small>Choose 1 sub-area. (You can add more notes, but keep the weekly signal tight.)</small>
+            <div style="margin-top:8px;">
+              <select id="sub_${safeId(key)}"></select>
+            </div>
+          </div>
+          <div class="callout">
+            <b>Module coaching prompts</b>
+            <small><span class="muted">Changed:</span> ${escapeAttr(f.prompts.changed)}<br/>
+            <span class="muted">Barrier:</span> ${escapeAttr(f.prompts.barrier)}<br/>
+            <span class="muted">Proof:</span> ${escapeAttr(f.prompts.proof)}</small>
+          </div>
+        </div>
+
+        <div class="sectionTitle">
+          <h2 style="margin:0; font-size:13px;">Module Status (R/Y/G) + What changed</h2>
+          <span class="muted" style="font-size:12px;">Make the truth visible</span>
+        </div>
+
+        <div class="row" style="margin-top:10px;">
+          <div>
+            <label for="mstatus_${safeId(key)}">${f.title} status</label>
+            <select id="mstatus_${safeId(key)}">
+              <option value="Green">Green (On plan)</option>
+              <option value="Yellow">Yellow (Uneven, recovery in motion)</option>
+              <option value="Red">Red (Off plan, needs help)</option>
+            </select>
+          </div>
+          <div>
+            <label for="mchanged_${safeId(key)}">What changed since last week?</label>
+            <textarea id="mchanged_${safeId(key)}" class="small" placeholder="${escapeAttr(f.prompts.changed)}"></textarea>
+          </div>
+        </div>
+
+        <div class="row">
+          <div>
+            <label for="mbarrier_${safeId(key)}">Main barrier (root cause in 1 sentence)</label>
+            <textarea id="mbarrier_${safeId(key)}" class="small" placeholder="${escapeAttr(f.prompts.barrier)}"></textarea>
+          </div>
+          <div>
+            <label for="mhelp_${safeId(key)}">Help needed (who removes barrier)</label>
+            <textarea id="mhelp_${safeId(key)}" class="small" placeholder="Curriculum, Student Services, HR, Transportation, Tech, Ops, etc."></textarea>
           </div>
         </div>
 
@@ -348,228 +703,319 @@
           <span class="muted" style="font-size:12px;">Check what you observed</span>
         </div>
 
-        <div class="checks" id="lookFors">
-          <!-- Injected by JS -->
-        </div>
+        <div class="checks" id="checks_${safeId(key)}"></div>
 
         <div class="sectionTitle">
-          <h2 style="margin:0; font-size:13px;">Quick Ratings</h2>
-          <span class="muted" style="font-size:12px;">1 = Limited, 4 = Strong</span>
+          <h2 style="margin:0; font-size:13px;">Ratings (1–4)</h2>
+          <span class="muted" style="font-size:12px;">Quick and consistent</span>
         </div>
 
-        <div class="twoCol" style="margin-top:10px;">
+        <div class="row" style="margin-top:10px;">
+          <div id="ratings_${safeId(key)}"></div>
           <div>
-            <label>Instructional Clarity</label>
-            <div class="ratings" data-rating="clarity"></div>
-            <div class="rateHint">Are expectations and success criteria clear to learners?</div>
-          </div>
-          <div>
-            <label>Student Engagement</label>
-            <div class="ratings" data-rating="engagement"></div>
-            <div class="rateHint">Are students cognitively engaged, not just compliant?</div>
-          </div>
-          <div>
-            <label>Evidence of Learning</label>
-            <div class="ratings" data-rating="evidence"></div>
-            <div class="rateHint">Is there visible evidence of thinking, progress, or mastery?</div>
-          </div>
-          <div>
-            <label>Team Follow-Through</label>
-            <div class="ratings" data-rating="followThrough"></div>
-            <div class="rateHint">Are next steps clear, owned, and scheduled?</div>
+            <label>Numeric signals (optional)</label>
+            <div id="signals_${safeId(key)}"></div>
+            <div class="footerNote">If you do not track it, leave it blank. Do not invent numbers.</div>
           </div>
         </div>
 
         <div class="sectionTitle">
-          <h2 style="margin:0; font-size:13px;">Notes</h2>
-          <span class="muted" style="font-size:12px;">Short and long form</span>
+          <h2 style="margin:0; font-size:13px;">Evidence</h2>
+          <span class="muted" style="font-size:12px;">Attach proof you can bring to Monday</span>
         </div>
 
         <div class="row" style="margin-top:10px;">
           <div>
-            <label for="glows">Glows (What is working?)</label>
-            <textarea id="glows" class="small" placeholder="What should they keep doing?"></textarea>
+            <label for="mevidence_${safeId(key)}">Evidence link(s)</label>
+            <input type="text" id="mevidence_${safeId(key)}" placeholder="${escapeAttr(f.prompts.proof)}"/>
           </div>
           <div>
-            <label for="grows">Grows (What needs tightening?)</label>
-            <textarea id="grows" class="small" placeholder="Where is the next inch?"></textarea>
+            <label for="mfile_${safeId(key)}">Upload note (file name stored)</label>
+            <input type="file" id="mfile_${safeId(key)}"/>
+            <div class="footerNote" id="mfileNote_${safeId(key)}">No file selected.</div>
           </div>
         </div>
 
         <div class="row">
           <div>
-            <label for="nextMoves">Concrete Next Moves (1-3)</label>
-            <textarea id="nextMoves" placeholder="Name the next actions, who owns them, and the timeline."></textarea>
+            <label for="mglows_${safeId(key)}">Module wins</label>
+            <textarea id="mglows_${safeId(key)}" class="small" placeholder="What worked inside this focus area?"></textarea>
           </div>
           <div>
-            <label for="supportNeeded">Support Needed (District role)</label>
-            <textarea id="supportNeeded" placeholder="What support, resources, coaching, or time is needed?"></textarea>
+            <label for="mgrows_${safeId(key)}">Module gaps</label>
+            <textarea id="mgrows_${safeId(key)}" class="small" placeholder="What needs tightening inside this focus area?"></textarea>
           </div>
-        </div>
-
-        <div class="row">
-          <div>
-            <label for="evidenceLink">Evidence Link (optional)</label>
-            <input type="text" id="evidenceLink" placeholder="Paste a link (doc, folder, dashboard, photos, etc.)"/>
-          </div>
-          <div>
-            <label for="attachFile">Upload (stores file name + note)</label>
-            <input type="file" id="attachFile" />
-            <div class="footerNote" id="fileNote">No file selected.</div>
-          </div>
-        </div>
-
-        <div class="footerNote">
-          Tip: Save entries weekly. This tool will build a trendline so you can coach for improvement, not just report what happened.
-        </div>
-      </div>
-
-      <!-- RIGHT: DASHBOARD -->
-      <div class="card">
-        <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:10px; flex-wrap:wrap;">
-          <div>
-            <h2>Trend Dashboard</h2>
-            <p class="sub">A quick view of your monitoring data over time (saved in your browser).</p>
-          </div>
-          <div class="pill"><span class="dot" style="background:var(--gold)"></span><span id="entryCount">0 entries</span></div>
-        </div>
-
-        <div style="margin-top:10px;">
-          <label for="filterSchool">Filter by School</label>
-          <select id="filterSchool">
-            <option value="ALL">All Schools</option>
-          </select>
-        </div>
-
-        <div style="margin-top:12px;">
-          <canvas id="trendChart" height="170"></canvas>
-        </div>
-
-        <div class="sectionTitle" style="margin-top:14px;">
-          <h2 style="margin:0; font-size:13px;">Most Recent Entries</h2>
-          <span class="muted" style="font-size:12px;">Click a row to load</span>
-        </div>
-
-        <div style="margin-top:10px; overflow:auto; max-height:380px;">
-          <table class="table" id="entriesTable">
-            <thead>
-              <tr>
-                <th>Date</th>
-                <th>School</th>
-                <th>Type</th>
-                <th>Priority</th>
-              </tr>
-            </thead>
-            <tbody></tbody>
-          </table>
-        </div>
-
-        <div class="footerNote">
-          Next step: we can add a “Principal Weekly Check-In” mode with branching prompts based on what they select (attendance concerns, behavior spikes, pacing gaps, etc.).
-        </div>
-      </div>
-    </div>
-  </div>
-
-<script>
-  // ---------- CONFIG ----------
-  const STORAGE_KEY = "weekly_monitor_entries_v1";
-
-  const LOOK_FORS = [
-    { id:"targets", title:"Clear learning target", desc:"Students can explain what they are learning and why it matters." },
-    { id:"success", title:"Success criteria visible", desc:"Students know what quality looks like and how it will be assessed." },
-    { id:"thinking", title:"Student thinking on display", desc:"Work shows reasoning, drafts, revisions, or problem-solving steps." },
-    { id:"checks", title:"Checks for understanding", desc:"Teacher uses quick checks and adjusts in real time." },
-    { id:"feedback", title:"Feedback moves learning", desc:"Students receive actionable feedback and use it." },
-    { id:"culture", title:"Strong learning culture", desc:"Respectful, safe, purposeful learning environment." },
-    { id:"intervention", title:"Supports targeted", desc:"Interventions match the need and are tracked for impact." },
-    { id:"data", title:"Data used to decide", desc:"Team uses evidence to choose next steps, not just to report." }
-  ];
-
-  // ---------- STATE ----------
-  let entries = [];
-  let chart;
-
-  // ---------- HELPERS ----------
-  const $ = (id) => document.getElementById(id);
-
-  function todayISO(){
-    const d = new Date();
-    const pad = (n)=> String(n).padStart(2,"0");
-    return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
-  }
-
-  function loadEntries(){
-    try{
-      entries = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
-      if(!Array.isArray(entries)) entries = [];
-    } catch(e){
-      entries = [];
-    }
-  }
-
-  function saveEntries(){
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
-  }
-
-  function severityTag(priority){
-    if(priority === "Maintain") return `<span class="tag good">Maintain</span>`;
-    if(priority === "Improve") return `<span class="tag warn">Improve</span>`;
-    return `<span class="tag risk">Urgent</span>`;
-  }
-
-  function avgRating(e){
-    const vals = [e.ratings.clarity, e.ratings.engagement, e.ratings.evidence, e.ratings.followThrough]
-      .map(v => Number(v) || 0)
-      .filter(v => v>0);
-    if(!vals.length) return 0;
-    return vals.reduce((a,b)=>a+b,0) / vals.length;
-  }
-
-  function filteredEntries(){
-    const fs = $("filterSchool").value;
-    if(fs === "ALL") return entries.slice();
-    return entries.filter(e => e.school === fs);
-  }
-
-  // ---------- UI BUILD ----------
-  function buildLookFors(){
-    const wrap = $("lookFors");
-    wrap.innerHTML = "";
-    LOOK_FORS.forEach(item=>{
-      const div = document.createElement("div");
-      div.className = "checkItem";
-      div.innerHTML = `
-        <input type="checkbox" id="lf_${item.id}">
-        <div>
-          <b>${item.title}</b>
-          <small>${item.desc}</small>
         </div>
       `;
-      wrap.appendChild(div);
-    });
-  }
 
-  function buildRatingGroups(){
-    document.querySelectorAll(".ratings").forEach(group=>{
-      const key = group.getAttribute("data-rating");
-      group.innerHTML = "";
-      [1,2,3,4].forEach(n=>{
-        const b = document.createElement("div");
-        b.className = "rateBtn";
-        b.textContent = n;
-        b.addEventListener("click", ()=>{
-          group.querySelectorAll(".rateBtn").forEach(x=>x.classList.remove("active"));
-          b.classList.add("active");
-          group.setAttribute("data-value", String(n));
-        });
-        group.appendChild(b);
+      host.appendChild(mod);
+
+      // Build sub-area picker
+      const sub = document.getElementById(`sub_${safeId(key)}`);
+      sub.innerHTML = (f.subareas||[]).map(sa => `<option value="${escapeAttr(sa.key)}">${sa.key}</option>`).join("");
+
+      // Build look-fors
+      const checksWrap = document.getElementById(`checks_${safeId(key)}`);
+      (f.lookFors||[]).forEach(lf=>{
+        const div = document.createElement("div");
+        div.className = "checkItem";
+        div.innerHTML = `
+          <input type="checkbox" id="lf_${safeId(key)}_${lf.id}">
+          <div>
+            <b>${lf.title}</b>
+            <small>${lf.desc}</small>
+          </div>
+        `;
+        checksWrap.appendChild(div);
       });
-      group.setAttribute("data-value", ""); // none selected
-      group.setAttribute("data-key", key);
+
+      // Build ratings
+      const ratingsWrap = document.getElementById(`ratings_${safeId(key)}`);
+      (f.ratings||[]).forEach(r=>{
+        const block = document.createElement("div");
+        block.style.marginBottom = "10px";
+        block.innerHTML = `
+          <label>${r.label}</label>
+          <div class="ratings" data-focus="${escapeAttr(key)}" data-rating="${escapeAttr(r.key)}" data-value=""></div>
+          <div class="rateHint">${r.hint}</div>
+        `;
+        ratingsWrap.appendChild(block);
+
+        const group = block.querySelector(".ratings");
+        [1,2,3,4].forEach(n=>{
+          const b = document.createElement("div");
+          b.className = "rateBtn";
+          b.textContent = n;
+          b.addEventListener("click", ()=>{
+            group.querySelectorAll(".rateBtn").forEach(x=>x.classList.remove("active"));
+            b.classList.add("active");
+            group.setAttribute("data-value", String(n));
+          });
+          group.appendChild(b);
+        });
+      });
+
+      // Build signals
+      const sigWrap = document.getElementById(`signals_${safeId(key)}`);
+      (f.signals||[]).forEach(s=>{
+        const line = document.createElement("div");
+        line.style.marginBottom = "10px";
+        line.innerHTML = `
+          <label for="sig_${safeId(key)}_${escapeAttr(s.key)}">${s.label}</label>
+          <input type="number" id="sig_${safeId(key)}_${escapeAttr(s.key)}" placeholder="(optional)" />
+        `;
+        sigWrap.appendChild(line);
+      });
+
+      // File note handler
+      const fileInput = document.getElementById(`mfile_${safeId(key)}`);
+      fileInput.addEventListener("change", ()=>{
+        const f0 = fileInput.files && fileInput.files[0];
+        document.getElementById(`mfileNote_${safeId(key)}`).textContent = f0 ? `Selected: ${f0.name}` : "No file selected.";
+      });
     });
   }
 
+  // ---------------- FORM READ/WRITE ----------------
+  function collectModulesData(){
+    const selected = getSelectedFocusKeys();
+    const out = {};
+
+    selected.forEach(key=>{
+      const f = focusByKey(key);
+      if(!f) return;
+
+      const mod = {
+        subarea: document.getElementById(`sub_${safeId(key)}`)?.value || "",
+        status: document.getElementById(`mstatus_${safeId(key)}`)?.value || "Green",
+        changed: (document.getElementById(`mchanged_${safeId(key)}`)?.value || "").trim(),
+        barrier: (document.getElementById(`mbarrier_${safeId(key)}`)?.value || "").trim(),
+        help: (document.getElementById(`mhelp_${safeId(key)}`)?.value || "").trim(),
+        lookFors: {},
+        ratings: {},
+        signals: {},
+        evidenceLink: (document.getElementById(`mevidence_${safeId(key)}`)?.value || "").trim(),
+        attachment: null,
+        notes: {
+          wins: (document.getElementById(`mglows_${safeId(key)}`)?.value || "").trim(),
+          gaps: (document.getElementById(`mgrows_${safeId(key)}`)?.value || "").trim()
+        }
+      };
+
+      // lookFors
+      (f.lookFors||[]).forEach(lf=>{
+        const el = document.getElementById(`lf_${safeId(key)}_${lf.id}`);
+        mod.lookFors[lf.id] = el ? !!el.checked : false;
+      });
+
+      // ratings
+      document.querySelectorAll(`.ratings[data-focus="${CSS.escape(key)}"]`).forEach(group=>{
+        const rKey = group.getAttribute("data-rating");
+        const v = group.getAttribute("data-value");
+        mod.ratings[rKey] = v ? Number(v) : "";
+      });
+
+      // signals
+      (f.signals||[]).forEach(s=>{
+        const el = document.getElementById(`sig_${safeId(key)}_${s.key}`);
+        mod.signals[s.key] = (el && el.value !== "") ? Number(el.value) : "";
+      });
+
+      // attachment meta only
+      const fileInput = document.getElementById(`mfile_${safeId(key)}`);
+      const file = fileInput && fileInput.files && fileInput.files[0];
+      mod.attachment = file ? { name:file.name, type:file.type, size:file.size } : null;
+
+      out[key] = mod;
+    });
+
+    return out;
+  }
+
+  function setModulesData(modules, focusKeys){
+    // select focus keys, render, then fill
+    const sel = $("focusPick");
+    Array.from(sel.options).forEach(o => o.selected = focusKeys.includes(o.value));
+    renderModules();
+
+    focusKeys.forEach(key=>{
+      const f = focusByKey(key);
+      const data = modules && modules[key];
+      if(!f || !data) return;
+
+      const sub = document.getElementById(`sub_${safeId(key)}`);
+      if(sub) sub.value = data.subarea || sub.value;
+
+      const ms = document.getElementById(`mstatus_${safeId(key)}`); if(ms) ms.value = data.status || "Green";
+      const mc = document.getElementById(`mchanged_${safeId(key)}`); if(mc) mc.value = data.changed || "";
+      const mb = document.getElementById(`mbarrier_${safeId(key)}`); if(mb) mb.value = data.barrier || "";
+      const mh = document.getElementById(`mhelp_${safeId(key)}`); if(mh) mh.value = data.help || "";
+      const ev = document.getElementById(`mevidence_${safeId(key)}`); if(ev) ev.value = data.evidenceLink || "";
+
+      const w = document.getElementById(`mglows_${safeId(key)}`); if(w) w.value = (data.notes && data.notes.wins) || "";
+      const g = document.getElementById(`mgrows_${safeId(key)}`); if(g) g.value = (data.notes && data.notes.gaps) || "";
+
+      // lookFors
+      (f.lookFors||[]).forEach(lf=>{
+        const el = document.getElementById(`lf_${safeId(key)}_${lf.id}`);
+        if(el) el.checked = !!(data.lookFors && data.lookFors[lf.id]);
+      });
+
+      // ratings
+      document.querySelectorAll(`.ratings[data-focus="${CSS.escape(key)}"]`).forEach(group=>{
+        const rKey = group.getAttribute("data-rating");
+        const v = data.ratings ? data.ratings[rKey] : "";
+        group.setAttribute("data-value", v ? String(v) : "");
+        group.querySelectorAll(".rateBtn").forEach(btn=>{
+          btn.classList.toggle("active", btn.textContent === String(v));
+        });
+      });
+
+      // signals
+      (f.signals||[]).forEach(s=>{
+        const el = document.getElementById(`sig_${safeId(key)}_${s.key}`);
+        if(el) el.value = (data.signals && data.signals[s.key] !== "" && data.signals[s.key] !== undefined) ? data.signals[s.key] : "";
+      });
+
+      // attachment note
+      const note = document.getElementById(`mfileNote_${safeId(key)}`);
+      if(note) note.textContent = data.attachment ? `Previously noted: ${data.attachment.name}` : "No file selected.";
+      const fileInput = document.getElementById(`mfile_${safeId(key)}`);
+      if(fileInput) fileInput.value = "";
+    });
+  }
+
+  function collectForm(){
+    const focusKeys = getSelectedFocusKeys();
+    return {
+      id: $("saveBtn").getAttribute("data-editing") || newId(),
+      date: $("entryDate").value,
+      entryType: $("entryType").value,
+      school: $("school").value,
+      who: $("who").value,
+      priority: $("priority").value,
+      weekTheme: $("weekTheme").value.trim(),
+
+      overallStatus: $("overallStatus").value,
+      whatChanged: $("whatChanged").value.trim(),
+      topIssues: $("topIssues").value.trim(),
+      helpNeeded: $("helpNeeded").value.trim(),
+      owner: $("owner").value.trim(),
+      dueDate: $("dueDate").value,
+
+      focusKeys,
+      generalEvidence: $("generalEvidence").value.trim(),
+      generalGlows: $("generalGlows").value.trim(),
+      generalGrows: $("generalGrows").value.trim(),
+
+      modules: collectModulesData(),
+
+      nextMoves: $("nextMoves").value.trim(),
+      proofNextWeek: $("proofNextWeek").value.trim(),
+
+      updatedAt: new Date().toISOString()
+    };
+  }
+
+  function setForm(e){
+    $("entryDate").value = e.date || todayISO();
+    $("entryType").value = e.entryType || "Weekly Check-In";
+    $("school").value = e.school || "(Select)";
+    $("who").value = e.who || "Principal";
+    $("priority").value = e.priority || "Maintain";
+    $("weekTheme").value = e.weekTheme || "";
+
+    $("overallStatus").value = e.overallStatus || "Green";
+    $("whatChanged").value = e.whatChanged || "";
+    $("topIssues").value = e.topIssues || "";
+    $("helpNeeded").value = e.helpNeeded || "";
+    $("owner").value = e.owner || "";
+    $("dueDate").value = e.dueDate || "";
+
+    $("generalEvidence").value = e.generalEvidence || "";
+    $("generalGlows").value = e.generalGlows || "";
+    $("generalGrows").value = e.generalGrows || "";
+
+    $("nextMoves").value = e.nextMoves || "";
+    $("proofNextWeek").value = e.proofNextWeek || "";
+
+    const focusKeys = e.focusKeys || [];
+    setModulesData(e.modules || {}, focusKeys);
+
+    $("saveBtn").setAttribute("data-editing", e.id);
+    $("saveBtn").textContent = "Update Entry";
+  }
+
+  function resetForm(){
+    $("entryDate").value = todayISO();
+    $("entryType").value = "Weekly Check-In";
+    $("school").value = "(Select)";
+    $("who").value = "Principal";
+    $("priority").value = "Maintain";
+    $("weekTheme").value = "";
+
+    $("overallStatus").value = "Green";
+    $("whatChanged").value = "";
+    $("topIssues").value = "";
+    $("helpNeeded").value = "";
+    $("owner").value = "";
+    $("dueDate").value = "";
+
+    $("generalEvidence").value = "";
+    $("generalGlows").value = "";
+    $("generalGrows").value = "";
+
+    $("nextMoves").value = "";
+    $("proofNextWeek").value = "";
+
+    Array.from($("focusPick").options).forEach(o => o.selected = false);
+    renderModules();
+
+    $("saveBtn").removeAttribute("data-editing");
+    $("saveBtn").textContent = "Save Entry";
+  }
+
+  // ---------------- DASHBOARD ----------------
   function refreshFilterOptions(){
     const sel = $("filterSchool");
     const current = sel.value;
@@ -581,18 +1027,16 @@
   function refreshTable(){
     const tbody = $("entriesTable").querySelector("tbody");
     tbody.innerHTML = "";
-    const list = filteredEntries()
-      .sort((a,b)=> (b.date||"").localeCompare(a.date||""))
-      .slice(0, 18);
 
+    const list = filteredEntries().slice().sort((a,b)=> (b.date||"").localeCompare(a.date||"")).slice(0, 20);
     list.forEach(e=>{
       const tr = document.createElement("tr");
       tr.style.cursor = "pointer";
       tr.innerHTML = `
         <td>${e.date || ""}</td>
-        <td><b>${e.school || ""}</b></td>
-        <td class="muted">${e.entryType || ""}</td>
-        <td>${severityTag(e.priority || "")}</td>
+        <td><b>${e.school || ""}</b><div class="muted" style="font-size:11px">${e.entryType || ""}</div></td>
+        <td>${statusTag(e.overallStatus || "Green")}</td>
+        <td class="muted">${(e.focusKeys||[]).join(", ")}</td>
       `;
       tr.addEventListener("click", ()=> loadEntryToForm(e.id));
       tbody.appendChild(tr);
@@ -601,150 +1045,53 @@
     $("entryCount").textContent = `${filteredEntries().length} entries`;
   }
 
-  function refreshChart(){
-    const data = filteredEntries()
-      .slice()
-      .sort((a,b)=> (a.date||"").localeCompare(b.date||""));
-
+  function refreshCharts(){
+    const data = filteredEntries().slice().sort((a,b)=> (a.date||"").localeCompare(b.date||""));
     const labels = data.map(e=>e.date);
-    const values = data.map(e=> Number(avgRating(e).toFixed(2)));
 
-    const ctx = $("trendChart").getContext("2d");
-    if(chart) chart.destroy();
+    // Chart 1: Overall status mapped to numeric (Green=3, Yellow=2, Red=1)
+    const statusVals = data.map(e=>{
+      const s = e.overallStatus || "Green";
+      if(s==="Green") return 3;
+      if(s==="Yellow") return 2;
+      return 1;
+    });
 
-    chart = new Chart(ctx, {
+    const ctx1 = $("statusChart").getContext("2d");
+    if(statusChart) statusChart.destroy();
+    statusChart = new Chart(ctx1, {
       type: "line",
-      data: {
-        labels,
-        datasets: [{
-          label: "Average Rating (1–4)",
-          data: values,
-          tension: 0.25
-        }]
-      },
-      options: {
-        responsive: true,
-        plugins: {
-          legend: { display: true }
-        },
-        scales: {
-          y: { min: 0, max: 4, ticks: { stepSize: 1 } }
-        }
-      }
+      data: { labels, datasets: [{ label:"Overall Status (Red=1, Yellow=2, Green=3)", data: statusVals, tension:0.25 }] },
+      options: { responsive:true, plugins:{ legend:{display:true} }, scales:{ y:{ min:1, max:3, ticks:{ stepSize:1 } } } }
+    });
+
+    // Chart 2: chosen numeric signal averaged across selected focus modules (if present)
+    const metricKey = $("metricPick").value;
+    const metricVals = data.map(e=>{
+      const keys = e.focusKeys || [];
+      const found = [];
+      keys.forEach(k=>{
+        const mod = e.modules && e.modules[k];
+        const v = mod && mod.signals ? mod.signals[metricKey] : "";
+        if(v !== "" && v !== undefined && v !== null) found.push(Number(v));
+      });
+      if(!found.length) return null;
+      return Number((found.reduce((a,b)=>a+b,0)/found.length).toFixed(2));
+    });
+
+    const ctx2 = $("metricChart").getContext("2d");
+    if(metricChart) metricChart.destroy();
+    metricChart = new Chart(ctx2, {
+      type: "line",
+      data: { labels, datasets: [{ label:`Signal: ${metricKey}`, data: metricVals, tension:0.25 }] },
+      options: { responsive:true, plugins:{ legend:{display:true} }, scales:{ y:{ beginAtZero:true } } }
     });
   }
 
   function refreshAll(){
     refreshFilterOptions();
     refreshTable();
-    refreshChart();
-  }
-
-  // ---------- FORM IO ----------
-  function readLookFors(){
-    const obj = {};
-    LOOK_FORS.forEach(i=>{
-      obj[i.id] = !!$("lf_"+i.id).checked;
-    });
-    return obj;
-  }
-
-  function setLookFors(values){
-    LOOK_FORS.forEach(i=>{
-      $("lf_"+i.id).checked = !!(values && values[i.id]);
-    });
-  }
-
-  function readRatings(){
-    const ratings = {};
-    document.querySelectorAll(".ratings").forEach(g=>{
-      const k = g.getAttribute("data-key");
-      const v = g.getAttribute("data-value");
-      ratings[k] = v ? Number(v) : "";
-    });
-    return ratings;
-  }
-
-  function setRatings(r){
-    document.querySelectorAll(".ratings").forEach(g=>{
-      const k = g.getAttribute("data-key");
-      const v = r ? r[k] : "";
-      g.setAttribute("data-value", v ? String(v) : "");
-      g.querySelectorAll(".rateBtn").forEach(btn=>{
-        btn.classList.toggle("active", btn.textContent === String(v));
-      });
-    });
-  }
-
-  function newId(){
-    return "e_" + Math.random().toString(16).slice(2) + "_" + Date.now().toString(16);
-  }
-
-  function collectForm(){
-    const file = $("attachFile").files && $("attachFile").files[0];
-    return {
-      id: $("saveBtn").getAttribute("data-editing") || newId(),
-      date: $("entryDate").value,
-      entryType: $("entryType").value,
-      school: $("school").value,
-      who: $("who").value,
-      focusArea: $("focusArea").value,
-      priority: $("priority").value,
-      lookFors: readLookFors(),
-      ratings: readRatings(),
-      notes: {
-        glows: $("glows").value.trim(),
-        grows: $("grows").value.trim(),
-        nextMoves: $("nextMoves").value.trim(),
-        supportNeeded: $("supportNeeded").value.trim()
-      },
-      evidenceLink: $("evidenceLink").value.trim(),
-      attachment: file ? { name: file.name, type: file.type, size: file.size } : null,
-      updatedAt: new Date().toISOString()
-    };
-  }
-
-  function setForm(e){
-    $("entryDate").value = e.date || todayISO();
-    $("entryType").value = e.entryType || "Weekly Check-In";
-    $("school").value = e.school || "(Select)";
-    $("who").value = e.who || "Principal";
-    $("focusArea").value = e.focusArea || "Instruction";
-    $("priority").value = e.priority || "Maintain";
-    setLookFors(e.lookFors || {});
-    setRatings(e.ratings || {});
-    $("glows").value = (e.notes && e.notes.glows) || "";
-    $("grows").value = (e.notes && e.notes.grows) || "";
-    $("nextMoves").value = (e.notes && e.notes.nextMoves) || "";
-    $("supportNeeded").value = (e.notes && e.notes.supportNeeded) || "";
-    $("evidenceLink").value = e.evidenceLink || "";
-
-    // File input cannot be programmatically set (browser security)
-    $("attachFile").value = "";
-    $("fileNote").textContent = e.attachment ? `Previously noted: ${e.attachment.name}` : "No file selected.";
-
-    $("saveBtn").setAttribute("data-editing", e.id);
-    $("saveBtn").textContent = "Update Entry";
-  }
-
-  function resetForm(){
-    $("entryDate").value = todayISO();
-    $("entryType").value = "Weekly Check-In";
-    $("school").value = "(Select)";
-    $("who").value = "Principal";
-    $("focusArea").value = "Instruction";
-    $("priority").value = "Maintain";
-    setLookFors({});
-    setRatings({});
-    $("glows").value = "";
-    $("grows").value = "";
-    $("nextMoves").value = "";
-    $("supportNeeded").value = "";
-    $("evidenceLink").value = "";
-    $("attachFile").value = "";
-    $("fileNote").textContent = "No file selected.";
-    $("saveBtn").removeAttribute("data-editing");
-    $("saveBtn").textContent = "Save Entry";
+    refreshCharts();
   }
 
   function loadEntryToForm(id){
@@ -754,53 +1101,52 @@
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
-  // ---------- EXPORT ----------
+  // ---------------- EXPORT ----------------
   function exportJSON(){
     const blob = new Blob([JSON.stringify(entries, null, 2)], { type:"application/json" });
-    downloadBlob(blob, "weekly-monitor-entries.json");
+    downloadBlob(blob, "district-exec-tool-entries.json");
   }
 
   function exportCSV(){
-    // Flatten a subset for practical export
+    // Flatten top-level + focus status summary
     const headers = [
-      "id","date","school","entryType","priority","focusArea","who",
-      "clarity","engagement","evidence","followThrough",
-      "glows","grows","nextMoves","supportNeeded","evidenceLink",
-      "lookFors_selected","attachment_name","updatedAt"
+      "id","date","school","entryType","priority","who","weekTheme",
+      "overallStatus","whatChanged","topIssues","helpNeeded","owner","dueDate",
+      "focusKeys","generalEvidence","generalGlows","generalGrows",
+      "nextMoves","proofNextWeek","updatedAt",
+      "focusStatusSummary"
     ];
 
     const rows = entries.map(e=>{
-      const lfSelected = Object.entries(e.lookFors || {})
-        .filter(([k,v])=>v)
-        .map(([k])=>k)
-        .join("|");
+      const focusKeys = (e.focusKeys||[]).join("|");
+      const summary = (e.focusKeys||[]).map(k=>{
+        const m = e.modules && e.modules[k];
+        const st = m ? (m.status||"") : "";
+        const sub = m ? (m.subarea||"") : "";
+        return `${k}:${st}:${sub}`;
+      }).join("||");
 
       return [
-        e.id, e.date, e.school, e.entryType, e.priority, e.focusArea, e.who,
-        e.ratings?.clarity ?? "", e.ratings?.engagement ?? "", e.ratings?.evidence ?? "", e.ratings?.followThrough ?? "",
-        safeCSV(e.notes?.glows ?? ""), safeCSV(e.notes?.grows ?? ""), safeCSV(e.notes?.nextMoves ?? ""), safeCSV(e.notes?.supportNeeded ?? ""),
-        e.evidenceLink ?? "",
-        lfSelected,
-        e.attachment?.name ?? "",
-        e.updatedAt ?? ""
+        e.id, e.date, e.school, e.entryType, e.priority, e.who, safeCSV(e.weekTheme||""),
+        e.overallStatus||"", safeCSV(e.whatChanged||""), safeCSV(e.topIssues||""), safeCSV(e.helpNeeded||""),
+        safeCSV(e.owner||""), e.dueDate||"",
+        safeCSV(focusKeys), e.generalEvidence||"", safeCSV(e.generalGlows||""), safeCSV(e.generalGrows||""),
+        safeCSV(e.nextMoves||""), safeCSV(e.proofNextWeek||""), e.updatedAt||"",
+        safeCSV(summary)
       ];
     });
 
     const csv = [headers.join(","), ...rows.map(r=>r.map(csvCell).join(","))].join("\n");
     const blob = new Blob([csv], { type:"text/csv;charset=utf-8" });
-    downloadBlob(blob, "weekly-monitor-entries.csv");
+    downloadBlob(blob, "district-exec-tool-entries.csv");
   }
 
-  function safeCSV(s){
-    return String(s).replace(/\r?\n/g, " ").trim();
-  }
-
+  function safeCSV(s){ return String(s).replace(/\r?\n/g, " ").trim(); }
   function csvCell(value){
     const v = value === null || value === undefined ? "" : String(value);
     if(/[",\n]/.test(v)) return `"${v.replace(/"/g,'""')}"`;
     return v;
   }
-
   function downloadBlob(blob, filename){
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
@@ -810,15 +1156,17 @@
     setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 0);
   }
 
-  // ---------- EVENTS ----------
+  // ---------------- EVENTS ----------------
+  $("focusPick").addEventListener("change", renderModules);
+
   $("saveBtn").addEventListener("click", ()=>{
     const e = collectForm();
     if(!e.date){ alert("Add a date."); return; }
     if(!e.school || e.school==="(Select)"){ alert("Select a school."); return; }
+    if(!e.focusKeys || !e.focusKeys.length){ alert("Select at least one focus area."); return; }
 
-    const existingIndex = entries.findIndex(x=>x.id===e.id);
-    if(existingIndex >= 0) entries[existingIndex] = e;
-    else entries.push(e);
+    const idx = entries.findIndex(x=>x.id===e.id);
+    if(idx>=0) entries[idx]=e; else entries.push(e);
 
     saveEntries();
     refreshAll();
@@ -837,22 +1185,17 @@
     resetForm();
   });
 
-  $("filterSchool").addEventListener("change", ()=>{
-    refreshTable();
-    refreshChart();
-  });
+  $("filterSchool").addEventListener("change", refreshAll);
+  $("metricPick").addEventListener("change", refreshCharts);
 
-  $("attachFile").addEventListener("change", ()=>{
-    const f = $("attachFile").files && $("attachFile").files[0];
-    $("fileNote").textContent = f ? `Selected: ${f.name}` : "No file selected.";
-  });
-
-  // ---------- INIT ----------
+  // ---------------- INIT ----------------
   (function init(){
     $("entryDate").value = todayISO();
-    buildLookFors();
-    buildRatingGroups();
+    $("dueDate").value = todayISO();
+    buildFocusPicker();
+    buildMetricPicker();
     loadEntries();
+    renderModules();
     refreshAll();
   })();
 </script>
