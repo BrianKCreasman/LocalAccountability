@@ -1,0 +1,1282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Vibrant Accountability Walkthrough + Monday Review Dashboard</title>
+  <style>
+    :root{
+      --bg:#ffffff;
+      --panel:#f6f6f6;
+      --text:#111;
+      --muted:#555;
+      --line:#d9d9d9;
+
+      --gold:#dbd59b;   /* your accent */
+      --black:#111;
+      --gray:#6b7280;
+      --white:#fff;
+
+      --ok:#17a34a;
+      --risk:#f59e0b;
+      --off:#dc2626;
+
+      --radius:18px;
+      --shadow: 0 10px 28px rgba(0,0,0,.10);
+    }
+
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background: linear-gradient(180deg, #fff 0%, #f3f3f3 100%);
+      color:var(--text);
+    }
+
+    /* Top bar */
+    .topbar{
+      position: sticky;
+      top:0;
+      z-index: 100;
+      background:#fff;
+      border-bottom:1px solid var(--line);
+      box-shadow: 0 6px 18px rgba(0,0,0,.06);
+    }
+    .topbar-inner{
+      max-width:1200px;
+      margin:0 auto;
+      padding:14px 18px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+    }
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      min-width: 280px;
+    }
+    .mark{
+      width:40px;height:40px;border-radius:12px;
+      background: linear-gradient(135deg, var(--black), #2b2b2b);
+      position:relative;
+      box-shadow: inset 0 0 0 2px rgba(255,255,255,.08);
+    }
+    .mark::after{
+      content:"";
+      position:absolute;
+      inset:10px;
+      border-radius:10px;
+      background: var(--gold);
+      opacity:.95;
+    }
+    .titleblock{line-height:1.1}
+    .titleblock .h1{font-weight:800;font-size:15px;letter-spacing:.2px}
+    .titleblock .sub{font-size:12px;color:var(--muted);margin-top:4px}
+
+    .tabs{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+    .tab{
+      border:1px solid var(--line);
+      background:#fff;
+      border-radius:999px;
+      padding:9px 12px;
+      font-size:12px;
+      cursor:pointer;
+      transition: transform .12s ease, box-shadow .12s ease, background .12s ease;
+      user-select:none;
+    }
+    .tab:hover{transform: translateY(-1px); box-shadow: 0 10px 20px rgba(0,0,0,.08)}
+    .tab.active{
+      background: var(--gold);
+      border-color: rgba(0,0,0,.18);
+      font-weight:700;
+    }
+
+    /* Layout */
+    .wrap{
+      max-width:1200px;
+      margin:0 auto;
+      padding:18px;
+      display:grid;
+      grid-template-columns: 280px 1fr;
+      gap:16px;
+    }
+
+    /* Left rail */
+    .rail{
+      background:#fff;
+      border:1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+      position: sticky;
+      top: 78px;
+      height: calc(100vh - 96px);
+      display:flex;
+      flex-direction:column;
+    }
+    .rail-head{
+      padding:14px 14px 10px 14px;
+      border-bottom:1px solid var(--line);
+      background: linear-gradient(180deg, #fff, #fafafa);
+    }
+    .rail-head h2{
+      margin:0;
+      font-size:13px;
+      font-weight:800;
+    }
+    .rail-head p{
+      margin:8px 0 0;
+      font-size:12px;
+      color:var(--muted);
+      line-height:1.35;
+    }
+    .rail-actions{
+      padding:12px 14px;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+    .btn{
+      appearance:none;
+      border:1px solid var(--line);
+      background:#fff;
+      border-radius:14px;
+      padding:10px 12px;
+      font-size:12px;
+      cursor:pointer;
+      text-align:left;
+      transition: transform .12s ease, box-shadow .12s ease, background .12s ease;
+    }
+    .btn:hover{transform: translateY(-2px); box-shadow: 0 10px 22px rgba(0,0,0,.08)}
+    .btn.primary{
+      background: var(--gold);
+      border-color: rgba(0,0,0,.18);
+      font-weight:800;
+    }
+    .btn.danger{
+      border-color: rgba(220,38,38,.25);
+    }
+    .mini{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      padding: 0 14px 14px 14px;
+    }
+    .pill{
+      font-size:11px;
+      border:1px solid var(--line);
+      border-radius:999px;
+      padding:6px 10px;
+      background:#fff;
+      color:var(--muted);
+    }
+
+    /* Main content */
+    .main{
+      min-width: 0;
+      display:flex;
+      flex-direction:column;
+      gap:16px;
+    }
+    .panel{
+      background:#fff;
+      border:1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .panel-head{
+      padding:14px 16px;
+      border-bottom:1px solid var(--line);
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:10px;
+      background: linear-gradient(180deg, #fff, #fbfbfb);
+    }
+    .panel-head h3{
+      margin:0;
+      font-size:14px;
+      font-weight:900;
+      letter-spacing:.1px;
+    }
+    .panel-head .hint{
+      margin:6px 0 0;
+      font-size:12px;
+      color:var(--muted);
+      line-height:1.35;
+      max-width: 760px;
+    }
+    .panel-body{padding:14px 16px}
+
+    /* Form grid */
+    .grid{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:12px;
+    }
+    .field{
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+    }
+    label{
+      font-size:12px;
+      font-weight:700;
+      color:#222;
+    }
+    input, select, textarea{
+      width:100%;
+      border:1px solid var(--line);
+      border-radius:12px;
+      padding:10px 10px;
+      font-size:12px;
+      outline:none;
+      background:#fff;
+    }
+    textarea{min-height: 92px; resize: vertical}
+    .field.small input, .field.small select{padding:9px 10px}
+    .span2{grid-column: 1 / -1}
+
+    /* RYG */
+    .ryg{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+    .chip{
+      border:1px solid var(--line);
+      border-radius:999px;
+      padding:8px 10px;
+      font-size:12px;
+      cursor:pointer;
+      user-select:none;
+      display:flex;
+      gap:8px;
+      align-items:center;
+      background:#fff;
+      transition: transform .12s ease, box-shadow .12s ease;
+    }
+    .chip:hover{transform: translateY(-1px); box-shadow: 0 10px 18px rgba(0,0,0,.08)}
+    .dot{width:10px;height:10px;border-radius:50%}
+    .dot.g{background:var(--ok)}
+    .dot.y{background:var(--risk)}
+    .dot.r{background:var(--off)}
+    .chip.active{
+      border-color: rgba(0,0,0,.35);
+      box-shadow: inset 0 0 0 2px rgba(0,0,0,.10);
+      background: #fcfcfc;
+      font-weight:800;
+    }
+
+    /* KPI tiles */
+    .kpis{
+      display:grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap:12px;
+    }
+    .kpi{
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:12px 12px;
+      background: linear-gradient(180deg, #fff, #fbfbfb);
+      position:relative;
+      overflow:hidden;
+    }
+    .kpi::after{
+      content:"";
+      position:absolute;
+      top:-40px; right:-40px;
+      width:120px;height:120px;
+      border-radius:50%;
+      background: var(--gold);
+      opacity:.35;
+      filter: blur(0px);
+    }
+    .kpi .kpi-title{font-size:11px;color:var(--muted);font-weight:700}
+    .kpi .kpi-value{font-size:22px;font-weight:950;margin-top:6px}
+    .kpi .kpi-sub{font-size:11px;color:var(--muted);margin-top:4px;line-height:1.25}
+
+    /* Score bars */
+    .bars{display:flex; flex-direction:column; gap:10px}
+    .barrow{
+      display:grid;
+      grid-template-columns: 220px 1fr 72px;
+      gap:10px;
+      align-items:center;
+    }
+    .barname{font-size:12px;font-weight:800}
+    .track{
+      height:12px;
+      border-radius:999px;
+      background:#efefef;
+      border:1px solid var(--line);
+      overflow:hidden;
+    }
+    .fill{
+      height:100%;
+      width:0%;
+      border-radius:999px;
+      background: var(--gold);
+      transition: width .2s ease;
+    }
+    .barval{font-size:12px;color:var(--muted);text-align:right}
+
+    /* Table */
+    table{
+      width:100%;
+      border-collapse:separate;
+      border-spacing:0;
+      overflow:hidden;
+      border:1px solid var(--line);
+      border-radius:16px;
+      background:#fff;
+    }
+    th, td{
+      text-align:left;
+      padding:10px 10px;
+      font-size:12px;
+      border-bottom:1px solid var(--line);
+      vertical-align:top;
+    }
+    th{
+      background:#fafafa;
+      font-weight:900;
+      position:sticky;
+      top:0;
+      z-index:1;
+    }
+    tr:last-child td{border-bottom:none}
+
+    .tag{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      border:1px solid var(--line);
+      border-radius:999px;
+      padding:6px 10px;
+      font-size:11px;
+      color:#222;
+      background:#fff;
+      white-space:nowrap;
+    }
+    .tag .dot{width:8px;height:8px}
+    .right{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+
+    .note{
+      font-size:12px;
+      color:var(--muted);
+      line-height:1.45;
+    }
+
+    .hide{display:none !important}
+
+    /* Responsive */
+    @media (max-width: 980px){
+      .wrap{grid-template-columns: 1fr}
+      .rail{position:relative; top:auto; height:auto}
+      .kpis{grid-template-columns: repeat(2, 1fr)}
+      .barrow{grid-template-columns: 1fr}
+      .barval{text-align:left}
+    }
+  </style>
+</head>
+<body>
+
+  <div class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <div class="mark" aria-hidden="true"></div>
+        <div class="titleblock">
+          <div class="h1">Vibrant Accountability Walkthrough Tool + Monday Morning Review</div>
+          <div class="sub">Tuesday to Friday input. Monday executive review. Clarity, coherence, and honest evidence.</div>
+        </div>
+      </div>
+
+      <div class="tabs" role="tablist" aria-label="Views">
+        <div class="tab active" data-view="entry" role="tab" aria-selected="true">Walkthrough Entry</div>
+        <div class="tab" data-view="week" role="tab" aria-selected="false">Weekly Summary</div>
+        <div class="tab" data-view="monday" role="tab" aria-selected="false">Monday Review Dashboard</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <!-- Left rail -->
+    <aside class="rail">
+      <div class="rail-head">
+        <h2>Five Areas of Focus</h2>
+        <p>
+          This tool is built to make reality visible across your Local Accountability system.
+          Principals and directors collect evidence Tuesday to Friday, then speak to the week on Monday.
+        </p>
+      </div>
+
+      <div class="rail-actions">
+        <button class="btn primary" id="btnNew">+ New Walkthrough Entry</button>
+        <button class="btn" id="btnQuickAdd">Quick Add (Minimal)</button>
+        <button class="btn" id="btnExport">Export Week (JSON)</button>
+        <button class="btn" id="btnCSV">Export Week (CSV)</button>
+        <button class="btn danger" id="btnClearWeek">Clear This Week (Local)</button>
+      </div>
+
+      <div class="mini">
+        <div class="pill"><strong>Tue-Fri:</strong> observe + log</div>
+        <div class="pill"><strong>Mon:</strong> review + commit</div>
+        <div class="pill">RYG must be honest</div>
+      </div>
+
+      <div class="rail-actions">
+        <div class="note">
+          <strong>Mulally rule:</strong> Red is not failure. Red is clarity. What matters is the plan and the support needed.
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <main class="main">
+
+      <!-- ENTRY VIEW -->
+      <section class="panel" id="view-entry">
+        <div class="panel-head">
+          <div>
+            <h3>Walkthrough Entry (Tuesday to Friday)</h3>
+            <div class="hint">
+              Capture what you actually saw and heard. Tie it directly to the Five Areas of Focus and the Local Accountability model.
+              Keep it short. Make it real. Upload or link artifacts when possible.
+            </div>
+          </div>
+          <div class="right">
+            <span class="tag" title="Local Accountability cycle">
+              <span class="dot" style="background:var(--gold)"></span>
+              Continuum: Define -> Design -> Demonstrate
+            </span>
+            <span class="tag" title="DDIER cycle">
+              <span class="dot" style="background:#111"></span>
+              DDIER: Design, Develop, Implement, Evaluate, Revise
+            </span>
+          </div>
+        </div>
+
+        <div class="panel-body">
+          <div class="grid">
+
+            <div class="field small">
+              <label>Date</label>
+              <input type="date" id="fDate"/>
+            </div>
+
+            <div class="field small">
+              <label>Day Type</label>
+              <select id="fDayType">
+                <option value="Tuesday-Friday">Tuesday-Friday (Input Window)</option>
+                <option value="Monday">Monday (Review Only)</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label>School</label>
+              <input type="text" id="fSchool" placeholder="Example: Fleming County High School"/>
+            </div>
+
+            <div class="field">
+              <label>Observer (Principal/Director)</label>
+              <input type="text" id="fObserver" placeholder="Name"/>
+            </div>
+
+            <div class="field">
+              <label>Classroom / Location</label>
+              <input type="text" id="fLocation" placeholder="Room, hallway, PLC, meeting, etc."/>
+            </div>
+
+            <div class="field">
+              <label>Content / Team</label>
+              <input type="text" id="fContent" placeholder="ELA 8, Algebra 1, SPED, CTE, District Dept, etc."/>
+            </div>
+
+            <div class="field span2">
+              <label>Area of Focus (Pick the primary one you are rating)</label>
+              <select id="fArea">
+                <option value="Vibrant Learning">1) Vibrant Learning</option>
+                <option value="Priority Standards & Proficiency Scales">2) Priority Standards & Proficiency Scales</option>
+                <option value="BRIDGE Instructional Model (Workshop Model)">3) BRIDGE Instructional Model (Workshop Model)</option>
+                <option value="BRIDGE Performance Assessments">4) BRIDGE Performance Assessments (BPAs)</option>
+                <option value="Compelling Evidence & SRG">5) Compelling Evidence & Standards-Referenced Grading (SRG)</option>
+              </select>
+            </div>
+
+            <div class="field span2">
+              <label>Status (RYG)</label>
+              <div class="ryg" id="ryg">
+                <div class="chip" data-ryg="Green"><span class="dot g"></span>Green: On track</div>
+                <div class="chip" data-ryg="Yellow"><span class="dot y"></span>Yellow: At risk, plan in place</div>
+                <div class="chip" data-ryg="Red"><span class="dot r"></span>Red: Off track, need help</div>
+              </div>
+              <input type="hidden" id="fRYG" value=""/>
+            </div>
+
+            <div class="field">
+              <label>Priority Standard / Skill (if applicable)</label>
+              <input type="text" id="fStandard" placeholder="Standard code or skill focus"/>
+            </div>
+
+            <div class="field">
+              <label>Observed Cognitive Demand</label>
+              <select id="fDOK">
+                <option value="DOK 1">DOK 1 (Recall / Routine)</option>
+                <option value="DOK 2">DOK 2 (Skills / Concepts)</option>
+                <option value="DOK 3">DOK 3 (Strategic Thinking)</option>
+                <option value="DOK 4">DOK 4 (Extended / Transfer)</option>
+              </select>
+            </div>
+
+            <div class="field span2">
+              <label>What I Saw (observable evidence, no interpretation)</label>
+              <textarea id="fSaw" placeholder="Example: Students used a rubric to self-check a real-world product. Teacher circulated and gave targeted feedback to 6 students."></textarea>
+            </div>
+
+            <div class="field span2">
+              <label>What Students Said (quick quotes or paraphrase)</label>
+              <textarea id="fStudentsSaid" placeholder='Example: "I am showing mastery by explaining my claim and evidence. If I am stuck, I check the success criteria."'></textarea>
+            </div>
+
+            <div class="field span2">
+              <label>What the Teacher Said (goal, checks for understanding, next steps)</label>
+              <textarea id="fTeacherSaid" placeholder='Example: "The target is to justify reasoning. I used exit responses to regroup 8 students for re-teach."'></textarea>
+            </div>
+
+            <div class="field">
+              <label>Evidence / Artifact Link (BPI, doc, photo folder, etc.)</label>
+              <input type="url" id="fArtifact" placeholder="https://..."/>
+            </div>
+
+            <div class="field">
+              <label>Student Evidence Type</label>
+              <select id="fEvidenceType">
+                <option value="Student Work Sample">Student Work Sample</option>
+                <option value="Performance Task Artifact">Performance Task Artifact</option>
+                <option value="Writing Sample">Writing Sample</option>
+                <option value="Assessment Evidence">Assessment Evidence</option>
+                <option value="BPI Website Evidence">BPI Website Evidence</option>
+                <option value="Observation Only">Observation Only</option>
+              </select>
+            </div>
+
+            <div class="field span2">
+              <label>Barrier / Risk (what is getting in the way)</label>
+              <textarea id="fBarrier" placeholder="Keep it specific. What is the constraint in the system?"></textarea>
+            </div>
+
+            <div class="field span2">
+              <label>Plan (what will be done this week to move Yellow or Red)</label>
+              <textarea id="fPlan" placeholder="Owner, action, when, and what evidence will prove movement."></textarea>
+            </div>
+
+            <div class="field span2">
+              <label>Support Needed (what help is required from district or team)</label>
+              <textarea id="fSupport" placeholder="Be direct. Mulally would rather hear the truth than hear silence."></textarea>
+            </div>
+
+            <div class="field small">
+              <label>Owner</label>
+              <input type="text" id="fOwner" placeholder="Who owns the next step"/>
+            </div>
+
+            <div class="field small">
+              <label>Due By</label>
+              <input type="date" id="fDue"/>
+            </div>
+
+            <div class="field span2">
+              <button class="btn primary" id="btnSave">Save Walkthrough Entry</button>
+              <div class="note" style="margin-top:8px">
+                <strong>Non-negotiable for Monday:</strong> every Yellow or Red must have a specific plan, an owner, and a support ask.
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      <!-- WEEK VIEW -->
+      <section class="panel hide" id="view-week">
+        <div class="panel-head">
+          <div>
+            <h3>Weekly Summary (Tuesday to Friday)</h3>
+            <div class="hint">
+              This is what principals and directors build during the week so Monday is crisp.
+              Trends matter more than one-offs. This view shows volume, RYG distribution, and patterns by Area of Focus.
+            </div>
+          </div>
+          <div class="right">
+            <span class="tag"><span class="dot g"></span>Green</span>
+            <span class="tag"><span class="dot y"></span>Yellow</span>
+            <span class="tag"><span class="dot r"></span>Red</span>
+          </div>
+        </div>
+
+        <div class="panel-body">
+          <div class="kpis" id="weekKPIs"></div>
+
+          <div style="height:14px"></div>
+
+          <div class="panel" style="border-radius:18px; box-shadow:none;">
+            <div class="panel-head">
+              <div>
+                <h3 style="margin:0;font-size:13px;">Patterns by Area of Focus</h3>
+                <div class="hint">The bar shows the % of entries that are Yellow or Red in each area. That is your early warning system.</div>
+              </div>
+            </div>
+            <div class="panel-body">
+              <div class="bars" id="areaBars"></div>
+            </div>
+          </div>
+
+          <div style="height:14px"></div>
+
+          <div class="panel" style="border-radius:18px; box-shadow:none;">
+            <div class="panel-head">
+              <div>
+                <h3 style="margin:0;font-size:13px;">This Week's Entries</h3>
+                <div class="hint">Use this list to prepare Monday talking points. Filter mentally by Yellows and Reds first.</div>
+              </div>
+              <div class="right">
+                <select id="filterSchool" style="padding:8px 10px;border-radius:12px;border:1px solid var(--line);font-size:12px;">
+                  <option value="">All Schools</option>
+                </select>
+                <select id="filterRYG" style="padding:8px 10px;border-radius:12px;border:1px solid var(--line);font-size:12px;">
+                  <option value="">All Status</option>
+                  <option value="Green">Green</option>
+                  <option value="Yellow">Yellow</option>
+                  <option value="Red">Red</option>
+                </select>
+              </div>
+            </div>
+            <div class="panel-body" style="padding:0">
+              <div style="max-height:420px; overflow:auto;">
+                <table>
+                  <thead>
+                    <tr>
+                      <th style="width:92px;">Date</th>
+                      <th style="width:170px;">School</th>
+                      <th style="width:200px;">Area of Focus</th>
+                      <th style="width:80px;">RYG</th>
+                      <th>Evidence Snapshot</th>
+                      <th style="width:190px;">Plan / Support</th>
+                    </tr>
+                  </thead>
+                  <tbody id="weekTable"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- MONDAY VIEW -->
+      <section class="panel hide" id="view-monday">
+        <div class="panel-head">
+          <div>
+            <h3>Monday Morning Review Dashboard (Executive View)</h3>
+            <div class="hint">
+              This is the meeting view. It should answer, quickly: Are we winning, stuck, or losing. Where. Why. What is the plan.
+              Reds are welcomed here because they create motion. Vagueness is not.
+            </div>
+          </div>
+          <div class="right">
+            <button class="btn" id="btnPrint">Print</button>
+            <button class="btn primary" id="btnGenerateTalkingPoints">Generate Talking Points</button>
+          </div>
+        </div>
+
+        <div class="panel-body">
+
+          <div class="kpis" id="mondayKPIs"></div>
+
+          <div style="height:14px"></div>
+
+          <div class="panel" style="border-radius:18px; box-shadow:none;">
+            <div class="panel-head">
+              <div>
+                <h3 style="margin:0;font-size:13px;">Top Constraints (Yellow + Red Drivers)</h3>
+                <div class="hint">If everything is a priority, nothing is. This list should be short and specific.</div>
+              </div>
+            </div>
+            <div class="panel-body">
+              <div id="topConstraints" class="note"></div>
+            </div>
+          </div>
+
+          <div style="height:14px"></div>
+
+          <div class="panel" style="border-radius:18px; box-shadow:none;">
+            <div class="panel-head">
+              <div>
+                <h3 style="margin:0;font-size:13px;">Monday Commitments (Owner, Action, Evidence, Support)</h3>
+                <div class="hint">This is where accountability becomes a shared discipline. Every Yellow/Red must land here.</div>
+              </div>
+            </div>
+            <div class="panel-body" style="padding:0">
+              <div style="max-height:420px; overflow:auto;">
+                <table>
+                  <thead>
+                    <tr>
+                      <th style="width:170px;">School</th>
+                      <th style="width:210px;">Area of Focus</th>
+                      <th style="width:80px;">RYG</th>
+                      <th>Plan (Owner + Next Move)</th>
+                      <th style="width:240px;">Support Needed</th>
+                      <th style="width:110px;">Due</th>
+                    </tr>
+                  </thead>
+                  <tbody id="commitTable"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <div style="height:14px"></div>
+
+          <div class="panel" style="border-radius:18px; box-shadow:none;">
+            <div class="panel-head">
+              <div>
+                <h3 style="margin:0;font-size:13px;">Prepared Talking Points</h3>
+                <div class="hint">Principals and directors should use these to speak clearly and consistently on Monday.</div>
+              </div>
+            </div>
+            <div class="panel-body">
+              <div id="talkingPoints" class="note">Click "Generate Talking Points" to build a clean Monday script from the week’s entries.</div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <script>
+    /******************************************************************
+     * Walkthrough Tool Architecture
+     * - Tuesday-Friday input (walkthrough entries)
+     * - Weekly summary view
+     * - Monday morning executive dashboard on top
+     * Data stored locally (localStorage) for easy pilot use.
+     ******************************************************************/
+
+    const STORAGE_KEY = "VA_WALKTHROUGH_ENTRIES_V1";
+
+    const AREAS = [
+      "Vibrant Learning",
+      "Priority Standards & Proficiency Scales",
+      "BRIDGE Instructional Model (Workshop Model)",
+      "BRIDGE Performance Assessments",
+      "Compelling Evidence & SRG"
+    ];
+
+    const $ = (id) => document.getElementById(id);
+
+    function loadEntries(){
+      try{
+        const raw = localStorage.getItem(STORAGE_KEY);
+        return raw ? JSON.parse(raw) : [];
+      }catch(e){
+        console.warn("Load error", e);
+        return [];
+      }
+    }
+
+    function saveEntries(entries){
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
+    }
+
+    function todayISO(){
+      const d = new Date();
+      const tzOff = d.getTimezoneOffset() * 60000;
+      const local = new Date(d.getTime() - tzOff);
+      return local.toISOString().slice(0,10);
+    }
+
+    function getWeekKey(dateStr){
+      // ISO week key (YYYY-W##) based on local date
+      const d = new Date(dateStr + "T12:00:00");
+      const day = (d.getDay() + 6) % 7; // Mon=0..Sun=6
+      d.setDate(d.getDate() - day + 3); // Thursday in current week
+      const firstThu = new Date(d.getFullYear(),0,4);
+      const firstDay = (firstThu.getDay() + 6) % 7;
+      firstThu.setDate(firstThu.getDate() - firstDay + 3);
+      const weekNo = 1 + Math.round((d - firstThu) / (7*24*60*60*1000));
+      const yr = d.getFullYear();
+      return `${yr}-W${String(weekNo).padStart(2,"0")}`;
+    }
+
+    function currentWeekKey(){
+      return getWeekKey(todayISO());
+    }
+
+    function entriesThisWeek(entries){
+      const wk = currentWeekKey();
+      return entries.filter(e => getWeekKey(e.date) === wk);
+    }
+
+    function escapeHTML(str){
+      return (str || "").replace(/[&<>"']/g, (m)=>({
+        "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"
+      }[m]));
+    }
+
+    /* Tabs */
+    const tabs = document.querySelectorAll(".tab");
+    const views = {
+      entry: $("view-entry"),
+      week: $("view-week"),
+      monday: $("view-monday")
+    };
+
+    function setView(name){
+      tabs.forEach(t=>{
+        const active = t.dataset.view === name;
+        t.classList.toggle("active", active);
+        t.setAttribute("aria-selected", active ? "true" : "false");
+      });
+      Object.keys(views).forEach(k=>{
+        views[k].classList.toggle("hide", k !== name);
+      });
+
+      // refresh view-specific renders
+      if(name === "week"){ renderWeekly(); }
+      if(name === "monday"){ renderMonday(); }
+    }
+
+    tabs.forEach(t=> t.addEventListener("click", ()=> setView(t.dataset.view)));
+
+    /* RYG chips */
+    const chips = document.querySelectorAll("#ryg .chip");
+    chips.forEach(c=>{
+      c.addEventListener("click", ()=>{
+        chips.forEach(x=>x.classList.remove("active"));
+        c.classList.add("active");
+        $("fRYG").value = c.dataset.ryg;
+      });
+    });
+
+    /* Initialize form defaults */
+    function resetForm(minimal=false){
+      $("fDate").value = todayISO();
+      $("fDayType").value = "Tuesday-Friday";
+      $("fSchool").value = "";
+      $("fObserver").value = "";
+      $("fLocation").value = "";
+      $("fContent").value = "";
+      $("fArea").value = "Vibrant Learning";
+      $("fStandard").value = "";
+      $("fDOK").value = "DOK 2";
+      $("fSaw").value = "";
+      $("fStudentsSaid").value = "";
+      $("fTeacherSaid").value = "";
+      $("fArtifact").value = "";
+      $("fEvidenceType").value = "Student Work Sample";
+      $("fBarrier").value = "";
+      $("fPlan").value = "";
+      $("fSupport").value = "";
+      $("fOwner").value = "";
+      $("fDue").value = "";
+
+      chips.forEach(x=>x.classList.remove("active"));
+      $("fRYG").value = "";
+
+      if(minimal){
+        $("fSaw").value = "Quick snapshot: ";
+      }
+    }
+
+    $("btnNew").addEventListener("click", ()=> { resetForm(false); setView("entry"); window.scrollTo({top:0, behavior:"smooth"}); });
+    $("btnQuickAdd").addEventListener("click", ()=> { resetForm(true); setView("entry"); window.scrollTo({top:0, behavior:"smooth"}); });
+
+    /* Save entry */
+    $("btnSave").addEventListener("click", ()=>{
+      const ryg = $("fRYG").value;
+      const date = $("fDate").value;
+
+      // Required: date, school, observer, area, ryg
+      const school = $("fSchool").value.trim();
+      const observer = $("fObserver").value.trim();
+      const area = $("fArea").value;
+
+      const errors = [];
+      if(!date) errors.push("Date");
+      if(!school) errors.push("School");
+      if(!observer) errors.push("Observer");
+      if(!area) errors.push("Area of Focus");
+      if(!ryg) errors.push("RYG Status");
+
+      if(errors.length){
+        alert("Missing required fields: " + errors.join(", "));
+        return;
+      }
+
+      const entry = {
+        id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(16).slice(2),
+        week: getWeekKey(date),
+        date,
+        dayType: $("fDayType").value,
+        school,
+        observer,
+        location: $("fLocation").value.trim(),
+        content: $("fContent").value.trim(),
+        area,
+        ryg,
+        standard: $("fStandard").value.trim(),
+        dok: $("fDOK").value,
+        saw: $("fSaw").value.trim(),
+        studentsSaid: $("fStudentsSaid").value.trim(),
+        teacherSaid: $("fTeacherSaid").value.trim(),
+        artifact: $("fArtifact").value.trim(),
+        evidenceType: $("fEvidenceType").value,
+        barrier: $("fBarrier").value.trim(),
+        plan: $("fPlan").value.trim(),
+        support: $("fSupport").value.trim(),
+        owner: $("fOwner").value.trim(),
+        due: $("fDue").value
+      };
+
+      const entries = loadEntries();
+      entries.push(entry);
+      saveEntries(entries);
+
+      alert("Saved. This entry is now part of this week's Tuesday-Friday build.");
+      resetForm(false);
+    });
+
+    /* Clear this week */
+    $("btnClearWeek").addEventListener("click", ()=>{
+      const entries = loadEntries();
+      const wk = currentWeekKey();
+      const kept = entries.filter(e => e.week !== wk);
+      const removed = entries.length - kept.length;
+      if(!confirm(`Clear this week (${wk}) from this device? This removes ${removed} entries locally.`)) return;
+      saveEntries(kept);
+      alert("Cleared this week locally.");
+      renderWeekly();
+      renderMonday();
+    });
+
+    /* Export JSON week */
+    $("btnExport").addEventListener("click", ()=>{
+      const wk = currentWeekKey();
+      const entries = entriesThisWeek(loadEntries());
+      const blob = new Blob([JSON.stringify({week:wk, exportedAt:new Date().toISOString(), entries}, null, 2)], {type:"application/json"});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `VA_Walkthrough_${wk}.json`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    });
+
+    /* Export CSV week */
+    $("btnCSV").addEventListener("click", ()=>{
+      const wk = currentWeekKey();
+      const entries = entriesThisWeek(loadEntries());
+      const cols = [
+        "week","date","school","observer","location","content","area","ryg","standard","dok",
+        "evidenceType","artifact","saw","studentsSaid","teacherSaid","barrier","plan","support","owner","due"
+      ];
+      const rows = [cols.join(",")].concat(
+        entries.map(e => cols.map(c => {
+          const v = (e[c] ?? "").toString().replace(/"/g,'""');
+          return `"${v}"`;
+        }).join(","))
+      );
+      const blob = new Blob([rows.join("\n")], {type:"text/csv"});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `VA_Walkthrough_${wk}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    });
+
+    /* Weekly render */
+    function renderWeekly(){
+      const all = loadEntries();
+      const wkEntries = entriesThisWeek(all);
+
+      // KPIs
+      const total = wkEntries.length;
+      const greens = wkEntries.filter(e=>e.ryg==="Green").length;
+      const yellows = wkEntries.filter(e=>e.ryg==="Yellow").length;
+      const reds = wkEntries.filter(e=>e.ryg==="Red").length;
+
+      const artifactCount = wkEntries.filter(e=> (e.artifact||"").length > 8).length;
+      const dok3plus = wkEntries.filter(e=> e.dok==="DOK 3" || e.dok==="DOK 4").length;
+
+      const kpiHTML = [
+        kpi("Entries Logged", total, "Tuesday-Friday build. More is not always better. Better is better."),
+        kpi("Green / Yellow / Red", `${greens} / ${yellows} / ${reds}`, "Honest color is the first win."),
+        kpi("Artifacts Linked", artifactCount, "Evidence moves this from opinion to proof."),
+        kpi("DOK 3-4 Observed", dok3plus, "High-quality rigor. Not compliance rigor.")
+      ].join("");
+      $("weekKPIs").innerHTML = kpiHTML;
+
+      // Bars by area: % Y/R
+      const bars = AREAS.map(a=>{
+        const subset = wkEntries.filter(e=>e.area===a);
+        const n = subset.length;
+        const yr = subset.filter(e=> e.ryg==="Yellow" || e.ryg==="Red").length;
+        const pct = n ? Math.round((yr/n)*100) : 0;
+        return barRow(a, pct, n);
+      }).join("");
+      $("areaBars").innerHTML = bars;
+
+      // Populate filter schools
+      const schoolSet = [...new Set(wkEntries.map(e=>e.school))].sort((a,b)=>a.localeCompare(b));
+      const sel = $("filterSchool");
+      const current = sel.value;
+      sel.innerHTML = `<option value="">All Schools</option>` + schoolSet.map(s=>`<option value="${escapeHTML(s)}">${escapeHTML(s)}</option>`).join("");
+      sel.value = current;
+
+      // Table
+      const rygFilter = $("filterRYG").value;
+      const schoolFilter = $("filterSchool").value;
+
+      const filtered = wkEntries
+        .filter(e => !rygFilter || e.ryg===rygFilter)
+        .filter(e => !schoolFilter || e.school===schoolFilter)
+        .sort((a,b)=> (a.date < b.date ? 1 : -1));
+
+      $("weekTable").innerHTML = filtered.map(e=>{
+        const rygTag = e.ryg==="Green" ? "g" : e.ryg==="Yellow" ? "y" : "r";
+        const snap = [
+          e.standard ? `<strong>${escapeHTML(e.standard)}</strong>` : "<strong>Evidence</strong>",
+          e.saw ? escapeHTML(e.saw).slice(0,130) + (e.saw.length>130?"...":"") : ""
+        ].filter(Boolean).join("<br>");
+        const plan = [
+          e.plan ? `<div><strong>Plan:</strong> ${escapeHTML(e.plan).slice(0,110)}${e.plan.length>110?"...":""}</div>` : "",
+          e.support ? `<div><strong>Support:</strong> ${escapeHTML(e.support).slice(0,90)}${e.support.length>90?"...":""}</div>` : ""
+        ].filter(Boolean).join("");
+
+        return `
+          <tr>
+            <td>${escapeHTML(e.date)}</td>
+            <td>${escapeHTML(e.school)}</td>
+            <td>${escapeHTML(e.area)}</td>
+            <td><span class="tag"><span class="dot ${rygTag}"></span>${escapeHTML(e.ryg)}</span></td>
+            <td>${snap}${e.artifact ? `<div style="margin-top:6px"><a href="${escapeHTML(e.artifact)}" target="_blank" rel="noopener" style="font-size:12px;color:#111;text-decoration:underline">Artifact</a></div>` : ""}</td>
+            <td>${plan || "<span class='note'>No plan/support captured yet.</span>"}</td>
+          </tr>
+        `;
+      }).join("");
+
+      // filters change events
+      $("filterSchool").onchange = renderWeekly;
+      $("filterRYG").onchange = renderWeekly;
+    }
+
+    function kpi(title, value, sub){
+      return `
+        <div class="kpi">
+          <div class="kpi-title">${escapeHTML(title)}</div>
+          <div class="kpi-value">${escapeHTML(String(value))}</div>
+          <div class="kpi-sub">${escapeHTML(sub)}</div>
+        </div>
+      `;
+    }
+
+    function barRow(name, pct, n){
+      const pctSafe = Math.max(0, Math.min(100, pct));
+      const label = n ? `${pctSafe}% (n=${n})` : `0% (n=0)`;
+      return `
+        <div class="barrow">
+          <div class="barname">${escapeHTML(name)}</div>
+          <div class="track"><div class="fill" style="width:${pctSafe}%"></div></div>
+          <div class="barval">${escapeHTML(label)}</div>
+        </div>
+      `;
+    }
+
+    /* Monday render */
+    function renderMonday(){
+      const wk = currentWeekKey();
+      const wkEntries = entriesThisWeek(loadEntries());
+
+      const total = wkEntries.length;
+      const yellows = wkEntries.filter(e=>e.ryg==="Yellow").length;
+      const reds = wkEntries.filter(e=>e.ryg==="Red").length;
+      const yr = yellows + reds;
+      const yrPct = total ? Math.round((yr/total)*100) : 0;
+
+      const schools = [...new Set(wkEntries.map(e=>e.school))].length;
+      const areasCovered = [...new Set(wkEntries.map(e=>e.area))].length;
+
+      // Quality checks Mulally would ask for
+      const withPlan = wkEntries.filter(e=> (e.ryg==="Yellow" || e.ryg==="Red") && (e.plan||"").length > 10 && (e.owner||"").length > 1).length;
+      const yrTotal = wkEntries.filter(e=> (e.ryg==="Yellow" || e.ryg==="Red")).length;
+      const planRate = yrTotal ? Math.round((withPlan/yrTotal)*100) : 100;
+
+      const withEvidence = wkEntries.filter(e=> (e.artifact||"").length > 8).length;
+      const evidenceRate = total ? Math.round((withEvidence/total)*100) : 0;
+
+      $("mondayKPIs").innerHTML = [
+        kpi("Week", wk, "This is the Monday meeting lens."),
+        kpi("Y+R Load", `${yr} / ${total}`, `${yrPct}% of entries are Yellow or Red.`),
+        kpi("Plan Discipline", `${planRate}%`, "Yellow/Red entries with an owner + plan."),
+        kpi("Evidence Rate", `${evidenceRate}%`, "Entries with an artifact link.")
+      ].join("");
+
+      // Top constraints: group barrier text keywords-ish
+      const constraintLines = wkEntries
+        .filter(e=> e.ryg==="Yellow" || e.ryg==="Red")
+        .map(e => (e.barrier || "").trim())
+        .filter(t => t.length > 0);
+
+      const constraintSummary = summarizeConstraints(constraintLines);
+      $("topConstraints").innerHTML = constraintSummary.length
+        ? `<ol style="margin:0; padding-left:18px;">${constraintSummary.map(x=>`<li style="margin:6px 0;"><strong>${escapeHTML(x.title)}</strong><br><span class="note">${escapeHTML(x.detail)}</span></li>`).join("")}</ol>`
+        : `<span class="note">No constraints captured yet. If there are Yellows/Reds, this should not be empty.</span>`;
+
+      // Commitments table: show all Yellow/Red first, then Greens
+      const sorted = wkEntries.slice().sort((a,b)=>{
+        const rank = (x)=> x.ryg==="Red" ? 0 : x.ryg==="Yellow" ? 1 : 2;
+        const r = rank(a) - rank(b);
+        if(r !== 0) return r;
+        return a.school.localeCompare(b.school);
+      });
+
+      $("commitTable").innerHTML = sorted.map(e=>{
+        const rygTag = e.ryg==="Green" ? "g" : e.ryg==="Yellow" ? "y" : "r";
+        const plan = e.plan ? escapeHTML(e.plan) : "<span class='note'>No plan logged.</span>";
+        const owner = e.owner ? `<div><strong>Owner:</strong> ${escapeHTML(e.owner)}</div>` : "<div class='note'>Owner not set.</div>";
+        const due = e.due ? escapeHTML(e.due) : "<span class='note'>-</span>";
+        const support = e.support ? escapeHTML(e.support) : "<span class='note'>No support ask logged.</span>";
+
+        return `
+          <tr>
+            <td>${escapeHTML(e.school)}</td>
+            <td>${escapeHTML(e.area)}</td>
+            <td><span class="tag"><span class="dot ${rygTag}"></span>${escapeHTML(e.ryg)}</span></td>
+            <td>${owner}<div style="margin-top:6px;">${plan}</div>${e.artifact ? `<div style="margin-top:6px;"><a href="${escapeHTML(e.artifact)}" target="_blank" rel="noopener" style="color:#111;text-decoration:underline;font-size:12px;">Artifact</a></div>` : ""}</td>
+            <td>${support}</td>
+            <td>${due}</td>
+          </tr>
+        `;
+      }).join("");
+
+      // talking points placeholder refresh
+      $("talkingPoints").innerHTML = `<span class="note">Click "Generate Talking Points" to build a clean Monday script from the week’s entries.</span>`;
+    }
+
+    function summarizeConstraints(lines){
+      // Simple clustering by first meaningful phrase
+      // Goal: give you a short executive list, not perfect NLP.
+      const buckets = new Map();
+
+      const normalize = (s) => s.toLowerCase()
+        .replace(/[^a-z0-9\s]/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+
+      for(const raw of lines){
+        const n = normalize(raw);
+        if(!n) continue;
+
+        // Use first 6-8 words as a "topic key"
+        const words = n.split(" ").filter(Boolean);
+        const key = words.slice(0, Math.min(8, words.length)).join(" ");
+        const list = buckets.get(key) || [];
+        list.push(raw.trim());
+        buckets.set(key, list);
+      }
+
+      const ranked = [...buckets.entries()]
+        .map(([k, list]) => ({ key:k, count:list.length, examples:list }))
+        .sort((a,b)=> b.count - a.count)
+        .slice(0, 5);
+
+      return ranked.map(r => ({
+        title: `Constraint showing up ${r.count} time(s)`,
+        detail: r.examples[0].length > 220 ? r.examples[0].slice(0,220) + "..." : r.examples[0]
+      }));
+    }
+
+    /* Generate talking points */
+    $("btnGenerateTalkingPoints").addEventListener("click", ()=>{
+      const wk = currentWeekKey();
+      const wkEntries = entriesThisWeek(loadEntries());
+
+      if(!wkEntries.length){
+        $("talkingPoints").innerHTML = "<span class='note'>No entries logged for this week yet.</span>";
+        return;
+      }
+
+      // Group by school then by area
+      const bySchool = new Map();
+      for(const e of wkEntries){
+        if(!bySchool.has(e.school)) bySchool.set(e.school, []);
+        bySchool.get(e.school).push(e);
+      }
+
+      const blocks = [];
+      for(const [school, list] of [...bySchool.entries()].sort((a,b)=>a[0].localeCompare(b[0]))){
+        const reds = list.filter(x=>x.ryg==="Red");
+        const yellows = list.filter(x=>x.ryg==="Yellow");
+        const greens = list.filter(x=>x.ryg==="Green");
+
+        const focusLine = (arr) => arr.slice(0,3).map(e=>{
+          const std = e.standard ? `(${e.standard}) ` : "";
+          const proof = e.artifact ? "Evidence linked." : "Evidence not linked yet.";
+          const plan = e.plan ? `Plan: ${e.plan}` : "Plan missing.";
+          const support = e.support ? `Support: ${e.support}` : "Support ask not stated.";
+          const owner = e.owner ? `Owner: ${e.owner}` : "Owner missing.";
+          return `- ${e.area} ${std}[${e.ryg}]. ${plan} ${owner} ${support} ${proof}`.replace(/\s+/g," ").trim();
+        }).join("<br>");
+
+        blocks.push(`
+          <div style="margin-bottom:12px;">
+            <div style="font-weight:950;font-size:13px;">${escapeHTML(school)} (Week ${escapeHTML(wk)})</div>
+            <div class="note" style="margin-top:6px;">
+              <strong>Wins (Green)</strong><br>
+              ${greens.length ? focusLine(greens) : "- No Greens logged yet. That might be a signal, or it might be a logging gap."}
+              <div style="height:8px"></div>
+              <strong>Risks (Yellow)</strong><br>
+              ${yellows.length ? focusLine(yellows) : "- No Yellows logged."}
+              <div style="height:8px"></div>
+              <strong>Critical (Red)</strong><br>
+              ${reds.length ? focusLine(reds) : "- No Reds logged. If reality is perfect, great. If not, we need more honesty."}
+            </div>
+          </div>
+        `);
+      }
+
+      $("talkingPoints").innerHTML = blocks.join("");
+    });
+
+    /* Print */
+    $("btnPrint").addEventListener("click", ()=> window.print());
+
+    /* Init */
+    resetForm(false);
+    setView("entry");
+    renderWeekly();
+    renderMonday();
+  </script>
+</body>
+</html>
