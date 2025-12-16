@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>FCS Weekly Executive Review (Mulally-Style)</title>
+  <style>
+    :root{
+      --black:#111111;
+      --gray:#6b7280;
+      --white:#ffffff;
+      --gold:#dbd59b;
+      --bg:#f5f5f7;
+      --shadow:0 14px 36px rgba(0,0,0,0.14);
+      --shadow-soft:0 10px 22px rgba(0,0,0,0.10);
+      --radius:22px;
+      --radius-sm:16px;
+      --border:1px solid rgba(0,0,0,0.12);
+
+      --green:#16a34a;
+      --yellow:#f59e0b;
+      --red:#dc2626;
+      --blue:#2563eb;
+    }
+
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--black);
+    }
+
+    .app{
+      display:grid;
+      grid-template-columns: 320px 1fr;
+      min-height:100vh;
+    }
+
+    .sidebar{
+      background: var(--white);
+      border-right: var(--border);
+      padding:18px 16px;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow:auto;
+    }
+
+    .brand{
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+      padding:10px 10px 14px 10px;
+      border-radius: var(--radius-sm);
+      border: var(--border);
+      background: linear-gradient(180deg, rgba(219,213,155,0.28), rgba(255,255,255,1));
+      box-shadow: var(--shadow-soft);
+      margin-bottom:14px;
+    }
+    .brand h1{
+      margin:0;
+      font-size:16px;
+      letter-spacing:0.2px;
+    }
+    .brand .sub{
+      font-size:12px;
+      color: var(--gray);
+      line-height:1.35;
+    }
+
+    .meta{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:10px;
+      margin:12px 0 14px 0;
+    }
+    .meta .field{
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+    }
+    label{
+      font-size:11px;
+      color: var(--gray);
+    }
+    input[type="text"], input[type="date"], select, textarea{
+      width:100%;
+      border: var(--border);
+      border-radius: 12px;
+      padding:10px 10px;
+      background: #fff;
+      font-size:13px;
+      outline:none;
+    }
+    textarea{ min-height: 86px; resize: vertical; }
+
+    .nav{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      margin-top:10px;
+    }
+
+    .navbtn{
+      text-align:left;
+      padding:12px 12px;
+      border-radius: 14px;
+      border: var(--border);
+      background: #fff;
+      cursor:pointer;
+      box-shadow: none;
+      transition: transform .12s ease, box-shadow .12s ease;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+    .navbtn:hover{
+      transform: translateY(-3px) scale(1.01);
+      box-shadow: var(--shadow-soft);
+    }
+    .navbtn.active{
+      border: 1px solid rgba(0,0,0,0.25);
+      background: rgba(219,213,155,0.25);
+    }
+    .navleft{
+      display:flex;
+      flex-direction:column;
+      gap:2px;
+    }
+    .navtitle{ font-size:13px; font-weight:700; }
+    .navhint{ font-size:11px; color: var(--gray); }
+
+    .pill{
+      font-size:11px;
+      padding:4px 8px;
+      border-radius:999px;
+      border: var(--border);
+      background:#fff;
+      white-space:nowrap;
+    }
+    .pill.green{ border-color: rgba(22,163,74,.35); color: var(--green); }
+    .pill.yellow{ border-color: rgba(245,158,11,.45); color: #9a6700; }
+    .pill.red{ border-color: rgba(220,38,38,.35); color: var(--red); }
+    .pill.gray{ border-color: rgba(107,114,128,.35); color: var(--gray); }
+
+    .tools{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-top:14px;
+    }
+    .btn{
+      border:none;
+      border-radius: 14px;
+      padding:10px 12px;
+      cursor:pointer;
+      font-weight:700;
+      font-size:12px;
+      background: var(--black);
+      color: var(--white);
+      transition: transform .12s ease, box-shadow .12s ease;
+    }
+    .btn:hover{ transform: translateY(-2px); box-shadow: var(--shadow-soft); }
+    .btn.secondary{
+      background: #fff;
+      color: var(--black);
+      border: var(--border);
+      font-weight:700;
+    }
+    .btn.gold{
+      background: var(--gold);
+      color: var(--black);
+    }
+    .btn.danger{
+      background: var(--red);
+      color: #fff;
+    }
+
+    .content{
+      padding:22px 22px 40px 22px;
+      overflow:auto;
+    }
+
+    .topbar{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:14px;
+      margin-bottom:14px;
+    }
+    .topbar h2{
+      margin:0;
+      font-size:18px;
+      letter-spacing:0.2px;
+    }
+    .topbar .context{
+      margin-top:4px;
+      color: var(--gray);
+      font-size:12px;
+      line-height:1.35;
+      max-width: 860px;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:14px;
+    }
+
+    .card{
+      background: #fff;
+      border: var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-soft);
+      padding:16px;
+    }
+    .card h3{
+      margin:0 0 10px 0;
+      font-size:14px;
+      letter-spacing:0.2px;
+    }
+    .row{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:12px;
+    }
+
+    .kpi{
+      display:grid;
+      grid-template-columns: 1.1fr 0.9fr 0.9fr 0.9fr 0.6fr;
+      gap:10px;
+      align-items:center;
+      margin-top:8px;
+    }
+    .kpi > div{
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+    }
+    .kpi .klabel{ font-size:11px; color: var(--gray); }
+    .kpi .kvalue{
+      border: var(--border);
+      border-radius: 12px;
+      padding:10px;
+      font-size:13px;
+      background:#fff;
+      min-height: 40px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+
+    .statusDot{
+      width:10px; height:10px; border-radius:99px;
+      background: rgba(107,114,128,.5);
+      box-shadow: 0 0 0 3px rgba(107,114,128,.12);
+      flex: 0 0 auto;
+    }
+    .statusDot.green{ background: var(--green); box-shadow: 0 0 0 3px rgba(22,163,74,.14); }
+    .statusDot.yellow{ background: var(--yellow); box-shadow: 0 0 0 3px rgba(245,158,11,.16); }
+    .statusDot.red{ background: var(--red); box-shadow: 0 0 0 3px rgba(220,38,38,.14); }
+
+    .split{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:12px;
+      margin-top:12px;
+    }
+
+    .mini{
+      border: var(--border);
+      border-radius: var(--radius-sm);
+      padding:12px;
+      background: rgba(245,245,247,.6);
+    }
+    .mini h4{
+      margin:0 0 8px 0;
+      font-size:12px;
+      letter-spacing:0.2px;
+    }
+    .muted{ color: var(--gray); font-size:12px; line-height:1.35; }
+
+    .commitments{
+      margin-top:10px;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+    .commit{
+      border: var(--border);
+      border-radius: 16px;
+      padding:12px;
+      background:#fff;
+      display:grid;
+      grid-template-columns: 1fr 140px 140px 44px;
+      gap:10px;
+      align-items:center;
+    }
+    .commit input[type="text"], .commit input[type="date"]{
+      padding:9px 10px;
+      border-radius: 12px;
+    }
+    .iconBtn{
+      width:44px;
+      height:44px;
+      border-radius: 14px;
+      border: var(--border);
+      background:#fff;
+      cursor:pointer;
+      font-size:16px;
+    }
+    .iconBtn:hover{ transform: translateY(-1px); box-shadow: var(--shadow-soft); }
+
+    .summaryBar{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-top:12px;
+    }
+    .chip{
+      border: var(--border);
+      border-radius:999px;
+      padding:8px 10px;
+      background:#fff;
+      font-size:12px;
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+
+    .footerNote{
+      margin-top:14px;
+      color: var(--gray);
+      font-size:11px;
+      line-height:1.35;
+    }
+
+    @media (max-width: 980px){
+      .app{ grid-template-columns: 1fr; }
+      .sidebar{ position:relative; height:auto; }
+      .row, .split{ grid-template-columns: 1fr; }
+      .commit{ grid-template-columns: 1fr; }
+      .kpi{ grid-template-columns: 1fr; }
+    }
+
+    @media print{
+      .sidebar, .tools, .footerNote{ display:none !important; }
+      .content{ padding:0; }
+      .card{ box-shadow:none; }
+      body{ background:#fff; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <h1>FCS Weekly Executive Review</h1>
+        <div class="sub">
+          Mulally-style operating system aligned to Local Accountability and the Five Areas of Focus.
+          Tue–Fri updates. Monday review. Evidence over opinion.
+        </div>
+      </div>
+
+      <div class="meta">
+        <div class="field">
+          <label for="weekOf">Week of</label>
+          <input id="weekOf" type="date"/>
+        </div>
+        <div class="field">
+          <label for="meetingType">View</label>
+          <select id="meetingType">
+            <option value="prep">Prep (Tue–Fri)</option>
+            <option value="monday">Monday Review</option>
+          </select>
+        </div>
+        <div class="field" style="grid-column:1 / span 2;">
+          <label for="owner">Owner (Principal/Director)</label>
+          <input id="owner" type="text" placeholder="Name"/>
+        </div>
+      </div>
+
+      <div class="nav" id="nav"></div>
+
+      <div class="tools">
+        <button class="btn gold" id="saveBtn">Save</button>
+        <button class="btn secondary" id="printBtn">Print</button>
+        <button class="btn secondary" id="exportBtn">Export JSON</button>
+        <label class="btn secondary" style="display:inline-flex; align-items:center; gap:8px;">
+          Import JSON
+          <input id="importFile" type="file" accept="application/json" style="display:none;">
+        </label>
+        <button class="btn danger" id="resetBtn">Reset</button>
+      </div>
+
+      <div class="footerNote">
+        Status rule: Yellow or Red requires a clear plan, owner, due date, and help needed.
+      </div>
+    </aside>
+
+    <main class="content">
+      <div class="topbar">
+        <div>
+          <h2 id="laneTitle">Loading...</h2>
+          <div class="context" id="laneContext"></div>
+        </div>
+        <div class="summaryBar" id="summaryBar"></div>
+      </div>
+
+      <div class="grid">
+        <section class="card">
+          <h3>Weekly status and scoreboard</h3>
+          <div class="kpi">
+            <div>
+              <div class="klabel">Status</div>
+              <div class="kvalue">
+                <div style="display:flex; align-items:center; gap:10px;">
+                  <span class="statusDot" id="statusDot"></span>
+                  <select id="statusSelect">
+                    <option value="green">Green (on track)</option>
+                    <option value="yellow">Yellow (risk, plan in place)</option>
+                    <option value="red">Red (off track, need help)</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div>
+              <div class="klabel">Key metric 1</div>
+              <input id="metric1" type="text" placeholder="Example: % BPI updates complete"/>
+            </div>
+            <div>
+              <div class="klabel">Key metric 2</div>
+              <input id="metric2" type="text" placeholder="Example: BPA calibration done"/>
+            </div>
+            <div>
+              <div class="klabel">Key metric 3</div>
+              <input id="metric3" type="text" placeholder="Example: WAC artifacts published"/>
+            </div>
+            <div>
+              <div class="klabel">Owner</div>
+              <input id="laneOwner" type="text" placeholder="Name"/>
+            </div>
+          </div>
+
+          <div class="split">
+            <div class="mini">
+              <h4>What is working (evidence-based)</h4>
+              <textarea id="working" placeholder="Write in observable terms. Reference artifacts (BPI/BPA/WAC) and walkthrough evidence."></textarea>
+              <div class="muted">Keep it tight. If you cannot point to evidence, it is not “working” yet.</div>
+            </div>
+            <div class="mini">
+              <h4>What is not working (signal, not blame)</h4>
+              <textarea id="notWorking" placeholder="Where is reality not matching intention. Name the condition, not the person."></textarea>
+              <div class="muted">Yellow and Red live here. Be specific so help is possible.</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="card">
+          <h3>Plan, help needed, and next moves</h3>
+          <div class="row">
+            <div class="mini">
+              <h4>Plan (what we will do next)</h4>
+              <textarea id="plan" placeholder="What actions will move this lane forward this week."></textarea>
+              <div class="muted">Include the smallest next step that changes the system, not just talk.</div>
+            </div>
+            <div class="mini">
+              <h4>Help needed (decision, support, barrier removal)</h4>
+              <textarea id="helpNeeded" placeholder="What help is required. Who can provide it. By when."></textarea>
+              <div class="muted">If Red, this cannot be blank.</div>
+            </div>
+          </div>
+
+          <div class="split">
+            <div class="mini">
+              <h4>Evidence links or artifact references</h4>
+              <textarea id="evidence" placeholder="Paste links or name artifacts: BPI pages, BPA rubrics, student products, WAC samples, walkthrough notes."></textarea>
+              <div class="muted">This is where Local Accountability stays credible.</div>
+            </div>
+            <div class="mini">
+              <h4>Risks and drift (what could knock us off track)</h4>
+              <textarea id="risks" placeholder="What could cause slippage. What early warning signals you are watching."></textarea>
+              <div class="muted">Name 1–3 risks, not 12.</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="card">
+          <h3>Commitments log (promises that close)</h3>
+          <div class="muted">Use this like Mulally. Make commitments specific, dated, and review them Monday.</div>
+          <div class="commitments" id="commitments"></div>
+          <div style="margin-top:10px;">
+            <button class="btn secondary" id="addCommitBtn">Add commitment</button>
+          </div>
+        </section>
+
+        <section class="card">
+          <h3>Local Accountability alignment checks (quick, non-negotiable)</h3>
+          <div class="split">
+            <div class="mini">
+              <h4>BPI pulse</h4>
+              <textarea id="bpiPulse" placeholder="Are BPI websites being updated with learning, growth, mastery, readiness evidence. What is the quality signal."></textarea>
+              <div class="muted">Capture: progress, quality, student voice, verification.</div>
+            </div>
+            <div class="mini">
+              <h4>Real-world, interdisciplinary learning and WAC</h4>
+              <textarea id="realWorldWac" placeholder="What real-world experiences and writing outputs are happening. What artifacts prove it."></textarea>
+              <div class="muted">Name products, audiences, revisions, and publishing when possible.</div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+<script>
+  const STORAGE_KEY = "fcs_weekly_exec_review_v1";
+
+  const LANES = [
+    {
+      id:"vibrant_learning",
+      title:"1) Vibrant Learning",
+      hint:"Real-world, interdisciplinary learning and student agency",
+      context:"Signal the lived classroom experience. Focus on authentic tasks, student thinking, and real-world application. Tie directly to artifacts and walkthrough look-fors."
+    },
+    {
+      id:"priority_standards",
+      title:"2) Priority Standards and Proficiency Scales",
+      hint:"Targets are clear. Mastery evidence is credible",
+      context:"Surface clarity of learning targets, alignment to proficiency scales, and the quality of mastery evidence. Look for misunderstandings, drift, and calibration needs."
+    },
+    {
+      id:"bim_workshop",
+      title:"3) BRIDGE Instructional Model (Workshop Model)",
+      hint:"Instructional coherence you can observe daily",
+      context:"Make the instructional model visible: mini-lesson, workshop, conferring, debrief, and student ownership. Focus on observable practice and student outcomes."
+    },
+    {
+      id:"bpa",
+      title:"4) BRIDGE Performance Assessments (BPAs)",
+      hint:"Performance tasks, rubrics, and calibration",
+      context:"Track BPA readiness, task quality, rubric clarity, calibration, and student products. Name where support is needed to protect validity and fairness."
+    },
+    {
+      id:"evidence_srg",
+      title:"5) Compelling Evidence and SRG",
+      hint:"Grades reflect evidence, not compliance",
+      context:"Monitor evidence balance, reassessment patterns, grade integrity, and reporting coherence. Ensure SRG is anchored in compelling evidence, not averages and points."
+    }
+  ];
+
+  const els = {
+    nav: document.getElementById("nav"),
+    laneTitle: document.getElementById("laneTitle"),
+    laneContext: document.getElementById("laneContext"),
+    summaryBar: document.getElementById("summaryBar"),
+
+    weekOf: document.getElementById("weekOf"),
+    meetingType: document.getElementById("meetingType"),
+    owner: document.getElementById("owner"),
+
+    statusSelect: document.getElementById("statusSelect"),
+    statusDot: document.getElementById("statusDot"),
+    metric1: document.getElementById("metric1"),
+    metric2: document.getElementById("metric2"),
+    metric3: document.getElementById("metric3"),
+    laneOwner: document.getElementById("laneOwner"),
+
+    working: document.getElementById("working"),
+    notWorking: document.getElementById("notWorking"),
+    plan: document.getElementById("plan"),
+    helpNeeded: document.getElementById("helpNeeded"),
+    evidence: document.getElementById("evidence"),
+    risks: document.getElementById("risks"),
+
+    bpiPulse: document.getElementById("bpiPulse"),
+    realWorldWac: document.getElementById("realWorldWac"),
+
+    commitments: document.getElementById("commitments"),
+    addCommitBtn: document.getElementById("addCommitBtn"),
+
+    saveBtn: document.getElementById("saveBtn"),
+    printBtn: document.getElementById("printBtn"),
+    exportBtn: document.getElementById("exportBtn"),
+    importFile: document.getElementById("importFile"),
+    resetBtn: document.getElementById("resetBtn")
+  };
+
+  function defaultState(){
+    const today = new Date();
+    const iso = new Date(today.getTime() - today.getTimezoneOffset()*60000).toISOString().slice(0,10);
+
+    const lanes = {};
+    LANES.forEach(l => {
+      lanes[l.id] = {
+        status: "green",
+        metric1: "",
+        metric2: "",
+        metric3: "",
+        laneOwner: "",
+        working: "",
+        notWorking: "",
+        plan: "",
+        helpNeeded: "",
+        evidence: "",
+        risks: "",
+        bpiPulse: "",
+        realWorldWac: "",
+        commitments: [
+          { text: "Example: Update BPI evidence rubric expectations for grade bands", owner: "", due: iso }
+        ]
+      };
+    });
+
+    return {
+      meta: {
+        weekOf: iso,
+        view: "prep",
+        owner: ""
+      },
+      activeLane: LANES[0].id,
+      lanes
+    };
+  }
+
+  let state = loadState();
+
+  function loadState(){
+    try{
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if(!raw) return defaultState();
+      const parsed = JSON.parse(raw);
+
+      // Basic forward-compat: ensure all lanes exist.
+      const base = defaultState();
+      parsed.lanes = parsed.lanes || {};
+      LANES.forEach(l => {
+        if(!parsed.lanes[l.id]) parsed.lanes[l.id] = base.lanes[l.id];
+      });
+
+      return { ...base, ...parsed };
+    }catch(e){
+      return defaultState();
+    }
+  }
+
+  function saveState(){
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  }
+
+  function statusClass(s){
+    if(s === "green") return "green";
+    if(s === "yellow") return "yellow";
+    if(s === "red") return "red";
+    return "gray";
+  }
+
+  function renderNav(){
+    els.nav.innerHTML = "";
+    LANES.forEach(l => {
+      const btn = document.createElement("button");
+      btn.className = "navbtn" + (state.activeLane === l.id ? " active" : "");
+      const laneStatus = state.lanes[l.id].status || "green";
+
+      btn.innerHTML = `
+        <div class="navleft">
+          <div class="navtitle">${l.title}</div>
+          <div class="navhint">${l.hint}</div>
+        </div>
+        <div class="pill ${statusClass(laneStatus)}">${laneStatus.toUpperCase()}</div>
+      `;
+      btn.addEventListener("click", () => {
+        pullFromUI();
+        state.activeLane = l.id;
+        renderAll();
+      });
+      els.nav.appendChild(btn);
+    });
+  }
+
+  function renderMeta(){
+    els.weekOf.value = state.meta.weekOf || "";
+    els.meetingType.value = state.meta.view || "prep";
+    els.owner.value = state.meta.owner || "";
+  }
+
+  function renderLane(){
+    const laneId = state.activeLane;
+    const laneDef = LANES.find(l => l.id === laneId);
+    const lane = state.lanes[laneId];
+
+    els.laneTitle.textContent = laneDef ? laneDef.title : "Lane";
+    els.laneContext.textContent = laneDef ? laneDef.context : "";
+
+    els.statusSelect.value = lane.status || "green";
+    updateStatusDot(lane.status || "green");
+
+    els.metric1.value = lane.metric1 || "";
+    els.metric2.value = lane.metric2 || "";
+    els.metric3.value = lane.metric3 || "";
+    els.laneOwner.value = lane.laneOwner || "";
+
+    els.working.value = lane.working || "";
+    els.notWorking.value = lane.notWorking || "";
+    els.plan.value = lane.plan || "";
+    els.helpNeeded.value = lane.helpNeeded || "";
+    els.evidence.value = lane.evidence || "";
+    els.risks.value = lane.risks || "";
+
+    els.bpiPulse.value = lane.bpiPulse || "";
+    els.realWorldWac.value = lane.realWorldWac || "";
+
+    renderCommitments(lane.commitments || []);
+    renderSummaryBar();
+  }
+
+  function renderCommitments(items){
+    els.commitments.innerHTML = "";
+    items.forEach((c, idx) => {
+      const row = document.createElement("div");
+      row.className = "commit";
+      row.innerHTML = `
+        <input type="text" value="${escapeHtml(c.text || "")}" data-commit="text" data-idx="${idx}" placeholder="Commitment (specific and observable)"/>
+        <input type="text" value="${escapeHtml(c.owner || "")}" data-commit="owner" data-idx="${idx}" placeholder="Owner"/>
+        <input type="date" value="${escapeHtml(c.due || "")}" data-commit="due" data-idx="${idx}"/>
+        <button class="iconBtn" title="Remove" data-commit="remove" data-idx="${idx}">✕</button>
+      `;
+
+      row.querySelectorAll("[data-commit]").forEach(el => {
+        const type = el.getAttribute("data-commit");
+        const i = Number(el.getAttribute("data-idx"));
+
+        if(type === "remove"){
+          el.addEventListener("click", () => {
+            pullFromUI();
+            state.lanes[state.activeLane].commitments.splice(i, 1);
+            renderLane();
+          });
+        }else{
+          el.addEventListener("input", () => {
+            pullFromUI();
+            // keep UI responsive but do not spam storage
+          });
+        }
+      });
+
+      els.commitments.appendChild(row);
+    });
+  }
+
+  function renderSummaryBar(){
+    const totals = { green:0, yellow:0, red:0 };
+    LANES.forEach(l => {
+      const s = state.lanes[l.id].status || "green";
+      totals[s] = (totals[s] || 0) + 1;
+    });
+
+    const redLanes = LANES.filter(l => (state.lanes[l.id].status || "green") === "red").map(l => shortLaneName(l.title));
+    const yellowLanes = LANES.filter(l => (state.lanes[l.id].status || "green") === "yellow").map(l => shortLaneName(l.title));
+
+    els.summaryBar.innerHTML = "";
+
+    els.summaryBar.appendChild(chip(`Green: ${totals.green}`, "green"));
+    els.summaryBar.appendChild(chip(`Yellow: ${totals.yellow}`, "yellow"));
+    els.summaryBar.appendChild(chip(`Red: ${totals.red}`, "red"));
+
+    if(redLanes.length){
+      els.summaryBar.appendChild(chip(`Red lanes: ${redLanes.join(", ")}`, "red"));
+    }
+    if(yellowLanes.length){
+      els.summaryBar.appendChild(chip(`Yellow lanes: ${yellowLanes.join(", ")}`, "yellow"));
+    }
+
+    const lane = state.lanes[state.activeLane];
+    const needsHelp = (lane.status === "red") || (lane.status === "yellow" && (lane.helpNeeded || "").trim().length > 0);
+    els.summaryBar.appendChild(chip(needsHelp ? "Help flagged in this lane" : "No help flagged in this lane", needsHelp ? "yellow" : "gray"));
+  }
+
+  function chip(text, status){
+    const d = document.createElement("div");
+    d.className = "chip";
+    const dot = document.createElement("span");
+    dot.className = "statusDot " + (statusClass(status));
+    dot.style.width = "9px";
+    dot.style.height = "9px";
+    dot.style.boxShadow = "none";
+    d.appendChild(dot);
+    const t = document.createElement("span");
+    t.textContent = text;
+    d.appendChild(t);
+    return d;
+  }
+
+  function shortLaneName(title){
+    return title.replace(/^\d+\)\s*/,"").split("(")[0].trim();
+  }
+
+  function updateStatusDot(s){
+    els.statusDot.className = "statusDot " + statusClass(s);
+  }
+
+  function pullFromUI(){
+    state.meta.weekOf = els.weekOf.value;
+    state.meta.view = els.meetingType.value;
+    state.meta.owner = els.owner.value;
+
+    const lane = state.lanes[state.activeLane];
+    lane.status = els.statusSelect.value;
+
+    lane.metric1 = els.metric1.value;
+    lane.metric2 = els.metric2.value;
+    lane.metric3 = els.metric3.value;
+    lane.laneOwner = els.laneOwner.value;
+
+    lane.working = els.working.value;
+    lane.notWorking = els.notWorking.value;
+    lane.plan = els.plan.value;
+    lane.helpNeeded = els.helpNeeded.value;
+    lane.evidence = els.evidence.value;
+    lane.risks = els.risks.value;
+
+    lane.bpiPulse = els.bpiPulse.value;
+    lane.realWorldWac = els.realWorldWac.value;
+
+    const commitRows = Array.from(els.commitments.querySelectorAll(".commit"));
+    const commits = [];
+    commitRows.forEach(r => {
+      const inputs = r.querySelectorAll("input");
+      const c = {
+        text: inputs[0]?.value || "",
+        owner: inputs[1]?.value || "",
+        due: inputs[2]?.value || ""
+      };
+      commits.push(c);
+    });
+    lane.commitments = commits;
+  }
+
+  function renderAll(){
+    renderNav();
+    renderMeta();
+    renderLane();
+  }
+
+  function escapeHtml(str){
+    return String(str)
+      .replaceAll("&","&amp;")
+      .replaceAll("<","&lt;")
+      .replaceAll(">","&gt;")
+      .replaceAll('"',"&quot;")
+      .replaceAll("'","&#039;");
+  }
+
+  // Events
+  els.statusSelect.addEventListener("change", () => {
+    updateStatusDot(els.statusSelect.value);
+    pullFromUI();
+    renderNav();
+    renderSummaryBar();
+  });
+
+  els.meetingType.addEventListener("change", () => {
+    pullFromUI();
+    // Optional: adjust prompts based on view
+    saveState();
+  });
+
+  els.addCommitBtn.addEventListener("click", () => {
+    pullFromUI();
+    state.lanes[state.activeLane].commitments.push({ text:"", owner:"", due:"" });
+    renderLane();
+  });
+
+  els.saveBtn.addEventListener("click", () => {
+    pullFromUI();
+    saveState();
+    renderNav();
+    renderSummaryBar();
+    alert("Saved.");
+  });
+
+  els.printBtn.addEventListener("click", () => {
+    pullFromUI();
+    saveState();
+    window.print();
+  });
+
+  els.exportBtn.addEventListener("click", () => {
+    pullFromUI();
+    saveState();
+    const blob = new Blob([JSON.stringify(state, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `FCS_Weekly_Executive_Review_${state.meta.weekOf || "week"}.json`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  });
+
+  els.importFile.addEventListener("change", async (e) => {
+    const file = e.target.files && e.target.files[0];
+    if(!file) return;
+    try{
+      const text = await file.text();
+      const parsed = JSON.parse(text);
+      state = parsed;
+
+      // Ensure lane completeness
+      const base = defaultState();
+      state.meta = state.meta || base.meta;
+      state.activeLane = state.activeLane || LANES[0].id;
+      state.lanes = state.lanes || {};
+      LANES.forEach(l => {
+        if(!state.lanes[l.id]) state.lanes[l.id] = base.lanes[l.id];
+      });
+
+      saveState();
+      renderAll();
+      alert("Imported.");
+    }catch(err){
+      alert("Import failed. Please choose a valid JSON export from this tool.");
+    }finally{
+      e.target.value = "";
+    }
+  });
+
+  els.resetBtn.addEventListener("click", () => {
+    const ok = confirm("Reset everything to defaults for this device?");
+    if(!ok) return;
+    state = defaultState();
+    saveState();
+    renderAll();
+  });
+
+  // Initial render
+  renderAll();
+</script>
+</body>
+</html>
