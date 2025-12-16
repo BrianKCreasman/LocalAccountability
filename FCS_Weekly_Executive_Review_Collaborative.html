@@ -378,14 +378,15 @@
             <option value="District">District</option>
           </select>
         </div>
+
         <div class="field" id="schoolField">
           <label for="schoolSelect">School</label>
           <select id="schoolSelect">
-            <option value="Fleming County High">Fleming County High</option>
-            <option value="Simons Middle">Simons Middle</option>
-            <option value="Hillsboro">Hillsboro</option>
-            <option value="Fleming County Intermediate">Fleming County Intermediate</option>
-            <option value="Fleming County Elementary">Fleming County Elementary</option>
+            <option value="Ewing ES">Ewing ES</option>
+            <option value="Flemingsburg ES">Flemingsburg ES</option>
+            <option value="Hillsboro ES">Hillsboro ES</option>
+            <option value="Simons ES">Simons ES</option>
+            <option value="Fleming Co. HS">Fleming Co. HS</option>
           </select>
         </div>
 
@@ -587,13 +588,13 @@
   // =========================
   // CONFIG
   // =========================
-  // Paste your deployed Google Apps Script Web App URL here:
-  const SCRIPT_URL = "PASTE_YOUR_WEB_APP_URL_HERE";
+  // Your deployed Google Apps Script Web App URL:
+  const SCRIPT_URL = "https://script.google.com/a/macros/fleming.kyschools.us/s/AKfycbzNVN8AiQzPBzE1CMdDzy9bWGzlq9_p4qALlzwuEDkUxIzazgIHK70pS61nswTX0T_B6w/exec";
 
   const STORAGE_KEY = "fcs_weekly_exec_review_collab_v1";
 
   // =========================
-  // QUESTIONS (your exact content, structured)
+  // QUESTIONS (structured)
   // =========================
   const CORE_FRAMING_QUESTIONS = [
     { id:"plan", prompt:"What is the plan for this area of focus? If the plan cannot be stated in two to three sentences, it is not clear enough yet.", tip:"Write it as a tight plan statement. If it is long, it is not clear yet." },
@@ -611,34 +612,13 @@
   };
 
   const FOCUS_META = {
-    vibrant_learning: {
-      title:"Vibrant Learning (Real-World, Interdisciplinary Learning)",
-      hint:"Mulally would not ask if learning was 'good'. He would ask if it was visible and aligned."
-    },
-    priority_standards: {
-      title:"Priority Standards and Proficiency Scales",
-      hint:"This mirrors Ford’s obsession with alignment to the plan."
-    },
-    bim_workshop: {
-      title:"BRIDGE Instructional Model (Workshop Model)",
-      hint:"Mulally cared deeply about process discipline. This is your process."
-    },
-    bpa: {
-      title:"BRIDGE Performance Assessments (BPAs)",
-      hint:"Ford’s BPRs always asked if results matched intent."
-    },
-    bpi_websites: {
-      title:"BRIDGE Performance Indicators and Student BPI Websites",
-      hint:"This is where the visibility principle maps perfectly to your work."
-    },
-    wac: {
-      title:"Writing Across the Content (WAC)",
-      hint:"Mulally would ask whether communication improved decision-making. Same here."
-    },
-    compelling_evidence: {
-      title:"Compelling Evidence and Local Accountability",
-      hint:"This keeps the system honest."
-    }
+    vibrant_learning: { title:"Vibrant Learning (Real-World, Interdisciplinary Learning)", hint:"Mulally would not ask if learning was 'good'. He would ask if it was visible and aligned." },
+    priority_standards: { title:"Priority Standards and Proficiency Scales", hint:"This mirrors Ford’s obsession with alignment to the plan." },
+    bim_workshop: { title:"BRIDGE Instructional Model (Workshop Model)", hint:"Mulally cared deeply about process discipline. This is your process." },
+    bpa: { title:"BRIDGE Performance Assessments (BPAs)", hint:"Ford’s BPRs always asked if results matched intent." },
+    bpi_websites: { title:"BRIDGE Performance Indicators and Student BPI Websites", hint:"This is where the visibility principle maps perfectly to your work." },
+    wac: { title:"Writing Across the Content (WAC)", hint:"Mulally would ask whether communication improved decision-making. Same here." },
+    compelling_evidence: { title:"Compelling Evidence and Local Accountability", hint:"This keeps the system honest." }
   };
 
   const FOCUS_QUESTIONS = {
@@ -705,7 +685,7 @@
         weekOf: iso,
         viewMode: "prep",
         orgLevel: "School",
-        school: "Fleming County High",
+        school: "Fleming Co. HS",
         submitterRole: "Principal",
         submitterName: "",
         weeklyFocus: "vibrant_learning"
@@ -718,9 +698,9 @@
         laneOwner: ""
       },
       answers: {
-        core: {},      // {id:{ text:"", checked:false, notes:"", artifacts:[...] }}
-        focus: {},     // same structure
-        closing: {}    // {closing:{...}}
+        core: {},
+        focus: {},
+        closing: {}
       }
     };
   }
@@ -870,7 +850,6 @@
   }
 
   function wireQuestionEvents(scopeEl){
-    // checkbox + textarea
     scopeEl.querySelectorAll("[data-field]").forEach(el => {
       const bucket = el.getAttribute("data-bucket");
       const qid = el.getAttribute("data-qid");
@@ -891,7 +870,6 @@
       el.addEventListener(field === "checked" ? "change" : "input", handler);
     });
 
-    // action buttons
     scopeEl.querySelectorAll("[data-action]").forEach(el => {
       const action = el.getAttribute("data-action");
       const bucket = el.getAttribute("data-bucket");
@@ -929,8 +907,6 @@
 
           try{
             const a = ensureAnswerBucket(bucket, qid);
-
-            // Upload to Apps Script -> Drive, then store the returned link.
             const uploaded = await uploadArtifactToDrive(file);
             a.artifacts.push({
               kind: "upload",
@@ -1080,7 +1056,6 @@
       const reader = new FileReader();
       reader.onload = () => {
         const result = String(reader.result || "");
-        // result is like "data:application/pdf;base64,AAAA"
         const parts = result.split(",");
         if(parts.length < 2) return reject(new Error("Invalid file encoding."));
         resolve(parts[1]);
@@ -1091,11 +1066,6 @@
   }
 
   async function uploadArtifactToDrive(file){
-    if(!SCRIPT_URL || SCRIPT_URL.includes("PASTE_YOUR_WEB_APP_URL_HERE")){
-      throw new Error("SCRIPT_URL is not set.");
-    }
-
-    // Practical note: Apps Script has size limits. Keep uploads small (example: under ~5-10MB).
     const b64 = await readFileAsBase64(file);
 
     const payload = {
@@ -1127,18 +1097,14 @@
     const focusId = state.meta.weeklyFocus;
     const focusTitle = FOCUS_META[focusId]?.title || focusId;
 
-    // Core answers as map id -> object
     const core_answers = {};
     CORE_FRAMING_QUESTIONS.forEach(q => core_answers[q.id] = ensureAnswerBucket("core", q.id));
 
-    // Focus answers
     const focus_answers = {};
     (FOCUS_QUESTIONS[focusId] || []).forEach(q => focus_answers[q.id] = ensureAnswerBucket("focus", q.id));
 
-    // Closing
     const closing_answers = { closing: ensureAnswerBucket("closing", "closing") };
 
-    // Include any artifacts that were attached inside answers, plus allow evidence links in answers themselves.
     return {
       week_of: state.meta.weekOf,
       view_mode: state.meta.viewMode,
@@ -1157,38 +1123,13 @@
       metric3: state.status.metric3,
       lane_owner: state.status.laneOwner,
 
-      // Keep these for compatibility with earlier schema, but answers carry the core truth.
-      working: "",
-      not_working: "",
-      plan: "",
-      help_needed: (ensureAnswerBucket("core","help").text || ""),
-      evidence: "",
-
-      risks: (ensureAnswerBucket("core","threat").text || ""),
-
-      // Optional quick signals (keep if you want, otherwise remove)
-      bpi_pulse: "",
-      real_world_wac: "",
-
       core_answers,
       focus_answers,
-      closing_answers,
-
-      commitments: [] // optional future
+      closing_answers
     };
   }
 
   async function submitToSheet(){
-    if(!SCRIPT_URL || SCRIPT_URL.includes("PASTE_YOUR_WEB_APP_URL_HERE")){
-      alert("Please set SCRIPT_URL in the HTML first.");
-      return;
-    }
-
-    if(state.meta.orgLevel === "School" && !state.meta.school){
-      alert("Please choose a school.");
-      return;
-    }
-
     const payload = buildSubmissionPayload();
 
     const btn = document.getElementById("submitToSheetBtn");
@@ -1213,7 +1154,7 @@
   }
 
   // =========================
-  // TRENDS
+  // TRENDS (expects your Apps Script doGet to return {ok:true, rows:[...]} )
   // =========================
   async function fetchAllRows(){
     const res = await fetch(SCRIPT_URL, { method: "GET" });
@@ -1238,21 +1179,11 @@
     const from = fromStr ? new Date(fromStr + "T00:00:00") : null;
     const to = toStr ? new Date(toStr + "T23:59:59") : null;
 
-    // Always filter to the currently selected weekly focus area, unless you want "All"
     const focusId = state.meta.weeklyFocus;
-
-    // Respect current school selection if School contributor, otherwise keep school filter optional by leaving it as-is
-    const schoolFilter = (state.meta.orgLevel === "School") ? state.meta.school : null;
 
     return rows.filter(r => {
       if(orgLevel !== "all" && r.org_level !== orgLevel) return false;
       if(r.weekly_focus_area_id && r.weekly_focus_area_id !== focusId) return false;
-
-      if(schoolFilter && r.school !== schoolFilter && r.school !== "District") {
-        // If principal is viewing, keep focus on their school (district rows optional).
-        // If you want to include district rows too, remove this block.
-        return false;
-      }
 
       const ts = parseDateMaybe(r.timestamp_iso) || parseDateMaybe(r.week_of);
       if(!ts) return false;
@@ -1341,10 +1272,6 @@
   }
 
   async function refreshTrends(){
-    if(!SCRIPT_URL || SCRIPT_URL.includes("PASTE_YOUR_WEB_APP_URL_HERE")){
-      alert("Please set SCRIPT_URL in the HTML first.");
-      return;
-    }
     try{
       const all = await fetchAllRows();
       const filtered = applyTrendFilters(all);
@@ -1369,7 +1296,6 @@
     bind("orgLevel", () => {
       state.meta.orgLevel = document.getElementById("orgLevel").value;
       setSchoolVisibility();
-      // Keep school when switching, but hide it for district.
       saveState();
       renderSummaryBar();
     });
