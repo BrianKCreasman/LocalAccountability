@@ -54,6 +54,26 @@
       overflow:auto;
     }
 
+    /* NEW: Compass logo above brand box */
+    .logoWrap{
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      margin: 4px 0 14px 0;
+    }
+    .logoWrap img{
+      width: 210px;
+      max-width: 100%;
+      height: auto;
+      border-radius: 18px;
+      background:#ffffff;
+      padding: 10px 12px;
+      border: 1px solid rgba(0,0,0,0.10);
+      box-shadow:
+        0 14px 36px rgba(0,0,0,0.14),
+        0 6px 14px rgba(0,0,0,0.10);
+    }
+
     .brand{
       display:flex;
       flex-direction:column;
@@ -546,6 +566,12 @@
 <body>
   <div class="app">
     <aside class="sidebar">
+
+      <!-- NEW: Logo above the brand rectangle -->
+      <div class="logoWrap">
+        <img src="https://i.postimg.cc/JhPCnwDT/Compass_Logo.png" alt="Compass Review Logo">
+      </div>
+
       <div class="brand">
         <h1>FCS Weekly Executive Review</h1>
         <div class="sub">
@@ -1039,14 +1065,12 @@
   }
 
   function isDistrictExpanded(bucket, qid){
-    // District contributor: always expanded
     if(isDistrictContributor()) return true;
 
     const key = districtKey(bucket, qid);
     if(typeof districtExpandMap[key] === "boolean"){
       return districtExpandMap[key];
     }
-    // default is collapsed
     return false;
   }
 
@@ -1366,13 +1390,11 @@
 
       container.appendChild(el);
 
-      // Hydrate values + artifacts
       hydrateRolePanel(bucket, q.id, "school", el);
       hydrateRolePanel(bucket, q.id, "district", el);
       renderArtifacts(bucket, q.id, "school");
       renderArtifacts(bucket, q.id, "district");
 
-      // Auto-collapse logic: if School contributor, default is collapsed unless previously expanded
       if(defaultDistrictCollapsed() && !isDistrictExpanded(bucket, q.id)){
         const body = el.querySelector(`#${bucket}_${q.id}_districtBody`);
         if(body) body.classList.add("collapsed");
@@ -1427,7 +1449,6 @@
   }
 
   function wireQuestionEvents(scopeEl){
-    // inputs/textarea
     scopeEl.querySelectorAll("[data-field]").forEach(el => {
       const bucket = el.getAttribute("data-bucket");
       const qid = el.getAttribute("data-qid");
@@ -1449,7 +1470,6 @@
       el.addEventListener(field === "checked" ? "change" : "input", handler);
     });
 
-    // actions
     scopeEl.querySelectorAll("[data-action]").forEach(el => {
       const action = el.getAttribute("data-action");
       const bucket = el.getAttribute("data-bucket");
@@ -1458,7 +1478,6 @@
 
       if(action === "toggleDistrict"){
         el.addEventListener("click", () => {
-          // For district contributors, do nothing (always expanded)
           if(isDistrictContributor()) return;
 
           const body = document.getElementById(`${bucket}_${qid}_districtBody`);
@@ -1538,9 +1557,6 @@
     });
   }
 
-  // =========================
-  // COMPLETION INDICATORS
-  // =========================
   function countAnswered(bucket, questions){
     let answered = 0;
     questions.forEach(q => {
@@ -1587,9 +1603,6 @@
     document.getElementById("completionPill").textContent = `${pct}% complete`;
   }
 
-  // =========================
-  // PAGE RENDER
-  // =========================
   function renderSummaryBar(){
     const bar = document.getElementById("summaryBar");
     bar.innerHTML = "";
@@ -1622,9 +1635,6 @@
     return d;
   }
 
-  // =========================
-  // ARTIFACT UPLOAD (Drive via Apps Script)
-  // =========================
   function readFileAsBase64(file){
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -1664,9 +1674,6 @@
     return data.file;
   }
 
-  // =========================
-  // SHEET SUBMISSION
-  // =========================
   function buildSubmissionPayload(){
     const focusId = state.meta.weeklyFocus;
     const focusTitle = FOCUS_META[focusId]?.title || focusId;
@@ -1727,9 +1734,6 @@
     }
   }
 
-  // =========================
-  // TRENDS (same as prior, unchanged)
-  // =========================
   async function fetchAllRows(){
     const res = await fetch(SCRIPT_URL, { method: "GET" });
     const data = await res.json();
@@ -1877,9 +1881,6 @@
     }
   }
 
-  // =========================
-  // PAGE RENDER
-  // =========================
   function renderPage(){
     document.getElementById("weekOf").value = state.meta.weekOf;
     document.getElementById("viewMode").value = state.meta.viewMode;
@@ -1914,7 +1915,6 @@
 
     renderSummaryBar();
 
-    // If contributor switched to District, force-expand all district panels (and update button text)
     if(isDistrictContributor()){
       forceExpandAllDistrictPanels();
     }
@@ -1926,8 +1926,6 @@
       btn.textContent = "Hide District";
     });
 
-    // also record expanded for all visible questions so switching back keeps last state reasonable
-    // (optional, but helps)
     const focusId = state.meta.weeklyFocus;
     const allQs = [
       ...CORE_FRAMING_QUESTIONS.map(q => ({bucket:"core", id:q.id})),
@@ -1937,9 +1935,6 @@
     allQs.forEach(x => setDistrictExpanded(x.bucket, x.id, true));
   }
 
-  // =========================
-  // WIRES
-  // =========================
   function wireMeta(){
     const bind = (id, fn, evt="change") => document.getElementById(id).addEventListener(evt, fn);
 
@@ -1949,8 +1944,6 @@
     bind("orgLevel", () => {
       state.meta.orgLevel = document.getElementById("orgLevel").value;
       setSchoolVisibility();
-
-      // If switching to District, expand everything immediately.
       saveState();
       renderPage();
     });
@@ -2036,9 +2029,6 @@
     document.getElementById("refreshTrendsBtn").addEventListener("click", refreshTrends);
   }
 
-  // =========================
-  // INIT
-  // =========================
   wireMeta();
   wireButtons();
   renderPage();
