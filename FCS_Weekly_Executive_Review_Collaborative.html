@@ -21,6 +21,13 @@
       --yellow:#f59e0b;
       --red:#dc2626;
       --blue:#2563eb;
+
+      /* role colors */
+      --school-bg: rgba(219,213,155,0.22);
+      --school-border: rgba(0,0,0,0.16);
+
+      --district-bg: rgba(37,99,235,0.10);
+      --district-border: rgba(37,99,235,0.22);
     }
 
     *{ box-sizing:border-box; }
@@ -220,12 +227,6 @@
       font-weight:700;
       line-height:1.35;
     }
-    .qMeta{
-      display:flex;
-      align-items:center;
-      gap:8px;
-      flex:0 0 auto;
-    }
 
     .checkWrap{
       display:flex;
@@ -246,9 +247,108 @@
     }
     .qItem:hover .tip{ display:block; }
 
+    /* Two-role layout */
+    .roleStack{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:10px;
+      margin-top:10px;
+    }
+    .rolePanel{
+      border-radius: 16px;
+      padding:10px;
+      border: 1px solid rgba(0,0,0,0.12);
+      background: #fff;
+      position: relative;
+      overflow: hidden;
+    }
+    .roleHeader{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:10px;
+      margin-bottom:8px;
+    }
+    .roleTitle{
+      font-weight:900;
+      font-size:12px;
+      letter-spacing:0.2px;
+    }
+    .roleBadge{
+      font-size:10px;
+      font-weight:900;
+      padding:6px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(0,0,0,0.10);
+      background:#fff;
+      white-space:nowrap;
+    }
+
+    .rolePanel.school{
+      background: var(--school-bg);
+      border-color: var(--school-border);
+    }
+    .rolePanel.district{
+      background: var(--district-bg);
+      border-color: var(--district-border);
+    }
+    .rolePanel.school .roleBadge{
+      background: rgba(219,213,155,0.45);
+    }
+    .rolePanel.district .roleBadge{
+      background: rgba(37,99,235,0.14);
+      border-color: rgba(37,99,235,0.22);
+    }
+
+    /* NEW: District auto-collapse */
+    .districtWrap{
+      margin-top: 8px;
+    }
+    .districtBanner{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      padding:10px 12px;
+      border-radius: 14px;
+      border: 1px dashed rgba(37,99,235,0.35);
+      background: rgba(37,99,235,0.08);
+      margin-bottom: 10px;
+    }
+    .districtBanner .left{
+      display:flex;
+      flex-direction:column;
+      gap:2px;
+    }
+    .districtBanner .title{
+      font-weight:900;
+      font-size:12px;
+      color:#111;
+      letter-spacing:0.2px;
+    }
+    .districtBanner .desc{
+      font-size:11px;
+      color: var(--gray);
+      line-height:1.25;
+    }
+    .toggleLink{
+      border: 1px solid rgba(37,99,235,0.25);
+      background:#fff;
+      border-radius: 999px;
+      padding:8px 10px;
+      font-weight:900;
+      font-size:11px;
+      cursor:pointer;
+      white-space:nowrap;
+      transition: transform .12s ease, box-shadow .12s ease;
+    }
+    .toggleLink:hover{ transform: translateY(-1px); box-shadow: var(--shadow-soft); }
+
+    .districtBody.collapsed{ display:none; }
+
     .qAnswer{
       width:100%;
-      min-height: 86px;
+      min-height: 110px;
     }
 
     .qActions{
@@ -338,12 +438,14 @@
       .app{ grid-template-columns: 1fr; }
       .sidebar{ position:relative; height:auto; }
       .laneRow{ grid-template-columns: 1fr; }
+      .roleStack{ grid-template-columns: 1fr; }
     }
 
     @media print{
-      .sidebar, .tools, .footerNote, .miniBtn{ display:none !important; }
+      .sidebar, .tools, .footerNote, .miniBtn, .toggleLink{ display:none !important; }
       body{ background:#fff; }
       .card{ box-shadow:none; }
+      .districtBody.collapsed{ display:block !important; }
     }
 
     /* Evidence Modal */
@@ -581,7 +683,7 @@
             </div>
 
             <div class="muted" style="margin-top:10px;">
-              Tip: Hover on questions for guidance. Use checkmarks when the answer is clear and evidence-backed.
+              Tip: District panels auto-collapse for School contributors. Use "Show District" when needed.
             </div>
           </div>
         </div>
@@ -705,13 +807,14 @@
   // =========================
   // CONFIG
   // =========================
-  // Your deployed Google Apps Script Web App URL:
   const SCRIPT_URL = "https://script.google.com/a/macros/fleming.kyschools.us/s/AKfycbzNVN8AiQzPBzE1CMdDzy9bWGzlq9_p4qALlzwuEDkUxIzazgIHK70pS61nswTX0T_B6w/exec";
+  const STORAGE_KEY = "fcs_weekly_exec_review_collab_v3_autocollapse";
 
-  const STORAGE_KEY = "fcs_weekly_exec_review_collab_v1";
+  // If true: District panels start collapsed unless Contributor=District
+  const AUTO_COLLAPSE_DISTRICT_FOR_SCHOOL = true;
 
   // =========================
-  // QUESTIONS (structured)
+  // QUESTIONS
   // =========================
   const CORE_FRAMING_QUESTIONS = [
     { id:"plan", prompt:"What is the plan for this area of focus? If the plan cannot be stated in two to three sentences, it is not clear enough yet.", tip:"Write it as a tight plan statement. If it is long, it is not clear yet." },
@@ -793,6 +896,10 @@
   // =========================
   // STATE
   // =========================
+  function blankRoleAnswer(){
+    return { text:"", checked:false, notes:"", artifacts:[] };
+  }
+
   function defaultState(){
     const today = new Date();
     const iso = new Date(today.getTime() - today.getTimezoneOffset()*60000).toISOString().slice(0,10);
@@ -824,18 +931,59 @@
 
   let state = loadState();
 
+  // Keep per-question district collapse state so toggles persist
+  // key: `${bucket}:${qid}` => boolean (true = expanded)
+  let districtExpandMap = {};
+
+  function migrateOldAnswerShape(obj){
+    if(!obj || typeof obj !== "object") return null;
+
+    const hasRole = (obj.school && obj.district);
+    if(hasRole) return obj;
+
+    const looksOld = ("text" in obj) || ("checked" in obj) || ("notes" in obj) || ("artifacts" in obj);
+    if(looksOld){
+      return {
+        school: { ...blankRoleAnswer(), ...obj },
+        district: { ...blankRoleAnswer() }
+      };
+    }
+
+    return {
+      school: { ...blankRoleAnswer(), ...(obj.school || {}) },
+      district: { ...blankRoleAnswer(), ...(obj.district || {}) }
+    };
+  }
+
   function loadState(){
     try{
       const raw = localStorage.getItem(STORAGE_KEY);
       if(!raw) return defaultState();
       const parsed = JSON.parse(raw);
-      return { ...defaultState(), ...parsed };
+      const merged = { ...defaultState(), ...parsed };
+
+      ["core","focus","closing"].forEach(bucket => {
+        merged.answers[bucket] = merged.answers[bucket] || {};
+        Object.keys(merged.answers[bucket]).forEach(qid => {
+          merged.answers[bucket][qid] = migrateOldAnswerShape(merged.answers[bucket][qid]) || {
+            school: blankRoleAnswer(),
+            district: blankRoleAnswer()
+          };
+        });
+      });
+
+      // restore collapse state map if present
+      districtExpandMap = merged._districtExpandMap || {};
+
+      return merged;
     }catch(e){
       return defaultState();
     }
   }
 
   function saveState(){
+    // persist collapse map too
+    state._districtExpandMap = districtExpandMap;
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
   }
 
@@ -877,8 +1025,58 @@
     schoolField.style.display = (org === "School") ? "block" : "none";
   }
 
+  function isDistrictContributor(){
+    return (state.meta.orgLevel || "").toLowerCase() === "district";
+  }
+
+  function defaultDistrictCollapsed(){
+    if(!AUTO_COLLAPSE_DISTRICT_FOR_SCHOOL) return false;
+    return !isDistrictContributor();
+  }
+
+  function districtKey(bucket, qid){
+    return `${bucket}:${qid}`;
+  }
+
+  function isDistrictExpanded(bucket, qid){
+    // District contributor: always expanded
+    if(isDistrictContributor()) return true;
+
+    const key = districtKey(bucket, qid);
+    if(typeof districtExpandMap[key] === "boolean"){
+      return districtExpandMap[key];
+    }
+    // default is collapsed
+    return false;
+  }
+
+  function setDistrictExpanded(bucket, qid, expanded){
+    districtExpandMap[districtKey(bucket, qid)] = !!expanded;
+    saveState();
+  }
+
   // =========================
-  // EVIDENCE (Modal + extraction)
+  // ROLE ANSWER SHAPE
+  // =========================
+  function ensureRoleAnswer(bucket, qid){
+    if(!state.answers[bucket][qid]){
+      state.answers[bucket][qid] = { school: blankRoleAnswer(), district: blankRoleAnswer() };
+      return state.answers[bucket][qid];
+    }
+    state.answers[bucket][qid] = migrateOldAnswerShape(state.answers[bucket][qid]) || {
+      school: blankRoleAnswer(),
+      district: blankRoleAnswer()
+    };
+    return state.answers[bucket][qid];
+  }
+
+  function getRoleAnswer(bucket, qid, role){
+    const a = ensureRoleAnswer(bucket, qid);
+    return a[role];
+  }
+
+  // =========================
+  // EVIDENCE MODAL (same as prior)
   // =========================
   let SUBMISSION_CACHE = [];
 
@@ -898,7 +1096,7 @@
     return Array.from(new Set(urls));
   }
 
-  function extractArtifactLinksFromAnswerObj(ans){
+  function extractArtifactLinksFromRoleAnswer(ans){
     const links = [];
     if(!ans) return links;
 
@@ -911,6 +1109,21 @@
     extractUrlsFromText(ans.text).forEach(u => links.push({ url: u, label: "Link in answer", kind: "inline" }));
     extractUrlsFromText(ans.notes).forEach(u => links.push({ url: u, label: "Link in note", kind: "inline" }));
 
+    return links;
+  }
+
+  function extractArtifactLinksFromAnswerObj(ans){
+    const links = [];
+    if(!ans) return links;
+
+    const normalized = migrateOldAnswerShape(ans);
+    if(normalized && normalized.school && normalized.district){
+      links.push(...extractArtifactLinksFromRoleAnswer(normalized.school));
+      links.push(...extractArtifactLinksFromRoleAnswer(normalized.district));
+      return links;
+    }
+
+    links.push(...extractArtifactLinksFromRoleAnswer(ans));
     return links;
   }
 
@@ -992,7 +1205,7 @@
       empty.innerHTML = `
         <div class="meta">
           <div class="title">No artifacts found for this week and focus yet</div>
-          <div class="hint">Upload or add a link inside any question, then submit again.</div>
+          <div class="hint">Upload or add a link inside any School or District box, then submit again.</div>
         </div>
       `;
       listEl.appendChild(empty);
@@ -1032,21 +1245,17 @@
   }
 
   // =========================
-  // RENDER QUESTIONS
+  // RENDER QUESTIONS (with District auto-collapse)
   // =========================
-  function ensureAnswerBucket(bucket, id){
-    if(!state.answers[bucket][id]){
-      state.answers[bucket][id] = { text:"", checked:false, notes:"", artifacts:[] };
-    }
-    return state.answers[bucket][id];
-  }
-
   function renderQuestionList(containerId, bucket, questions){
     const container = document.getElementById(containerId);
     container.innerHTML = "";
 
     questions.forEach(q => {
-      const a = ensureAnswerBucket(bucket, q.id);
+      ensureRoleAnswer(bucket, q.id);
+
+      const expanded = isDistrictExpanded(bucket, q.id);
+      const collapseClass = expanded ? "" : "collapsed";
 
       const el = document.createElement("div");
       el.className = "qItem";
@@ -1056,38 +1265,119 @@
             <div class="qPrompt">${escapeHtml(q.prompt)}</div>
             <div class="tip">Tip: ${escapeHtml(q.tip || "")}</div>
           </div>
-          <div class="qMeta">
+        </div>
+
+        <div class="roleStack">
+          <!-- SCHOOL -->
+          <div class="rolePanel school">
+            <div class="roleHeader">
+              <div>
+                <div class="roleTitle">School Leader</div>
+                <div class="muted">What you saw and what students produced this week.</div>
+              </div>
+              <div class="roleBadge">SCHOOL</div>
+            </div>
+
             <label class="checkWrap" title="Mark as clear and evidence-backed">
-              <input type="checkbox" data-bucket="${bucket}" data-qid="${q.id}" data-field="checked" ${a.checked ? "checked":""}/>
+              <input type="checkbox"
+                data-bucket="${bucket}" data-qid="${q.id}" data-role="school" data-field="checked"/>
               Clear
             </label>
+
+            <textarea class="qAnswer"
+              data-bucket="${bucket}" data-qid="${q.id}" data-role="school" data-field="text"
+              placeholder="School leader response (evidence-backed specifics)."></textarea>
+
+            <div class="qActions">
+              <button class="miniBtn" data-action="addNote" data-bucket="${bucket}" data-qid="${q.id}" data-role="school">Add note</button>
+
+              <button class="miniBtn primary" data-action="addLink" data-bucket="${bucket}" data-qid="${q.id}" data-role="school">
+                Add artifact link
+              </button>
+
+              <label class="miniBtn primary" style="display:inline-flex; align-items:center; gap:8px;">
+                Upload artifact
+                <input type="file" style="display:none;" data-action="upload" data-bucket="${bucket}" data-qid="${q.id}" data-role="school"/>
+              </label>
+
+              <span class="muted" id="${bucket}_${q.id}_school_noteHint"></span>
+            </div>
+
+            <div class="artifactList" id="${bucket}_${q.id}_school_artifacts"></div>
+          </div>
+
+          <!-- DISTRICT (Banner + Collapsible Body) -->
+          <div class="rolePanel district">
+            <div class="districtWrap">
+              <div class="districtBanner">
+                <div class="left">
+                  <div class="title">District panel exists</div>
+                  <div class="desc">Used for validation, patterns, supports, and barrier removal.</div>
+                </div>
+                <button class="toggleLink"
+                  type="button"
+                  data-action="toggleDistrict"
+                  data-bucket="${bucket}"
+                  data-qid="${q.id}">
+                  ${expanded ? "Hide District" : "Show District"}
+                </button>
+              </div>
+
+              <div class="districtBody ${collapseClass}" id="${bucket}_${q.id}_districtBody">
+                <div class="roleHeader">
+                  <div>
+                    <div class="roleTitle">District Leader</div>
+                    <div class="muted">What you can validate, support, and remove as barriers.</div>
+                  </div>
+                  <div class="roleBadge">DISTRICT</div>
+                </div>
+
+                <label class="checkWrap" title="Mark as clear and evidence-backed">
+                  <input type="checkbox"
+                    data-bucket="${bucket}" data-qid="${q.id}" data-role="district" data-field="checked"/>
+                  Clear
+                </label>
+
+                <textarea class="qAnswer"
+                  data-bucket="${bucket}" data-qid="${q.id}" data-role="district" data-field="text"
+                  placeholder="District leader response (validation, patterns, supports needed)."></textarea>
+
+                <div class="qActions">
+                  <button class="miniBtn" data-action="addNote" data-bucket="${bucket}" data-qid="${q.id}" data-role="district">Add note</button>
+
+                  <button class="miniBtn primary" data-action="addLink" data-bucket="${bucket}" data-qid="${q.id}" data-role="district">
+                    Add artifact link
+                  </button>
+
+                  <label class="miniBtn primary" style="display:inline-flex; align-items:center; gap:8px;">
+                    Upload artifact
+                    <input type="file" style="display:none;" data-action="upload" data-bucket="${bucket}" data-qid="${q.id}" data-role="district"/>
+                  </label>
+
+                  <span class="muted" id="${bucket}_${q.id}_district_noteHint"></span>
+                </div>
+
+                <div class="artifactList" id="${bucket}_${q.id}_district_artifacts"></div>
+              </div>
+            </div>
           </div>
         </div>
-
-        <textarea class="qAnswer" data-bucket="${bucket}" data-qid="${q.id}" data-field="text"
-          placeholder="Answer with evidence-backed specifics.">${escapeHtml(a.text)}</textarea>
-
-        <div class="qActions">
-          <button class="miniBtn" data-action="addNote" data-bucket="${bucket}" data-qid="${q.id}">Add note</button>
-
-          <button class="miniBtn primary" data-action="addLink" data-bucket="${bucket}" data-qid="${q.id}">
-            Add artifact link
-          </button>
-
-          <label class="miniBtn primary" style="display:inline-flex; align-items:center; gap:8px;">
-            Upload artifact
-            <input type="file" style="display:none;" data-action="upload" data-bucket="${bucket}" data-qid="${q.id}"/>
-          </label>
-
-          <span class="muted" id="${bucket}_${q.id}_noteHint">${a.notes ? "Note added" : ""}</span>
-        </div>
-
-        <div class="artifactList" id="${bucket}_${q.id}_artifacts"></div>
       `;
 
       container.appendChild(el);
 
-      renderArtifacts(bucket, q.id);
+      // Hydrate values + artifacts
+      hydrateRolePanel(bucket, q.id, "school", el);
+      hydrateRolePanel(bucket, q.id, "district", el);
+      renderArtifacts(bucket, q.id, "school");
+      renderArtifacts(bucket, q.id, "district");
+
+      // Auto-collapse logic: if School contributor, default is collapsed unless previously expanded
+      if(defaultDistrictCollapsed() && !isDistrictExpanded(bucket, q.id)){
+        const body = el.querySelector(`#${bucket}_${q.id}_districtBody`);
+        if(body) body.classList.add("collapsed");
+      }
+
       wireQuestionEvents(el);
     });
 
@@ -1095,9 +1385,22 @@
     updateCompletion();
   }
 
-  function renderArtifacts(bucket, qid){
-    const a = ensureAnswerBucket(bucket, qid);
-    const list = document.getElementById(`${bucket}_${qid}_artifacts`);
+  function hydrateRolePanel(bucket, qid, role, scopeEl){
+    const a = getRoleAnswer(bucket, qid, role);
+
+    const chk = scopeEl.querySelector(`input[type="checkbox"][data-bucket="${bucket}"][data-qid="${qid}"][data-role="${role}"][data-field="checked"]`);
+    if(chk) chk.checked = !!a.checked;
+
+    const ta = scopeEl.querySelector(`textarea[data-bucket="${bucket}"][data-qid="${qid}"][data-role="${role}"][data-field="text"]`);
+    if(ta) ta.value = a.text || "";
+
+    const hint = document.getElementById(`${bucket}_${qid}_${role}_noteHint`);
+    if(hint) hint.textContent = a.notes ? "Note added" : "";
+  }
+
+  function renderArtifacts(bucket, qid, role){
+    const a = getRoleAnswer(bucket, qid, role);
+    const list = document.getElementById(`${bucket}_${qid}_${role}_artifacts`);
     if(!list) return;
 
     list.innerHTML = "";
@@ -1113,7 +1416,10 @@
           <div class="muted">${escapeHtml(art.kind || "")}${art.kind ? " | " : ""}${escapeHtml(art.note || "")}</div>
         </div>
         <div class="right">
-          <button class="miniBtn" data-action="removeArtifact" data-bucket="${bucket}" data-qid="${qid}" data-idx="${idx}">Remove</button>
+          <button class="miniBtn"
+            data-action="removeArtifact" data-bucket="${bucket}" data-qid="${qid}" data-role="${role}" data-idx="${idx}">
+            Remove
+          </button>
         </div>
       `;
       list.appendChild(row);
@@ -1121,13 +1427,15 @@
   }
 
   function wireQuestionEvents(scopeEl){
+    // inputs/textarea
     scopeEl.querySelectorAll("[data-field]").forEach(el => {
       const bucket = el.getAttribute("data-bucket");
       const qid = el.getAttribute("data-qid");
+      const role = el.getAttribute("data-role");
       const field = el.getAttribute("data-field");
 
       const handler = () => {
-        const a = ensureAnswerBucket(bucket, qid);
+        const a = getRoleAnswer(bucket, qid, role);
         if(field === "checked"){
           a.checked = !!el.checked;
         }else if(field === "text"){
@@ -1141,32 +1449,55 @@
       el.addEventListener(field === "checked" ? "change" : "input", handler);
     });
 
+    // actions
     scopeEl.querySelectorAll("[data-action]").forEach(el => {
       const action = el.getAttribute("data-action");
       const bucket = el.getAttribute("data-bucket");
       const qid = el.getAttribute("data-qid");
+      const role = el.getAttribute("data-role");
+
+      if(action === "toggleDistrict"){
+        el.addEventListener("click", () => {
+          // For district contributors, do nothing (always expanded)
+          if(isDistrictContributor()) return;
+
+          const body = document.getElementById(`${bucket}_${qid}_districtBody`);
+          if(!body) return;
+
+          const currentlyCollapsed = body.classList.contains("collapsed");
+          if(currentlyCollapsed){
+            body.classList.remove("collapsed");
+            el.textContent = "Hide District";
+            setDistrictExpanded(bucket, qid, true);
+          }else{
+            body.classList.add("collapsed");
+            el.textContent = "Show District";
+            setDistrictExpanded(bucket, qid, false);
+          }
+        });
+      }
 
       if(action === "addNote"){
         el.addEventListener("click", () => {
-          const a = ensureAnswerBucket(bucket, qid);
+          const a = getRoleAnswer(bucket, qid, role);
           const next = prompt("Add a short note (context, names, reminders):", a.notes || "");
           if(next === null) return;
           a.notes = next.trim();
           saveState();
-          const hint = document.getElementById(`${bucket}_${qid}_noteHint`);
+          const hint = document.getElementById(`${bucket}_${qid}_${role}_noteHint`);
           if(hint) hint.textContent = a.notes ? "Note added" : "";
         });
       }
 
       if(action === "addLink"){
         el.addEventListener("click", () => {
-          const a = ensureAnswerBucket(bucket, qid);
+          const a = getRoleAnswer(bucket, qid, role);
           const url = prompt("Paste an artifact link (Drive link, BPI page, rubric, student product URL):", "");
           if(!url) return;
           const label = prompt("Short label (example: 'BPI sample: Grade 7', 'BPA rubric', 'WAC published piece'):", "Artifact");
           a.artifacts.push({ kind:"link", url: url.trim(), label: (label || "Artifact").trim(), note:"" });
           saveState();
-          renderArtifacts(bucket, qid);
+          renderArtifacts(bucket, qid, role);
         });
       }
 
@@ -1177,7 +1508,7 @@
           if(!file) return;
 
           try{
-            const a = ensureAnswerBucket(bucket, qid);
+            const a = getRoleAnswer(bucket, qid, role);
             const uploaded = await uploadArtifactToDrive(file);
             a.artifacts.push({
               kind: "upload",
@@ -1187,7 +1518,7 @@
             });
 
             saveState();
-            renderArtifacts(bucket, qid);
+            renderArtifacts(bucket, qid, role);
             alert("Uploaded and linked.");
           }catch(err){
             alert("Upload failed: " + String(err));
@@ -1198,10 +1529,10 @@
       if(action === "removeArtifact"){
         el.addEventListener("click", () => {
           const idx = Number(el.getAttribute("data-idx"));
-          const a = ensureAnswerBucket(bucket, qid);
+          const a = getRoleAnswer(bucket, qid, role);
           a.artifacts.splice(idx, 1);
           saveState();
-          renderArtifacts(bucket, qid);
+          renderArtifacts(bucket, qid, role);
         });
       }
     });
@@ -1213,9 +1544,12 @@
   function countAnswered(bucket, questions){
     let answered = 0;
     questions.forEach(q => {
-      const a = ensureAnswerBucket(bucket, q.id);
-      const hasText = (a.text || "").trim().length > 0;
-      if(hasText) answered += 1;
+      const school = getRoleAnswer(bucket, q.id, "school");
+      const district = getRoleAnswer(bucket, q.id, "district");
+      const hasAnyText =
+        (school.text || "").trim().length > 0 ||
+        (district.text || "").trim().length > 0;
+      if(hasAnyText) answered += 1;
     });
     return { answered, total: questions.length };
   }
@@ -1229,8 +1563,10 @@
     const focus = countAnswered("focus", focusQs);
     document.getElementById("focusDonePill").textContent = `${focus.answered}/${focus.total} answered`;
 
-    const closingA = ensureAnswerBucket("closing", "closing");
-    document.getElementById("closeDonePill").textContent = (closingA.text || "").trim().length ? "Answered" : "Not answered";
+    const closingSchool = getRoleAnswer("closing", "closing", "school");
+    const closingDistrict = getRoleAnswer("closing", "closing", "district");
+    const closingAnswered = (closingSchool.text || "").trim().length || (closingDistrict.text || "").trim().length;
+    document.getElementById("closeDonePill").textContent = closingAnswered ? "Answered" : "Not answered";
   }
 
   function updateCompletion(){
@@ -1239,8 +1575,10 @@
 
     const core = countAnswered("core", CORE_FRAMING_QUESTIONS);
     const focus = countAnswered("focus", focusQs);
-    const closingA = ensureAnswerBucket("closing", "closing");
-    const closingAnswered = (closingA.text || "").trim().length ? 1 : 0;
+
+    const closingSchool = getRoleAnswer("closing", "closing", "school");
+    const closingDistrict = getRoleAnswer("closing", "closing", "district");
+    const closingAnswered = ((closingSchool.text || "").trim().length || (closingDistrict.text || "").trim().length) ? 1 : 0;
 
     const total = core.total + focus.total + 1;
     const done = core.answered + focus.answered + closingAnswered;
@@ -1252,41 +1590,6 @@
   // =========================
   // PAGE RENDER
   // =========================
-  function renderPage(){
-    document.getElementById("weekOf").value = state.meta.weekOf;
-    document.getElementById("viewMode").value = state.meta.viewMode;
-    document.getElementById("orgLevel").value = state.meta.orgLevel;
-    document.getElementById("schoolSelect").value = state.meta.school;
-    document.getElementById("submitterRole").value = state.meta.submitterRole;
-    document.getElementById("submitterName").value = state.meta.submitterName;
-    document.getElementById("weeklyFocus").value = state.meta.weeklyFocus;
-
-    setSchoolVisibility();
-
-    document.getElementById("statusSelect").value = state.status.status;
-    document.getElementById("metric1").value = state.status.metric1;
-    document.getElementById("metric2").value = state.status.metric2;
-    document.getElementById("metric3").value = state.status.metric3;
-    document.getElementById("laneOwner").value = state.status.laneOwner;
-
-    updateStatusDot();
-
-    const focusId = state.meta.weeklyFocus;
-    const meta = FOCUS_META[focusId];
-    document.getElementById("pageTitle").textContent = `Weekly Focus: ${meta ? meta.title : "Focus Area"}`;
-    document.getElementById("pageContext").textContent =
-      "Complete this as a School or District contributor. Use evidence. Keep answers tight and honest. Submit once your answers are clear.";
-
-    document.getElementById("focusTitle").textContent = `Focus Area Questions: ${meta ? meta.title : ""}`;
-    document.getElementById("focusHint").textContent = meta ? meta.hint : "";
-
-    renderQuestionList("coreQuestions", "core", CORE_FRAMING_QUESTIONS);
-    renderQuestionList("focusQuestions", "focus", FOCUS_QUESTIONS[focusId] || []);
-    renderQuestionList("closingQuestion", "closing", [CLOSING_QUESTION]);
-
-    renderSummaryBar();
-  }
-
   function renderSummaryBar(){
     const bar = document.getElementById("summaryBar");
     bar.innerHTML = "";
@@ -1369,12 +1672,12 @@
     const focusTitle = FOCUS_META[focusId]?.title || focusId;
 
     const core_answers = {};
-    CORE_FRAMING_QUESTIONS.forEach(q => core_answers[q.id] = ensureAnswerBucket("core", q.id));
+    CORE_FRAMING_QUESTIONS.forEach(q => core_answers[q.id] = ensureRoleAnswer("core", q.id));
 
     const focus_answers = {};
-    (FOCUS_QUESTIONS[focusId] || []).forEach(q => focus_answers[q.id] = ensureAnswerBucket("focus", q.id));
+    (FOCUS_QUESTIONS[focusId] || []).forEach(q => focus_answers[q.id] = ensureRoleAnswer("focus", q.id));
 
-    const closing_answers = { closing: ensureAnswerBucket("closing", "closing") };
+    const closing_answers = { closing: ensureRoleAnswer("closing", "closing") };
 
     return {
       week_of: state.meta.weekOf,
@@ -1425,7 +1728,7 @@
   }
 
   // =========================
-  // TRENDS (expects your Apps Script doGet to return {ok:true, rows:[...]} )
+  // TRENDS (same as prior, unchanged)
   // =========================
   async function fetchAllRows(){
     const res = await fetch(SCRIPT_URL, { method: "GET" });
@@ -1575,7 +1878,67 @@
   }
 
   // =========================
-  // WIRE UI EVENTS
+  // PAGE RENDER
+  // =========================
+  function renderPage(){
+    document.getElementById("weekOf").value = state.meta.weekOf;
+    document.getElementById("viewMode").value = state.meta.viewMode;
+    document.getElementById("orgLevel").value = state.meta.orgLevel;
+    document.getElementById("schoolSelect").value = state.meta.school;
+    document.getElementById("submitterRole").value = state.meta.submitterRole;
+    document.getElementById("submitterName").value = state.meta.submitterName;
+    document.getElementById("weeklyFocus").value = state.meta.weeklyFocus;
+
+    setSchoolVisibility();
+
+    document.getElementById("statusSelect").value = state.status.status;
+    document.getElementById("metric1").value = state.status.metric1;
+    document.getElementById("metric2").value = state.status.metric2;
+    document.getElementById("metric3").value = state.status.metric3;
+    document.getElementById("laneOwner").value = state.status.laneOwner;
+
+    updateStatusDot();
+
+    const focusId = state.meta.weeklyFocus;
+    const meta = FOCUS_META[focusId];
+    document.getElementById("pageTitle").textContent = `Weekly Focus: ${meta ? meta.title : "Focus Area"}`;
+    document.getElementById("pageContext").textContent =
+      "Each question includes a School box. District boxes are available for validation and support. For School contributors, District panels stay collapsed unless you open them.";
+
+    document.getElementById("focusTitle").textContent = `Focus Area Questions: ${meta ? meta.title : ""}`;
+    document.getElementById("focusHint").textContent = meta ? meta.hint : "";
+
+    renderQuestionList("coreQuestions", "core", CORE_FRAMING_QUESTIONS);
+    renderQuestionList("focusQuestions", "focus", FOCUS_QUESTIONS[focusId] || []);
+    renderQuestionList("closingQuestion", "closing", [CLOSING_QUESTION]);
+
+    renderSummaryBar();
+
+    // If contributor switched to District, force-expand all district panels (and update button text)
+    if(isDistrictContributor()){
+      forceExpandAllDistrictPanels();
+    }
+  }
+
+  function forceExpandAllDistrictPanels(){
+    document.querySelectorAll(".districtBody").forEach(body => body.classList.remove("collapsed"));
+    document.querySelectorAll('[data-action="toggleDistrict"]').forEach(btn => {
+      btn.textContent = "Hide District";
+    });
+
+    // also record expanded for all visible questions so switching back keeps last state reasonable
+    // (optional, but helps)
+    const focusId = state.meta.weeklyFocus;
+    const allQs = [
+      ...CORE_FRAMING_QUESTIONS.map(q => ({bucket:"core", id:q.id})),
+      ...((FOCUS_QUESTIONS[focusId] || []).map(q => ({bucket:"focus", id:q.id}))),
+      {bucket:"closing", id:"closing"}
+    ];
+    allQs.forEach(x => setDistrictExpanded(x.bucket, x.id, true));
+  }
+
+  // =========================
+  // WIRES
   // =========================
   function wireMeta(){
     const bind = (id, fn, evt="change") => document.getElementById(id).addEventListener(evt, fn);
@@ -1586,8 +1949,10 @@
     bind("orgLevel", () => {
       state.meta.orgLevel = document.getElementById("orgLevel").value;
       setSchoolVisibility();
+
+      // If switching to District, expand everything immediately.
       saveState();
-      renderSummaryBar();
+      renderPage();
     });
 
     bind("schoolSelect", () => { state.meta.school = document.getElementById("schoolSelect").value; saveState(); renderSummaryBar(); });
@@ -1650,6 +2015,7 @@
         const text = await file.text();
         const parsed = JSON.parse(text);
         state = { ...defaultState(), ...parsed };
+        districtExpandMap = state._districtExpandMap || {};
         saveState();
         renderPage();
         alert("Imported.");
@@ -1661,6 +2027,7 @@
     document.getElementById("resetBtn").addEventListener("click", () => {
       if(!confirm("Reset everything to defaults for this device?")) return;
       state = defaultState();
+      districtExpandMap = {};
       saveState();
       renderPage();
     });
