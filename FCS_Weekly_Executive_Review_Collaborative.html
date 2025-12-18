@@ -22,15 +22,12 @@
       --red:#dc2626;
       --blue:#2563eb;
 
-      /* role colors */
       --school-bg: rgba(219,213,155,0.22);
       --school-border: rgba(0,0,0,0.16);
 
-      /* keep district blue theme for the "district exists" banner */
       --district-bg: rgba(37,99,235,0.10);
       --district-border: rgba(37,99,235,0.22);
 
-      /* optional district drawer purple */
       --purple:#6d28d9;
       --purple-soft: rgba(109,40,217,.10);
       --purple-border: rgba(109,40,217,.22);
@@ -46,7 +43,7 @@
 
     .app{
       display:grid;
-      grid-template-columns: 360px 1fr;
+      grid-template-columns: 380px 1fr;
       min-height:100vh;
     }
 
@@ -73,31 +70,31 @@
       overflow:hidden;
     }
 
-    /* Logo that visually blends with the rounded rectangle.
-       If your PNG already has transparency, this will look perfect.
-       If it does not, the soft white "logoPlate" helps it still blend. */
+    /* Logo: remove the visible rectangle. This assumes your PNG has transparency.
+       If your file has a white background baked in, you must replace it with a transparent PNG. */
     .brandLogoWrap{
       display:flex;
       justify-content:center;
       align-items:center;
-      padding:8px 8px 0 8px;
+      padding:6px 6px 0 6px;
     }
     .logoPlate{
       border-radius: 18px;
-      padding:10px 14px;
-      background: rgba(255,255,255,0.78);
-      border: 1px solid rgba(0,0,0,0.10);
-      box-shadow: 0 10px 20px rgba(0,0,0,0.10);
+      padding:6px 8px;
+      background: transparent; /* removed */
+      border: none;           /* removed */
+      box-shadow: none;       /* removed */
       display:flex;
       justify-content:center;
       align-items:center;
       width: 100%;
     }
     .brandLogo{
-      max-width: 240px;
+      max-width: 250px;
       width: 100%;
       height: auto;
       display:block;
+      background: transparent;
       filter: drop-shadow(0 10px 14px rgba(0,0,0,0.14));
     }
 
@@ -136,7 +133,7 @@
       border-radius: 14px;
       padding:10px 12px;
       cursor:pointer;
-      font-weight:700;
+      font-weight:800;
       font-size:12px;
       background: var(--black);
       color: var(--white);
@@ -260,7 +257,7 @@
     }
     .qPrompt{
       font-size:13px;
-      font-weight:700;
+      font-weight:800;
       line-height:1.35;
     }
 
@@ -283,7 +280,6 @@
     }
     .qItem:hover .tip{ display:block; }
 
-    /* Two-role layout */
     .roleStack{
       display:grid;
       grid-template-columns: 1fr 1fr;
@@ -320,23 +316,14 @@
       white-space:nowrap;
     }
 
-    .rolePanel.school{
-      background: var(--school-bg);
-      border-color: var(--school-border);
-    }
-    .rolePanel.district{
-      background: var(--district-bg);
-      border-color: var(--district-border);
-    }
-    .rolePanel.school .roleBadge{
-      background: rgba(219,213,155,0.45);
-    }
+    .rolePanel.school{ background: var(--school-bg); border-color: var(--school-border); }
+    .rolePanel.district{ background: var(--district-bg); border-color: var(--district-border); }
+    .rolePanel.school .roleBadge{ background: rgba(219,213,155,0.45); }
     .rolePanel.district .roleBadge{
       background: rgba(37,99,235,0.14);
       border-color: rgba(37,99,235,0.22);
     }
 
-    /* District auto-collapse (structure stays visible) */
     .districtWrap{ margin-top: 8px; }
     .districtBanner{
       display:flex;
@@ -379,10 +366,7 @@
     .toggleLink:hover{ transform: translateY(-1px); box-shadow: var(--shadow-soft); }
     .districtBody.collapsed{ display:none; }
 
-    .qAnswer{
-      width:100%;
-      min-height: 110px;
-    }
+    .qAnswer{ width:100%; min-height: 110px; }
 
     .qActions{
       display:flex;
@@ -398,7 +382,7 @@
       border-radius: 14px;
       padding:8px 10px;
       cursor:pointer;
-      font-weight:700;
+      font-weight:800;
       font-size:12px;
       transition: transform .12s ease, box-shadow .12s ease;
     }
@@ -484,12 +468,7 @@
     /* Evidence Modal */
     .modal.hidden { display: none; }
     .modal { position: fixed; inset: 0; z-index: 9999; }
-
-    .modal-backdrop {
-      position: absolute; inset: 0;
-      background: rgba(0,0,0,0.45);
-    }
-
+    .modal-backdrop { position: absolute; inset: 0; background: rgba(0,0,0,0.45); }
     .modal-card{
       position: relative;
       width: min(920px, calc(100vw - 32px));
@@ -501,7 +480,6 @@
       box-shadow: 0 18px 45px rgba(0,0,0,0.22);
       border: 1px solid rgba(0,0,0,0.12);
     }
-
     .modal-header{
       display:flex;
       align-items:flex-start;
@@ -510,10 +488,8 @@
       padding: 18px 18px 12px 18px;
       border-bottom: 1px solid rgba(0,0,0,0.10);
     }
-
-    .modal-title{ font-size: 18px; font-weight: 800; color:#111; }
+    .modal-title{ font-size: 18px; font-weight: 900; color:#111; }
     .modal-subtitle{ font-size: 13px; color:#6b7280; margin-top: 2px; }
-
     .modal-body{ padding: 14px 18px 18px 18px; }
 
     .evidence-summary{
@@ -522,7 +498,6 @@
       gap: 10px;
       margin-bottom: 12px;
     }
-
     .pillMini{
       display:inline-flex;
       align-items:center;
@@ -534,13 +509,7 @@
       font-size: 12px;
       color: #111;
     }
-
-    .evidence-list{
-      display:flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
+    .evidence-list{ display:flex; flex-direction: column; gap: 10px; }
     .evidence-item{
       display:flex;
       align-items:flex-start;
@@ -551,32 +520,12 @@
       border: 1px solid rgba(0,0,0,0.12);
       background: #fff;
     }
+    .evidence-item .meta{ display:flex; flex-direction: column; gap: 4px; }
+    .evidence-item .title{ font-weight: 900; color:#111; font-size: 14px; }
+    .evidence-item .hint{ color:#6b7280; font-size: 12px; }
+    .evidence-item a{ white-space: nowrap; text-decoration: none; }
 
-    .evidence-item .meta{
-      display:flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-
-    .evidence-item .title{
-      font-weight: 800;
-      color:#111;
-      font-size: 14px;
-    }
-
-    .evidence-item .hint{
-      color:#6b7280;
-      font-size: 12px;
-    }
-
-    .evidence-item a{
-      white-space: nowrap;
-      text-decoration: none;
-    }
-
-    /* =========================
-       OPTIONAL DISTRICT DRAWER
-       ========================= */
+    /* District drawer */
     .districtDetails{
       margin-top:10px;
       border-radius: 14px;
@@ -584,7 +533,6 @@
       background: rgba(109,40,217,.06);
       overflow:hidden;
     }
-
     .districtDetails > summary{
       list-style:none;
       cursor:pointer;
@@ -597,33 +545,102 @@
       font-size:12px;
       color:#111;
     }
-
     .districtDetails > summary::-webkit-details-marker{ display:none; }
-
     .districtDetails .sumLeft{
       display:flex;
       align-items:center;
       gap:8px;
       flex-wrap:wrap;
     }
-
     .purpleDotSmall{
       width:9px; height:9px; border-radius:99px;
       background:#6d28d9;
       box-shadow: 0 0 0 3px rgba(109,40,217,.14);
     }
-
     .districtDetails .sumHint{
-      font-weight:600;
+      font-weight:700;
       font-size:11px;
       color: var(--gray);
     }
-
     .districtDetails .drawer{
       padding: 10px 12px 12px 12px;
       border-top: 1px solid rgba(109,40,217,.20);
       background: rgba(255,255,255,.75);
     }
+
+    /* RYG rating chips */
+    .ratingRow{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      flex-wrap:wrap;
+      margin: 8px 0 8px 0;
+    }
+    .ratingLabel{
+      font-size:11px;
+      color: var(--gray);
+      font-weight:800;
+    }
+    .ratingSelect{
+      width:auto;
+      min-width: 170px;
+      padding:8px 10px;
+      border-radius: 999px;
+      font-weight:900;
+      font-size:12px;
+    }
+    .ratingSelect.green{ border-color: rgba(22,163,74,.35); background: rgba(22,163,74,.10); }
+    .ratingSelect.yellow{ border-color: rgba(245,158,11,.40); background: rgba(245,158,11,.12); }
+    .ratingSelect.red{ border-color: rgba(220,38,38,.38); background: rgba(220,38,38,.10); }
+
+    /* Sidebar analytics block (tight + clean) */
+    details.analytics{
+      margin-top:12px;
+      border: var(--border);
+      border-radius: var(--radius-sm);
+      background: rgba(245,245,247,.55);
+      box-shadow: var(--shadow-soft);
+      overflow:hidden;
+    }
+    details.analytics > summary{
+      list-style:none;
+      cursor:pointer;
+      padding:12px 12px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      font-weight:900;
+      font-size:12px;
+      color:#111;
+    }
+    details.analytics > summary::-webkit-details-marker{ display:none; }
+    .analyticsBody{
+      padding: 10px 12px 12px 12px;
+      border-top: 1px solid rgba(0,0,0,0.08);
+      background: rgba(255,255,255,0.85);
+    }
+    .miniGrid{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:10px;
+    }
+    .chartCard{
+      border: 1px solid rgba(0,0,0,0.10);
+      border-radius: 14px;
+      padding:10px;
+      background:#fff;
+    }
+    .chartTitle{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:10px;
+      margin-bottom:6px;
+    }
+    .chartTitle .name{ font-weight:900; font-size:12px; }
+    .chartTitle .hint{ font-size:11px; color: var(--gray); line-height:1.2; }
+    canvas{ width:100%; height:120px; display:block; } /* tight height */
   </style>
 </head>
 
@@ -633,15 +650,13 @@
       <div class="brand">
         <div class="brandLogoWrap">
           <div class="logoPlate" aria-label="Compass logo">
+            <!-- Replace this URL with a transparent PNG to fully remove any background -->
             <img class="brandLogo" src="https://i.postimg.cc/JhPCnwDT/Compass_Logo.png" alt="Compass Logo">
           </div>
         </div>
-
         <div>
           <h1>FCS Weekly Executive Review</h1>
-          <div class="sub">
-            Collaborative weekly discipline. Same questions. Better answers. Evidence first.
-          </div>
+          <div class="sub">Collaborative weekly discipline. Same questions. Better answers. Evidence first.</div>
         </div>
       </div>
 
@@ -722,6 +737,43 @@
         <button class="btn secondary" id="refreshTrendsBtn">Refresh trends</button>
       </div>
 
+      <!-- Animated charts live UNDER the left submit buttons -->
+      <details class="analytics" id="analyticsBlock" open>
+        <summary>
+          <span>Analytics (Selected School vs District)</span>
+          <span class="pill" id="analyticsPill">No data</span>
+        </summary>
+        <div class="analyticsBody">
+          <div class="miniGrid">
+            <div class="chartCard">
+              <div class="chartTitle">
+                <div>
+                  <div class="name">Status score</div>
+                  <div class="hint">Current week vs YTD (avg)</div>
+                </div>
+                <div class="pill" id="statusLegendPill">G=3 Y=2 R=1</div>
+              </div>
+              <canvas id="barStatus"></canvas>
+            </div>
+
+            <div class="chartCard">
+              <div class="chartTitle">
+                <div>
+                  <div class="name">Core question ratings</div>
+                  <div class="hint">Distribution (School + District)</div>
+                </div>
+                <div class="pill" id="coreLegendPill">RYG</div>
+              </div>
+              <canvas id="pieCore"></canvas>
+            </div>
+          </div>
+
+          <div class="footerNote" style="margin-top:10px;">
+            These charts update when you change School, Week, Focus Area, or refresh trends.
+          </div>
+        </div>
+      </details>
+
       <div class="footerNote">
         Rule: Yellow or Red requires a clear plan, owner, due date, and help needed.
       </div>
@@ -739,8 +791,8 @@
           <div class="card" style="padding:14px;">
             <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:12px;">
               <div>
-                <div style="font-weight:800; font-size:13px;">Status</div>
-                <div class="muted">Must match evidence.</div>
+                <div style="font-weight:900; font-size:13px;">Lane Status</div>
+                <div class="muted">Overall weekly focus status (must match evidence).</div>
               </div>
               <div class="pill" id="completionPill">0% complete</div>
             </div>
@@ -761,7 +813,7 @@
               </div>
               <div>
                 <label>Key metric 2</label>
-                <input id="metric2" type="text" placeholder="Example: BPA calibration done"/>
+                <input id="metric2" type="text" placeholder="Example: calibration done"/>
               </div>
               <div>
                 <label>Key metric 3</label>
@@ -775,7 +827,7 @@
             </div>
 
             <div class="muted" style="margin-top:10px;">
-              Tip: District panels auto-collapse for School contributors. District comments expand only when needed.
+              Tip: District panels auto-collapse for School contributors. District comment drawers open only when needed.
             </div>
           </div>
         </div>
@@ -786,7 +838,7 @@
           <div class="cardHeader">
             <div>
               <h3>Core Framing Questions (Every Area, Every Week)</h3>
-              <div class="muted">These never change. Clarity is the goal. Evidence is the requirement.</div>
+              <div class="muted">Now includes School and District RYG ratings on every core question.</div>
             </div>
             <div class="pill" id="coreDonePill">0/0 answered</div>
           </div>
@@ -819,7 +871,7 @@
           <div class="cardHeader">
             <div>
               <h3>Trends and rollups (from Google Sheet)</h3>
-              <div class="muted">Filter by school, focus area, org level, and date range.</div>
+              <div class="muted">Filter by org level and date range. Table includes an Evidence viewer.</div>
             </div>
             <div class="pill">Green=3, Yellow=2, Red=1</div>
           </div>
@@ -875,7 +927,6 @@
   <!-- Evidence Modal -->
   <div id="evidenceModal" class="modal hidden" aria-hidden="true">
     <div class="modal-backdrop" onclick="closeEvidenceModal()"></div>
-
     <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="evidenceTitle">
       <div class="modal-header">
         <div>
@@ -884,12 +935,11 @@
         </div>
         <button class="btn secondary" onclick="closeEvidenceModal()">Close</button>
       </div>
-
       <div class="modal-body">
         <div id="evidenceSummary" class="evidence-summary"></div>
         <div id="evidenceList" class="evidence-list"></div>
         <div class="footerNote" style="margin-top:12px;">
-          Note: This list shows links saved in the submission (uploaded artifacts and pasted links). If a link is missing, it was not attached to the submission.
+          Note: This list shows links saved in the submission (uploaded artifacts and pasted links).
         </div>
       </div>
     </div>
@@ -900,9 +950,8 @@
   // CONFIG
   // =========================
   const SCRIPT_URL = "https://script.google.com/a/macros/fleming.kyschools.us/s/AKfycbzNVN8AiQzPBzE1CMdDzy9bWGzlq9_p4qALlzwuEDkUxIzazgIHK70pS61nswTX0T_B6w/exec";
-  const STORAGE_KEY = "fcs_weekly_exec_review_collab_v3_autocollapse";
+  const STORAGE_KEY = "fcs_weekly_exec_review_collab_v4_charts_core_ratings";
 
-  // If true: District panels start collapsed unless Contributor=District
   const AUTO_COLLAPSE_DISTRICT_FOR_SCHOOL = true;
 
   // =========================
@@ -924,13 +973,13 @@
   };
 
   const FOCUS_META = {
-    vibrant_learning: { title:"Vibrant Learning (Real-World, Interdisciplinary Learning)", hint:"Mulally would not ask if learning was 'good'. He would ask if it was visible and aligned." },
-    priority_standards: { title:"Priority Standards and Proficiency Scales", hint:"This mirrors Ford’s obsession with alignment to the plan." },
-    bim_workshop: { title:"BRIDGE Instructional Model (Workshop Model)", hint:"Mulally cared deeply about process discipline. This is your process." },
-    bpa: { title:"BRIDGE Performance Assessments (BPAs)", hint:"Ford’s BPRs always asked if results matched intent." },
-    bpi_websites: { title:"BRIDGE Performance Indicators and Student BPI Websites", hint:"This is where the visibility principle maps perfectly to your work." },
-    wac: { title:"Writing Across the Content (WAC)", hint:"Mulally would ask whether communication improved decision-making. Same here." },
-    compelling_evidence: { title:"Compelling Evidence and Local Accountability", hint:"This keeps the system honest." }
+    vibrant_learning: { title:"Vibrant Learning (Real-World, Interdisciplinary Learning)", hint:"Ask if learning is visible and aligned, not if it feels good." },
+    priority_standards: { title:"Priority Standards and Proficiency Scales", hint:"Alignment to the plan and clarity of expectations." },
+    bim_workshop: { title:"BRIDGE Instructional Model (Workshop Model)", hint:"Process discipline. Visible steps. Evidence in student work." },
+    bpa: { title:"BRIDGE Performance Assessments (BPAs)", hint:"Results must match intent. Calibrate quality and expectations." },
+    bpi_websites: { title:"BRIDGE Performance Indicators and Student BPI Websites", hint:"Visibility of growth, mastery, readiness, and story." },
+    wac: { title:"Writing Across the Content (WAC)", hint:"Writing deepens thinking and makes learning transferable." },
+    compelling_evidence: { title:"Compelling Evidence and Local Accountability", hint:"This keeps the system honest and coherent." }
   };
 
   const FOCUS_QUESTIONS = {
@@ -986,10 +1035,10 @@
   };
 
   // =========================
-  // STATE
+  // STATE + MIGRATION
   // =========================
   function blankRoleAnswer(){
-    return { text:"", checked:false, notes:"", artifacts:[] };
+    return { text:"", checked:false, notes:"", artifacts:[], rating:"" }; // rating: green/yellow/red
   }
 
   function defaultState(){
@@ -1017,40 +1066,53 @@
         core: {},
         focus: {},
         closing: {}
-      }
+      },
+      _districtExpandMap: {}
     };
   }
 
+  let districtExpandMap = {};
   let state = loadState();
 
-  // Keep per-question district collapse state so toggles persist
-  // key: `${bucket}:${qid}` => boolean (true = expanded)
-  let districtExpandMap = {};
+  function migrateRoleAnswer(roleObj){
+    const base = blankRoleAnswer();
+    if(!roleObj || typeof roleObj !== "object") return base;
+    return { ...base, ...roleObj, artifacts: Array.isArray(roleObj.artifacts) ? roleObj.artifacts : [] };
+  }
 
   function migrateOldAnswerShape(obj){
     if(!obj || typeof obj !== "object") return null;
 
     const hasRole = (obj.school && obj.district);
-    if(hasRole) return obj;
+    if(hasRole){
+      return {
+        school: migrateRoleAnswer(obj.school),
+        district: migrateRoleAnswer(obj.district)
+      };
+    }
 
-    const looksOld = ("text" in obj) || ("checked" in obj) || ("notes" in obj) || ("artifacts" in obj);
+    const looksOld = ("text" in obj) || ("checked" in obj) || ("notes" in obj) || ("artifacts" in obj) || ("rating" in obj);
     if(looksOld){
       return {
-        school: { ...blankRoleAnswer(), ...obj },
-        district: { ...blankRoleAnswer() }
+        school: migrateRoleAnswer(obj),
+        district: blankRoleAnswer()
       };
     }
 
     return {
-      school: { ...blankRoleAnswer(), ...(obj.school || {}) },
-      district: { ...blankRoleAnswer(), ...(obj.district || {}) }
+      school: migrateRoleAnswer(obj.school),
+      district: migrateRoleAnswer(obj.district)
     };
   }
 
   function loadState(){
     try{
       const raw = localStorage.getItem(STORAGE_KEY);
-      if(!raw) return defaultState();
+      if(!raw) {
+        const s = defaultState();
+        districtExpandMap = s._districtExpandMap || {};
+        return s;
+      }
       const parsed = JSON.parse(raw);
       const merged = { ...defaultState(), ...parsed };
 
@@ -1067,13 +1129,17 @@
       districtExpandMap = merged._districtExpandMap || {};
       return merged;
     }catch(e){
-      return defaultState();
+      const s = defaultState();
+      districtExpandMap = {};
+      return s;
     }
   }
 
   function saveState(){
     state._districtExpandMap = districtExpandMap;
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    // update charts from local changes too
+    requestAnalyticsUpdate("local");
   }
 
   // =========================
@@ -1118,11 +1184,6 @@
     return (state.meta.orgLevel || "").toLowerCase() === "district";
   }
 
-  function defaultDistrictCollapsed(){
-    if(!AUTO_COLLAPSE_DISTRICT_FOR_SCHOOL) return false;
-    return !isDistrictContributor();
-  }
-
   function districtKey(bucket, qid){
     return `${bucket}:${qid}`;
   }
@@ -1130,9 +1191,7 @@
   function isDistrictExpanded(bucket, qid){
     if(isDistrictContributor()) return true;
     const key = districtKey(bucket, qid);
-    if(typeof districtExpandMap[key] === "boolean"){
-      return districtExpandMap[key];
-    }
+    if(typeof districtExpandMap[key] === "boolean") return districtExpandMap[key];
     return false;
   }
 
@@ -1141,9 +1200,6 @@
     saveState();
   }
 
-  // =========================
-  // ROLE ANSWER SHAPE
-  // =========================
   function ensureRoleAnswer(bucket, qid){
     if(!state.answers[bucket][qid]){
       state.answers[bucket][qid] = { school: blankRoleAnswer(), district: blankRoleAnswer() };
@@ -1161,16 +1217,14 @@
     return a[role];
   }
 
-  // =========================
-  // OPTIONAL DISTRICT DRAWER LOGIC
-  // =========================
   function districtHasAnyContent(bucket, qid){
     const d = getRoleAnswer(bucket, qid, "district");
     const hasText = (d.text || "").trim().length > 0;
     const hasNote = (d.notes || "").trim().length > 0;
     const hasArtifacts = Array.isArray(d.artifacts) && d.artifacts.length > 0;
     const hasChecked = !!d.checked;
-    return hasText || hasNote || hasArtifacts || hasChecked;
+    const hasRating = !!(d.rating || "").trim();
+    return hasText || hasNote || hasArtifacts || hasChecked || hasRating;
   }
 
   function setDistrictDetailsAutoOpen(bucket, qid){
@@ -1180,7 +1234,557 @@
   }
 
   // =========================
-  // EVIDENCE MODAL
+  // RENDER QUESTIONS
+  // =========================
+  function renderQuestionList(containerId, bucket, questions, withRatings){
+    const container = document.getElementById(containerId);
+    container.innerHTML = "";
+
+    questions.forEach(q => {
+      ensureRoleAnswer(bucket, q.id);
+
+      const expanded = isDistrictExpanded(bucket, q.id);
+      const collapseClass = expanded ? "" : "collapsed";
+
+      const ratingBlockSchool = withRatings ? `
+        <div class="ratingRow">
+          <span class="ratingLabel">Rating:</span>
+          <select class="ratingSelect" data-bucket="${bucket}" data-qid="${q.id}" data-role="school" data-field="rating">
+            <option value="">Select</option>
+            <option value="green">Green</option>
+            <option value="yellow">Yellow</option>
+            <option value="red">Red</option>
+          </select>
+        </div>
+      ` : "";
+
+      const ratingBlockDistrict = withRatings ? `
+        <div class="ratingRow">
+          <span class="ratingLabel">Rating:</span>
+          <select class="ratingSelect" data-bucket="${bucket}" data-qid="${q.id}" data-role="district" data-field="rating">
+            <option value="">Select</option>
+            <option value="green">Green</option>
+            <option value="yellow">Yellow</option>
+            <option value="red">Red</option>
+          </select>
+        </div>
+      ` : "";
+
+      const el = document.createElement("div");
+      el.className = "qItem";
+      el.innerHTML = `
+        <div class="qTop">
+          <div>
+            <div class="qPrompt">${escapeHtml(q.prompt)}</div>
+            <div class="tip">Tip: ${escapeHtml(q.tip || "")}</div>
+          </div>
+        </div>
+
+        <div class="roleStack">
+          <!-- SCHOOL -->
+          <div class="rolePanel school">
+            <div class="roleHeader">
+              <div>
+                <div class="roleTitle">School Leader</div>
+                <div class="muted">What you saw and what students produced this week.</div>
+              </div>
+              <div class="roleBadge">SCHOOL</div>
+            </div>
+
+            ${ratingBlockSchool}
+
+            <label class="checkWrap" title="Mark as clear and evidence-backed">
+              <input type="checkbox"
+                data-bucket="${bucket}" data-qid="${q.id}" data-role="school" data-field="checked"/>
+              Clear
+            </label>
+
+            <textarea class="qAnswer"
+              data-bucket="${bucket}" data-qid="${q.id}" data-role="school" data-field="text"
+              placeholder="School leader response (evidence-backed specifics)."></textarea>
+
+            <div class="qActions">
+              <button class="miniBtn" data-action="addNote" data-bucket="${bucket}" data-qid="${q.id}" data-role="school">Add note</button>
+
+              <button class="miniBtn primary" data-action="addLink" data-bucket="${bucket}" data-qid="${q.id}" data-role="school">
+                Add artifact link
+              </button>
+
+              <label class="miniBtn primary" style="display:inline-flex; align-items:center; gap:8px;">
+                Upload artifact
+                <input type="file" style="display:none;" data-action="upload" data-bucket="${bucket}" data-qid="${q.id}" data-role="school"/>
+              </label>
+
+              <span class="muted" id="${bucket}_${q.id}_school_noteHint"></span>
+            </div>
+
+            <div class="artifactList" id="${bucket}_${q.id}_school_artifacts"></div>
+          </div>
+
+          <!-- DISTRICT -->
+          <div class="rolePanel district">
+            <div class="districtWrap">
+              <div class="districtBanner">
+                <div class="left">
+                  <div class="title">District panel exists</div>
+                  <div class="desc">Used for validation, patterns, supports, and barrier removal.</div>
+                </div>
+                <button class="toggleLink"
+                  type="button"
+                  data-action="toggleDistrict"
+                  data-bucket="${bucket}"
+                  data-qid="${q.id}">
+                  ${expanded ? "Hide District" : "Show District"}
+                </button>
+              </div>
+
+              <div class="districtBody ${collapseClass}" id="${bucket}_${q.id}_districtBody">
+
+                <details class="districtDetails" id="${bucket}_${q.id}_districtDetails">
+                  <summary>
+                    <div class="sumLeft">
+                      <span class="purpleDotSmall"></span>
+                      <span>District leader comment (optional)</span>
+                      <span class="sumHint">Expand only if needed</span>
+                    </div>
+                    <span class="toggleLink" style="padding:6px 10px; border-color: rgba(109,40,217,.25);">Open</span>
+                  </summary>
+
+                  <div class="drawer">
+                    <div class="roleHeader" style="margin-bottom:6px;">
+                      <div>
+                        <div class="roleTitle">District Leader</div>
+                        <div class="muted">Validation, patterns, supports, barrier removal.</div>
+                      </div>
+                      <div class="roleBadge" style="background: rgba(109,40,217,.14); border-color: rgba(109,40,217,.22);">DISTRICT</div>
+                    </div>
+
+                    ${ratingBlockDistrict}
+
+                    <label class="checkWrap" title="Mark as clear and evidence-backed">
+                      <input type="checkbox"
+                        data-bucket="${bucket}" data-qid="${q.id}" data-role="district" data-field="checked"/>
+                      Clear
+                    </label>
+
+                    <textarea class="qAnswer"
+                      data-bucket="${bucket}" data-qid="${q.id}" data-role="district" data-field="text"
+                      placeholder="District leader comment (only if needed)."></textarea>
+
+                    <div class="qActions">
+                      <button class="miniBtn" data-action="addNote" data-bucket="${bucket}" data-qid="${q.id}" data-role="district">Add note</button>
+
+                      <button class="miniBtn primary" data-action="addLink" data-bucket="${bucket}" data-qid="${q.id}" data-role="district">
+                        Add artifact link
+                      </button>
+
+                      <label class="miniBtn primary" style="display:inline-flex; align-items:center; gap:8px;">
+                        Upload artifact
+                        <input type="file" style="display:none;" data-action="upload" data-bucket="${bucket}" data-qid="${q.id}" data-role="district"/>
+                      </label>
+
+                      <span class="muted" id="${bucket}_${q.id}_district_noteHint"></span>
+                    </div>
+
+                    <div class="artifactList" id="${bucket}_${q.id}_district_artifacts"></div>
+                  </div>
+                </details>
+
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+
+      container.appendChild(el);
+
+      hydrateRolePanel(bucket, q.id, "school", el, withRatings);
+      hydrateRolePanel(bucket, q.id, "district", el, withRatings);
+
+      renderArtifacts(bucket, q.id, "school");
+      renderArtifacts(bucket, q.id, "district");
+
+      setDistrictDetailsAutoOpen(bucket, q.id);
+      wireQuestionEvents(el, withRatings);
+    });
+
+    updateAnsweredPills();
+    updateCompletion();
+  }
+
+  function hydrateRolePanel(bucket, qid, role, scopeEl, withRatings){
+    const a = getRoleAnswer(bucket, qid, role);
+
+    const chk = scopeEl.querySelector(`input[type="checkbox"][data-bucket="${bucket}"][data-qid="${qid}"][data-role="${role}"][data-field="checked"]`);
+    if(chk) chk.checked = !!a.checked;
+
+    const ta = scopeEl.querySelector(`textarea[data-bucket="${bucket}"][data-qid="${qid}"][data-role="${role}"][data-field="text"]`);
+    if(ta) ta.value = a.text || "";
+
+    if(withRatings){
+      const rs = scopeEl.querySelector(`select[data-bucket="${bucket}"][data-qid="${qid}"][data-role="${role}"][data-field="rating"]`);
+      if(rs){
+        rs.value = a.rating || "";
+        rs.classList.remove("green","yellow","red");
+        if(a.rating) rs.classList.add(a.rating);
+      }
+    }
+
+    const hint = document.getElementById(`${bucket}_${qid}_${role}_noteHint`);
+    if(hint) hint.textContent = a.notes ? "Note added" : "";
+  }
+
+  function renderArtifacts(bucket, qid, role){
+    const a = getRoleAnswer(bucket, qid, role);
+    const list = document.getElementById(`${bucket}_${qid}_${role}_artifacts`);
+    if(!list) return;
+
+    list.innerHTML = "";
+    (a.artifacts || []).forEach((art, idx) => {
+      const row = document.createElement("div");
+      row.className = "artifact";
+      const label = art.label || art.name || "Artifact";
+      const linkHtml = art.url ? `<a href="${escapeHtml(art.url)}" target="_blank" rel="noopener">${escapeHtml(label)}</a>` : escapeHtml(label);
+
+      row.innerHTML = `
+        <div>
+          <div style="font-weight:900;">${linkHtml}</div>
+          <div class="muted">${escapeHtml(art.kind || "")}${art.kind ? " | " : ""}${escapeHtml(art.note || "")}</div>
+        </div>
+        <div class="right">
+          <button class="miniBtn"
+            data-action="removeArtifact" data-bucket="${bucket}" data-qid="${qid}" data-role="${role}" data-idx="${idx}">
+            Remove
+          </button>
+        </div>
+      `;
+      list.appendChild(row);
+    });
+  }
+
+  function wireQuestionEvents(scopeEl, withRatings){
+    // inputs/textarea/select (data-field)
+    scopeEl.querySelectorAll("[data-field]").forEach(el => {
+      const bucket = el.getAttribute("data-bucket");
+      const qid = el.getAttribute("data-qid");
+      const role = el.getAttribute("data-role");
+      const field = el.getAttribute("data-field");
+
+      const handler = () => {
+        const a = getRoleAnswer(bucket, qid, role);
+        if(field === "checked"){
+          a.checked = !!el.checked;
+        }else if(field === "text"){
+          a.text = el.value || "";
+        }else if(field === "rating"){
+          a.rating = el.value || "";
+          el.classList.remove("green","yellow","red");
+          if(a.rating) el.classList.add(a.rating);
+        }
+
+        saveState();
+
+        if(role === "district"){
+          setDistrictDetailsAutoOpen(bucket, qid);
+        }
+
+        updateAnsweredPills();
+        updateCompletion();
+      };
+
+      const evt = (field === "text") ? "input" : "change";
+      el.addEventListener(evt, handler);
+    });
+
+    // actions
+    scopeEl.querySelectorAll("[data-action]").forEach(el => {
+      const action = el.getAttribute("data-action");
+      const bucket = el.getAttribute("data-bucket");
+      const qid = el.getAttribute("data-qid");
+      const role = el.getAttribute("data-role");
+
+      if(action === "toggleDistrict"){
+        el.addEventListener("click", () => {
+          if(isDistrictContributor()) return;
+
+          const body = document.getElementById(`${bucket}_${qid}_districtBody`);
+          if(!body) return;
+
+          const currentlyCollapsed = body.classList.contains("collapsed");
+          if(currentlyCollapsed){
+            body.classList.remove("collapsed");
+            el.textContent = "Hide District";
+            setDistrictExpanded(bucket, qid, true);
+          }else{
+            body.classList.add("collapsed");
+            el.textContent = "Show District";
+            setDistrictExpanded(bucket, qid, false);
+          }
+        });
+      }
+
+      if(action === "addNote"){
+        el.addEventListener("click", () => {
+          const a = getRoleAnswer(bucket, qid, role);
+          const next = prompt("Add a short note (context, names, reminders):", a.notes || "");
+          if(next === null) return;
+          a.notes = next.trim();
+          saveState();
+
+          const hint = document.getElementById(`${bucket}_${qid}_${role}_noteHint`);
+          if(hint) hint.textContent = a.notes ? "Note added" : "";
+
+          if(role === "district") setDistrictDetailsAutoOpen(bucket, qid);
+        });
+      }
+
+      if(action === "addLink"){
+        el.addEventListener("click", () => {
+          const a = getRoleAnswer(bucket, qid, role);
+          const url = prompt("Paste an artifact link (Drive link, BPI page, rubric, student product URL):", "");
+          if(!url) return;
+          const label = prompt("Short label (example: 'BPI sample: Grade 7', 'BPA rubric', 'WAC published piece'):", "Artifact");
+          a.artifacts.push({ kind:"link", url: url.trim(), label: (label || "Artifact").trim(), note:"" });
+          saveState();
+          renderArtifacts(bucket, qid, role);
+
+          if(role === "district") setDistrictDetailsAutoOpen(bucket, qid);
+        });
+      }
+
+      if(action === "upload"){
+        el.addEventListener("change", async (evt) => {
+          const file = evt.target.files && evt.target.files[0];
+          evt.target.value = "";
+          if(!file) return;
+
+          try{
+            const a = getRoleAnswer(bucket, qid, role);
+            const uploaded = await uploadArtifactToDrive(file);
+            a.artifacts.push({
+              kind: "upload",
+              url: uploaded.url,
+              label: uploaded.name || file.name,
+              note: uploaded.note || ""
+            });
+
+            saveState();
+            renderArtifacts(bucket, qid, role);
+
+            if(role === "district") setDistrictDetailsAutoOpen(bucket, qid);
+
+            alert("Uploaded and linked.");
+          }catch(err){
+            alert("Upload failed: " + String(err));
+          }
+        });
+      }
+
+      if(action === "removeArtifact"){
+        el.addEventListener("click", () => {
+          const idx = Number(el.getAttribute("data-idx"));
+          const a = getRoleAnswer(bucket, qid, role);
+          a.artifacts.splice(idx, 1);
+          saveState();
+          renderArtifacts(bucket, qid, role);
+
+          if(role === "district") setDistrictDetailsAutoOpen(bucket, qid);
+        });
+      }
+    });
+  }
+
+  // =========================
+  // COMPLETION
+  // =========================
+  function countAnswered(bucket, questions){
+    let answered = 0;
+    questions.forEach(q => {
+      const school = getRoleAnswer(bucket, q.id, "school");
+      const district = getRoleAnswer(bucket, q.id, "district");
+      const hasAnyText = (school.text || "").trim().length > 0 || (district.text || "").trim().length > 0;
+      if(hasAnyText) answered += 1;
+    });
+    return { answered, total: questions.length };
+  }
+
+  function updateAnsweredPills(){
+    const core = countAnswered("core", CORE_FRAMING_QUESTIONS);
+    document.getElementById("coreDonePill").textContent = `${core.answered}/${core.total} answered`;
+
+    const focusId = state.meta.weeklyFocus;
+    const focusQs = FOCUS_QUESTIONS[focusId] || [];
+    const focus = countAnswered("focus", focusQs);
+    document.getElementById("focusDonePill").textContent = `${focus.answered}/${focus.total} answered`;
+
+    const closingSchool = getRoleAnswer("closing", "closing", "school");
+    const closingDistrict = getRoleAnswer("closing", "closing", "district");
+    const closingAnswered = (closingSchool.text || "").trim().length || (closingDistrict.text || "").trim().length;
+    document.getElementById("closeDonePill").textContent = closingAnswered ? "Answered" : "Not answered";
+  }
+
+  function updateCompletion(){
+    const focusId = state.meta.weeklyFocus;
+    const focusQs = FOCUS_QUESTIONS[focusId] || [];
+
+    const core = countAnswered("core", CORE_FRAMING_QUESTIONS);
+    const focus = countAnswered("focus", focusQs);
+
+    const closingSchool = getRoleAnswer("closing", "closing", "school");
+    const closingDistrict = getRoleAnswer("closing", "closing", "district");
+    const closingAnswered = ((closingSchool.text || "").trim().length || (closingDistrict.text || "").trim().length) ? 1 : 0;
+
+    const total = core.total + focus.total + 1;
+    const done = core.answered + focus.answered + closingAnswered;
+
+    const pct = total ? Math.round((done/total)*100) : 0;
+    document.getElementById("completionPill").textContent = `${pct}% complete`;
+  }
+
+  // =========================
+  // SUMMARY BAR
+  // =========================
+  function renderSummaryBar(){
+    const bar = document.getElementById("summaryBar");
+    bar.innerHTML = "";
+
+    const org = state.meta.orgLevel;
+    const school = (org === "School") ? state.meta.school : "District";
+    const focus = FOCUS_META[state.meta.weeklyFocus]?.title || state.meta.weeklyFocus;
+
+    bar.appendChild(chip(`${org} submission`, "gray"));
+    bar.appendChild(chip(`${school}`, "gray"));
+    bar.appendChild(chip(`${focus}`, "gray"));
+
+    const score = statusToScore(state.status.status);
+    const sLabel = (state.status.status || "").toUpperCase();
+    bar.appendChild(chip(`Lane status: ${sLabel} (score ${score})`, state.status.status));
+  }
+
+  function chip(text, status){
+    const d = document.createElement("div");
+    d.className = "chip";
+    const dot = document.createElement("span");
+    dot.className = "statusDot " + statusClass(status);
+    dot.style.width = "9px";
+    dot.style.height = "9px";
+    dot.style.boxShadow = "none";
+    d.appendChild(dot);
+    const t = document.createElement("span");
+    t.textContent = text;
+    d.appendChild(t);
+    return d;
+  }
+
+  // =========================
+  // ARTIFACT UPLOAD
+  // =========================
+  function readFileAsBase64(file){
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const result = String(reader.result || "");
+        const parts = result.split(",");
+        if(parts.length < 2) return reject(new Error("Invalid file encoding."));
+        resolve(parts[1]);
+      };
+      reader.onerror = () => reject(reader.error || new Error("File read failed."));
+      reader.readAsDataURL(file);
+    });
+  }
+
+  async function uploadArtifactToDrive(file){
+    const b64 = await readFileAsBase64(file);
+
+    const payload = {
+      action: "upload",
+      file_name: file.name,
+      mime_type: file.type || "application/octet-stream",
+      base64: b64,
+      week_of: state.meta.weekOf,
+      org_level: state.meta.orgLevel,
+      school: state.meta.orgLevel === "School" ? state.meta.school : "District",
+      focus_area_id: state.meta.weeklyFocus
+    };
+
+    const res = await fetch(SCRIPT_URL, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify(payload)
+    });
+
+    const data = await res.json();
+    if(!data.ok) throw new Error(data.error || "Upload failed.");
+    return data.file;
+  }
+
+  // =========================
+  // SHEET SUBMISSION
+  // =========================
+  function buildSubmissionPayload(){
+    const focusId = state.meta.weeklyFocus;
+    const focusTitle = FOCUS_META[focusId]?.title || focusId;
+
+    const core_answers = {};
+    CORE_FRAMING_QUESTIONS.forEach(q => core_answers[q.id] = ensureRoleAnswer("core", q.id));
+
+    const focus_answers = {};
+    (FOCUS_QUESTIONS[focusId] || []).forEach(q => focus_answers[q.id] = ensureRoleAnswer("focus", q.id));
+
+    const closing_answers = { closing: ensureRoleAnswer("closing", "closing") };
+
+    return {
+      week_of: state.meta.weekOf,
+      view_mode: state.meta.viewMode,
+
+      org_level: state.meta.orgLevel,
+      school: state.meta.orgLevel === "School" ? state.meta.school : "District",
+      submitter_name: state.meta.submitterName,
+      submitter_role: state.meta.submitterRole,
+
+      weekly_focus_area_id: focusId,
+      weekly_focus_area_title: focusTitle,
+
+      status: state.status.status,
+      metric1: state.status.metric1,
+      metric2: state.status.metric2,
+      metric3: state.status.metric3,
+      lane_owner: state.status.laneOwner,
+
+      core_answers,
+      focus_answers,
+      closing_answers
+    };
+  }
+
+  async function submitToSheet(){
+    const payload = buildSubmissionPayload();
+
+    const btn = document.getElementById("submitToSheetBtn");
+    btn.disabled = true;
+    btn.textContent = "Submitting...";
+
+    try{
+      const res = await fetch(SCRIPT_URL, {
+        method: "POST",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if(!data.ok) throw new Error(data.error || "Submit failed.");
+      alert("Submitted to Google Sheet.");
+      // After submit, refresh trends so charts are up-to-date
+      await refreshTrends(true);
+    }catch(err){
+      alert("Submit failed: " + String(err));
+    }finally{
+      btn.disabled = false;
+      btn.textContent = "Submit to Google Sheet";
+    }
+  }
+
+  // =========================
+  // TRENDS + EVIDENCE MODAL
   // =========================
   let SUBMISSION_CACHE = [];
 
@@ -1188,6 +1792,154 @@
     SUBMISSION_CACHE = Array.isArray(rows) ? rows : [];
   }
 
+  async function fetchAllRows(){
+    const res = await fetch(SCRIPT_URL, { method: "GET" });
+    const data = await res.json();
+    if(!data.ok) throw new Error(data.error || "Failed to load rows");
+    return data.rows || [];
+  }
+
+  function parseDateMaybe(d){
+    const dt = new Date(d);
+    return isNaN(dt.getTime()) ? null : dt;
+  }
+
+  function startOfMonth(dt){ return new Date(dt.getFullYear(), dt.getMonth(), 1); }
+  function startOfYear(dt){ return new Date(dt.getFullYear(), 0, 1); }
+
+  function applyTrendFilters(rows){
+    const orgLevel = document.getElementById("trendOrgLevel").value;
+    const fromStr = document.getElementById("dateFrom").value;
+    const toStr = document.getElementById("dateTo").value;
+
+    const from = fromStr ? new Date(fromStr + "T00:00:00") : null;
+    const to = toStr ? new Date(toStr + "T23:59:59") : null;
+
+    const focusId = state.meta.weeklyFocus;
+
+    return rows.filter(r => {
+      if(orgLevel !== "all" && r.org_level !== orgLevel) return false;
+      if(r.weekly_focus_area_id && r.weekly_focus_area_id !== focusId) return false;
+
+      const ts = parseDateMaybe(r.timestamp_iso) || parseDateMaybe(r.week_of);
+      if(!ts) return false;
+      if(from && ts < from) return false;
+      if(to && ts > to) return false;
+
+      return true;
+    });
+  }
+
+  function avgScore(rows){
+    if(!rows.length) return 0;
+    const sum = rows.reduce((a, r) => a + (Number(r.status_score) || 0), 0);
+    return sum / rows.length;
+  }
+
+  function scoreLabel(avg){
+    if(avg >= 2.5) return "Green";
+    if(avg >= 1.75) return "Yellow";
+    if(avg > 0) return "Red";
+    return "No data";
+  }
+
+  function computeRollups(rows){
+    const now = new Date();
+    const monthStart = startOfMonth(now);
+    const yearStart = startOfYear(now);
+
+    const weekOf = state.meta.weekOf ? new Date(state.meta.weekOf + "T00:00:00") : null;
+    let weeklyRows = [];
+    if(weekOf){
+      weeklyRows = rows.filter(r => String(r.week_of).slice(0,10) === String(state.meta.weekOf).slice(0,10));
+    } else {
+      const sevenDaysAgo = new Date(now.getTime() - 7*24*60*60*1000);
+      weeklyRows = rows.filter(r => {
+        const ts = parseDateMaybe(r.timestamp_iso);
+        return ts && ts >= sevenDaysAgo;
+      });
+    }
+
+    const monthlyRows = rows.filter(r => {
+      const ts = parseDateMaybe(r.timestamp_iso);
+      return ts && ts >= monthStart;
+    });
+
+    const ytdRows = rows.filter(r => {
+      const ts = parseDateMaybe(r.timestamp_iso);
+      return ts && ts >= yearStart;
+    });
+
+    return {
+      weekly: avgScore(weeklyRows),
+      monthly: avgScore(monthlyRows),
+      ytd: avgScore(ytdRows)
+    };
+  }
+
+  function renderRollups(rollups){
+    document.getElementById("rollupWeekly").textContent =
+      rollups.weekly ? `${rollups.weekly.toFixed(2)} (${scoreLabel(rollups.weekly)})` : "No data";
+    document.getElementById("rollupMonthly").textContent =
+      rollups.monthly ? `${rollups.monthly.toFixed(2)} (${scoreLabel(rollups.monthly)})` : "No data";
+    document.getElementById("rollupYtd").textContent =
+      rollups.ytd ? `${rollups.ytd.toFixed(2)} (${scoreLabel(rollups.ytd)})` : "No data";
+  }
+
+  function renderTrendsTable(rows){
+    const tbody = document.getElementById("trendsTableBody");
+    tbody.innerHTML = "";
+
+    setSubmissionCache(rows);
+
+    const sorted = [...rows].sort((a,b) => String(b.timestamp_iso).localeCompare(String(a.timestamp_iso)));
+    sorted.slice(0, 250).forEach(r => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${escapeHtml(String(r.timestamp_iso || "").replace("T"," ").slice(0,16))}</td>
+        <td>${escapeHtml(r.org_level || "")}</td>
+        <td>${escapeHtml(r.school || "")}</td>
+        <td>${escapeHtml(r.weekly_focus_area_title || r.weekly_focus_area_id || "")}</td>
+        <td>${escapeHtml(String(r.status || "").toUpperCase())}</td>
+        <td>${escapeHtml(r.metric1 || "")}</td>
+        <td>${escapeHtml(r.metric2 || "")}</td>
+        <td>${escapeHtml(r.metric3 || "")}</td>
+        <td><button class="miniBtn primary" style="padding:8px 10px;">View Evidence</button></td>
+      `;
+
+      const btn = tr.querySelector("button");
+      btn.addEventListener("click", () => {
+        openEvidenceModal({
+          week_of: r.week_of,
+          school: r.school,
+          weekly_focus_area_id: r.weekly_focus_area_id,
+          weekly_focus_area_title: r.weekly_focus_area_title,
+          org_level: r.org_level,
+          status: r.status
+        });
+      });
+
+      tbody.appendChild(tr);
+    });
+  }
+
+  async function refreshTrends(silent=false){
+    try{
+      const all = await fetchAllRows();
+      const filtered = applyTrendFilters(all);
+      const rollups = computeRollups(filtered);
+      renderRollups(rollups);
+      renderTrendsTable(filtered);
+
+      requestAnalyticsUpdate("trends");
+
+      if(!silent) alert("Trends refreshed.");
+    }catch(err){
+      if(!silent) alert("Trend refresh failed: " + String(err));
+    }
+  }
+
+  // Evidence modal helpers (unchanged, but will read rating fields if present in JSON)
   function safeJsonParse(maybeJson){
     if(!maybeJson) return null;
     if(typeof maybeJson === "object") return maybeJson;
@@ -1317,10 +2069,8 @@
       links.forEach((l, idx) => {
         const item = document.createElement("div");
         item.className = "evidence-item";
-
         const isDrive = String(l.url).includes("drive.google.com");
         const label = l.label || (isDrive ? `Drive Artifact ${idx+1}` : `Evidence Link ${idx+1}`);
-
         item.innerHTML = `
           <div class="meta">
             <div class="title">${escapeHtml(label)}</div>
@@ -1349,679 +2099,306 @@
   }
 
   // =========================
-  // RENDER QUESTIONS
+  // ANALYTICS (Animated Charts)
   // =========================
-  function renderQuestionList(containerId, bucket, questions){
-    const container = document.getElementById(containerId);
-    container.innerHTML = "";
+  const analytics = {
+    lastSource: "init",
+    bar: { current: { school:0, district:0 }, ytd: { school:0, district:0 } },
+    pie: { green:0, yellow:0, red:0 }
+  };
 
-    questions.forEach(q => {
-      ensureRoleAnswer(bucket, q.id);
+  let chartAnim = { barT:0, pieT:0, raf:null };
 
-      const expanded = isDistrictExpanded(bucket, q.id);
-      const collapseClass = expanded ? "" : "collapsed";
-
-      const el = document.createElement("div");
-      el.className = "qItem";
-      el.innerHTML = `
-        <div class="qTop">
-          <div>
-            <div class="qPrompt">${escapeHtml(q.prompt)}</div>
-            <div class="tip">Tip: ${escapeHtml(q.tip || "")}</div>
-          </div>
-        </div>
-
-        <div class="roleStack">
-          <!-- SCHOOL -->
-          <div class="rolePanel school">
-            <div class="roleHeader">
-              <div>
-                <div class="roleTitle">School Leader</div>
-                <div class="muted">What you saw and what students produced this week.</div>
-              </div>
-              <div class="roleBadge">SCHOOL</div>
-            </div>
-
-            <label class="checkWrap" title="Mark as clear and evidence-backed">
-              <input type="checkbox"
-                data-bucket="${bucket}" data-qid="${q.id}" data-role="school" data-field="checked"/>
-              Clear
-            </label>
-
-            <textarea class="qAnswer"
-              data-bucket="${bucket}" data-qid="${q.id}" data-role="school" data-field="text"
-              placeholder="School leader response (evidence-backed specifics)."></textarea>
-
-            <div class="qActions">
-              <button class="miniBtn" data-action="addNote" data-bucket="${bucket}" data-qid="${q.id}" data-role="school">Add note</button>
-
-              <button class="miniBtn primary" data-action="addLink" data-bucket="${bucket}" data-qid="${q.id}" data-role="school">
-                Add artifact link
-              </button>
-
-              <label class="miniBtn primary" style="display:inline-flex; align-items:center; gap:8px;">
-                Upload artifact
-                <input type="file" style="display:none;" data-action="upload" data-bucket="${bucket}" data-qid="${q.id}" data-role="school"/>
-              </label>
-
-              <span class="muted" id="${bucket}_${q.id}_school_noteHint"></span>
-            </div>
-
-            <div class="artifactList" id="${bucket}_${q.id}_school_artifacts"></div>
-          </div>
-
-          <!-- DISTRICT (Structure visible + optional per-question drawer) -->
-          <div class="rolePanel district">
-            <div class="districtWrap">
-              <div class="districtBanner">
-                <div class="left">
-                  <div class="title">District panel exists</div>
-                  <div class="desc">Used for validation, patterns, supports, and barrier removal.</div>
-                </div>
-                <button class="toggleLink"
-                  type="button"
-                  data-action="toggleDistrict"
-                  data-bucket="${bucket}"
-                  data-qid="${q.id}">
-                  ${expanded ? "Hide District" : "Show District"}
-                </button>
-              </div>
-
-              <div class="districtBody ${collapseClass}" id="${bucket}_${q.id}_districtBody">
-
-                <details class="districtDetails" id="${bucket}_${q.id}_districtDetails">
-                  <summary>
-                    <div class="sumLeft">
-                      <span class="purpleDotSmall"></span>
-                      <span>District leader comment (optional)</span>
-                      <span class="sumHint">Expand only if needed</span>
-                    </div>
-                    <span class="toggleLink" style="padding:6px 10px; border-color: rgba(109,40,217,.25);">Open</span>
-                  </summary>
-
-                  <div class="drawer">
-                    <div class="roleHeader" style="margin-bottom:6px;">
-                      <div>
-                        <div class="roleTitle">District Leader</div>
-                        <div class="muted">Validation, patterns, supports, barrier removal.</div>
-                      </div>
-                      <div class="roleBadge" style="background: rgba(109,40,217,.14); border-color: rgba(109,40,217,.22);">
-                        DISTRICT
-                      </div>
-                    </div>
-
-                    <label class="checkWrap" title="Mark as clear and evidence-backed">
-                      <input type="checkbox"
-                        data-bucket="${bucket}" data-qid="${q.id}" data-role="district" data-field="checked"/>
-                      Clear
-                    </label>
-
-                    <textarea class="qAnswer"
-                      data-bucket="${bucket}" data-qid="${q.id}" data-role="district" data-field="text"
-                      placeholder="District leader comment (only if needed)."></textarea>
-
-                    <div class="qActions">
-                      <button class="miniBtn" data-action="addNote" data-bucket="${bucket}" data-qid="${q.id}" data-role="district">Add note</button>
-
-                      <button class="miniBtn primary" data-action="addLink" data-bucket="${bucket}" data-qid="${q.id}" data-role="district">
-                        Add artifact link
-                      </button>
-
-                      <label class="miniBtn primary" style="display:inline-flex; align-items:center; gap:8px;">
-                        Upload artifact
-                        <input type="file" style="display:none;" data-action="upload" data-bucket="${bucket}" data-qid="${q.id}" data-role="district"/>
-                      </label>
-
-                      <span class="muted" id="${bucket}_${q.id}_district_noteHint"></span>
-                    </div>
-
-                    <div class="artifactList" id="${bucket}_${q.id}_district_artifacts"></div>
-                  </div>
-                </details>
-
-              </div>
-            </div>
-          </div>
-        </div>
-      `;
-
-      container.appendChild(el);
-
-      // Hydrate values + artifacts
-      hydrateRolePanel(bucket, q.id, "school", el);
-      hydrateRolePanel(bucket, q.id, "district", el);
-      renderArtifacts(bucket, q.id, "school");
-      renderArtifacts(bucket, q.id, "district");
-
-      // Auto-open District drawer only when District has content (or contributor=District)
-      setDistrictDetailsAutoOpen(bucket, q.id);
-
-      // Auto-collapse logic: if School contributor, default is collapsed unless previously expanded
-      if(defaultDistrictCollapsed() && !isDistrictExpanded(bucket, q.id)){
-        const body = el.querySelector(`#${bucket}_${q.id}_districtBody`);
-        if(body) body.classList.add("collapsed");
-      }
-
-      wireQuestionEvents(el);
-    });
-
-    updateAnsweredPills();
-    updateCompletion();
+  function requestAnalyticsUpdate(source){
+    analytics.lastSource = source || "unknown";
+    computeAnalytics();
+    animateCharts();
   }
 
-  function hydrateRolePanel(bucket, qid, role, scopeEl){
-    const a = getRoleAnswer(bucket, qid, role);
-
-    const chk = scopeEl.querySelector(`input[type="checkbox"][data-bucket="${bucket}"][data-qid="${qid}"][data-role="${role}"][data-field="checked"]`);
-    if(chk) chk.checked = !!a.checked;
-
-    const ta = scopeEl.querySelector(`textarea[data-bucket="${bucket}"][data-qid="${qid}"][data-role="${role}"][data-field="text"]`);
-    if(ta) ta.value = a.text || "";
-
-    const hint = document.getElementById(`${bucket}_${qid}_${role}_noteHint`);
-    if(hint) hint.textContent = a.notes ? "Note added" : "";
-  }
-
-  function renderArtifacts(bucket, qid, role){
-    const a = getRoleAnswer(bucket, qid, role);
-    const list = document.getElementById(`${bucket}_${qid}_${role}_artifacts`);
-    if(!list) return;
-
-    list.innerHTML = "";
-    (a.artifacts || []).forEach((art, idx) => {
-      const row = document.createElement("div");
-      row.className = "artifact";
-      const label = art.label || art.name || "Artifact";
-      const linkHtml = art.url ? `<a href="${escapeHtml(art.url)}" target="_blank" rel="noopener">${escapeHtml(label)}</a>` : escapeHtml(label);
-
-      row.innerHTML = `
-        <div>
-          <div style="font-weight:800;">${linkHtml}</div>
-          <div class="muted">${escapeHtml(art.kind || "")}${art.kind ? " | " : ""}${escapeHtml(art.note || "")}</div>
-        </div>
-        <div class="right">
-          <button class="miniBtn"
-            data-action="removeArtifact" data-bucket="${bucket}" data-qid="${qid}" data-role="${role}" data-idx="${idx}">
-            Remove
-          </button>
-        </div>
-      `;
-      list.appendChild(row);
-    });
-  }
-
-  function wireQuestionEvents(scopeEl){
-    // inputs/textarea
-    scopeEl.querySelectorAll("[data-field]").forEach(el => {
-      const bucket = el.getAttribute("data-bucket");
-      const qid = el.getAttribute("data-qid");
-      const role = el.getAttribute("data-role");
-      const field = el.getAttribute("data-field");
-
-      const handler = () => {
-        const a = getRoleAnswer(bucket, qid, role);
-        if(field === "checked"){
-          a.checked = !!el.checked;
-        }else if(field === "text"){
-          a.text = el.value || "";
-        }
-        saveState();
-
-        // If district starts adding content, auto-open the drawer for that question
-        if(role === "district"){
-          setDistrictDetailsAutoOpen(bucket, qid);
-        }
-
-        updateAnsweredPills();
-        updateCompletion();
-      };
-
-      el.addEventListener(field === "checked" ? "change" : "input", handler);
-    });
-
-    // actions
-    scopeEl.querySelectorAll("[data-action]").forEach(el => {
-      const action = el.getAttribute("data-action");
-      const bucket = el.getAttribute("data-bucket");
-      const qid = el.getAttribute("data-qid");
-      const role = el.getAttribute("data-role");
-
-      if(action === "toggleDistrict"){
-        el.addEventListener("click", () => {
-          if(isDistrictContributor()) return;
-
-          const body = document.getElementById(`${bucket}_${qid}_districtBody`);
-          if(!body) return;
-
-          const currentlyCollapsed = body.classList.contains("collapsed");
-          if(currentlyCollapsed){
-            body.classList.remove("collapsed");
-            el.textContent = "Hide District";
-            setDistrictExpanded(bucket, qid, true);
-          }else{
-            body.classList.add("collapsed");
-            el.textContent = "Show District";
-            setDistrictExpanded(bucket, qid, false);
-          }
-        });
-      }
-
-      if(action === "addNote"){
-        el.addEventListener("click", () => {
-          const a = getRoleAnswer(bucket, qid, role);
-          const next = prompt("Add a short note (context, names, reminders):", a.notes || "");
-          if(next === null) return;
-          a.notes = next.trim();
-          saveState();
-
-          const hint = document.getElementById(`${bucket}_${qid}_${role}_noteHint`);
-          if(hint) hint.textContent = a.notes ? "Note added" : "";
-
-          if(role === "district"){
-            setDistrictDetailsAutoOpen(bucket, qid);
-          }
-        });
-      }
-
-      if(action === "addLink"){
-        el.addEventListener("click", () => {
-          const a = getRoleAnswer(bucket, qid, role);
-          const url = prompt("Paste an artifact link (Drive link, BPI page, rubric, student product URL):", "");
-          if(!url) return;
-          const label = prompt("Short label (example: 'BPI sample: Grade 7', 'BPA rubric', 'WAC published piece'):", "Artifact");
-          a.artifacts.push({ kind:"link", url: url.trim(), label: (label || "Artifact").trim(), note:"" });
-          saveState();
-          renderArtifacts(bucket, qid, role);
-
-          if(role === "district"){
-            setDistrictDetailsAutoOpen(bucket, qid);
-          }
-        });
-      }
-
-      if(action === "upload"){
-        el.addEventListener("change", async (evt) => {
-          const file = evt.target.files && evt.target.files[0];
-          evt.target.value = "";
-          if(!file) return;
-
-          try{
-            const a = getRoleAnswer(bucket, qid, role);
-            const uploaded = await uploadArtifactToDrive(file);
-            a.artifacts.push({
-              kind: "upload",
-              url: uploaded.url,
-              label: uploaded.name || file.name,
-              note: uploaded.note || ""
-            });
-
-            saveState();
-            renderArtifacts(bucket, qid, role);
-
-            if(role === "district"){
-              setDistrictDetailsAutoOpen(bucket, qid);
-            }
-
-            alert("Uploaded and linked.");
-          }catch(err){
-            alert("Upload failed: " + String(err));
-          }
-        });
-      }
-
-      if(action === "removeArtifact"){
-        el.addEventListener("click", () => {
-          const idx = Number(el.getAttribute("data-idx"));
-          const a = getRoleAnswer(bucket, qid, role);
-          a.artifacts.splice(idx, 1);
-          saveState();
-          renderArtifacts(bucket, qid, role);
-
-          if(role === "district"){
-            setDistrictDetailsAutoOpen(bucket, qid);
-          }
-        });
-      }
-    });
-  }
-
-  // =========================
-  // COMPLETION INDICATORS
-  // =========================
-  function countAnswered(bucket, questions){
-    let answered = 0;
-    questions.forEach(q => {
-      const school = getRoleAnswer(bucket, q.id, "school");
-      const district = getRoleAnswer(bucket, q.id, "district");
-      const hasAnyText =
-        (school.text || "").trim().length > 0 ||
-        (district.text || "").trim().length > 0;
-      if(hasAnyText) answered += 1;
-    });
-    return { answered, total: questions.length };
-  }
-
-  function updateAnsweredPills(){
-    const core = countAnswered("core", CORE_FRAMING_QUESTIONS);
-    document.getElementById("coreDonePill").textContent = `${core.answered}/${core.total} answered`;
-
+  function computeAnalytics(){
+    // 1) Status bar chart: Current week + YTD averages for selected school and district
     const focusId = state.meta.weeklyFocus;
-    const focusQs = FOCUS_QUESTIONS[focusId] || [];
-    const focus = countAnswered("focus", focusQs);
-    document.getElementById("focusDonePill").textContent = `${focus.answered}/${focus.total} answered`;
+    const week = String(state.meta.weekOf || "").slice(0,10);
+    const selectedSchool = state.meta.school;
 
-    const closingSchool = getRoleAnswer("closing", "closing", "school");
-    const closingDistrict = getRoleAnswer("closing", "closing", "district");
-    const closingAnswered = (closingSchool.text || "").trim().length || (closingDistrict.text || "").trim().length;
-    document.getElementById("closeDonePill").textContent = closingAnswered ? "Answered" : "Not answered";
-  }
+    const rows = SUBMISSION_CACHE || [];
 
-  function updateCompletion(){
-    const focusId = state.meta.weeklyFocus;
-    const focusQs = FOCUS_QUESTIONS[focusId] || [];
+    const districtRows = rows.filter(r =>
+      String(r.weekly_focus_area_id || "") === focusId && String(r.org_level || "") === "District"
+    );
 
-    const core = countAnswered("core", CORE_FRAMING_QUESTIONS);
-    const focus = countAnswered("focus", focusQs);
+    const schoolRows = rows.filter(r =>
+      String(r.weekly_focus_area_id || "") === focusId && String(r.org_level || "") === "School" && String(r.school || "") === selectedSchool
+    );
 
-    const closingSchool = getRoleAnswer("closing", "closing", "school");
-    const closingDistrict = getRoleAnswer("closing", "closing", "district");
-    const closingAnswered = ((closingSchool.text || "").trim().length || (closingDistrict.text || "").trim().length) ? 1 : 0;
-
-    const total = core.total + focus.total + 1;
-    const done = core.answered + focus.answered + closingAnswered;
-
-    const pct = total ? Math.round((done/total)*100) : 0;
-    document.getElementById("completionPill").textContent = `${pct}% complete`;
-  }
-
-  // =========================
-  // SUMMARY BAR
-  // =========================
-  function renderSummaryBar(){
-    const bar = document.getElementById("summaryBar");
-    bar.innerHTML = "";
-
-    const org = state.meta.orgLevel;
-    const school = (org === "School") ? state.meta.school : "District";
-    const focus = FOCUS_META[state.meta.weeklyFocus]?.title || state.meta.weeklyFocus;
-
-    bar.appendChild(chip(`${org} submission`, "gray"));
-    bar.appendChild(chip(`${school}`, "gray"));
-    bar.appendChild(chip(`${focus}`, "gray"));
-
-    const score = statusToScore(state.status.status);
-    const sLabel = (state.status.status || "").toUpperCase();
-    bar.appendChild(chip(`Status: ${sLabel} (score ${score})`, state.status.status));
-  }
-
-  function chip(text, status){
-    const d = document.createElement("div");
-    d.className = "chip";
-    const dot = document.createElement("span");
-    dot.className = "statusDot " + statusClass(status);
-    dot.style.width = "9px";
-    dot.style.height = "9px";
-    dot.style.boxShadow = "none";
-    d.appendChild(dot);
-    const t = document.createElement("span");
-    t.textContent = text;
-    d.appendChild(t);
-    return d;
-  }
-
-  // =========================
-  // ARTIFACT UPLOAD (Drive via Apps Script)
-  // =========================
-  function readFileAsBase64(file){
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => {
-        const result = String(reader.result || "");
-        const parts = result.split(",");
-        if(parts.length < 2) return reject(new Error("Invalid file encoding."));
-        resolve(parts[1]);
-      };
-      reader.onerror = () => reject(reader.error || new Error("File read failed."));
-      reader.readAsDataURL(file);
-    });
-  }
-
-  async function uploadArtifactToDrive(file){
-    const b64 = await readFileAsBase64(file);
-
-    const payload = {
-      action: "upload",
-      file_name: file.name,
-      mime_type: file.type || "application/octet-stream",
-      base64: b64,
-      week_of: state.meta.weekOf,
-      org_level: state.meta.orgLevel,
-      school: state.meta.orgLevel === "School" ? state.meta.school : "District",
-      focus_area_id: state.meta.weeklyFocus
-    };
-
-    const res = await fetch(SCRIPT_URL, {
-      method: "POST",
-      headers: { "Content-Type": "text/plain;charset=utf-8" },
-      body: JSON.stringify(payload)
-    });
-
-    const data = await res.json();
-    if(!data.ok) throw new Error(data.error || "Upload failed.");
-    return data.file;
-  }
-
-  // =========================
-  // SHEET SUBMISSION
-  // =========================
-  function buildSubmissionPayload(){
-    const focusId = state.meta.weeklyFocus;
-    const focusTitle = FOCUS_META[focusId]?.title || focusId;
-
-    const core_answers = {};
-    CORE_FRAMING_QUESTIONS.forEach(q => core_answers[q.id] = ensureRoleAnswer("core", q.id));
-
-    const focus_answers = {};
-    (FOCUS_QUESTIONS[focusId] || []).forEach(q => focus_answers[q.id] = ensureRoleAnswer("focus", q.id));
-
-    const closing_answers = { closing: ensureRoleAnswer("closing", "closing") };
-
-    return {
-      week_of: state.meta.weekOf,
-      view_mode: state.meta.viewMode,
-
-      org_level: state.meta.orgLevel,
-      school: state.meta.orgLevel === "School" ? state.meta.school : "District",
-      submitter_name: state.meta.submitterName,
-      submitter_role: state.meta.submitterRole,
-
-      weekly_focus_area_id: focusId,
-      weekly_focus_area_title: focusTitle,
-
-      status: state.status.status,
-      metric1: state.status.metric1,
-      metric2: state.status.metric2,
-      metric3: state.status.metric3,
-      lane_owner: state.status.laneOwner,
-
-      core_answers,
-      focus_answers,
-      closing_answers
-    };
-  }
-
-  async function submitToSheet(){
-    const payload = buildSubmissionPayload();
-
-    const btn = document.getElementById("submitToSheetBtn");
-    btn.disabled = true;
-    btn.textContent = "Submitting...";
-
-    try{
-      const res = await fetch(SCRIPT_URL, {
-        method: "POST",
-        headers: { "Content-Type": "text/plain;charset=utf-8" },
-        body: JSON.stringify(payload)
-      });
-      const data = await res.json();
-      if(!data.ok) throw new Error(data.error || "Submit failed.");
-      alert("Submitted to Google Sheet.");
-    }catch(err){
-      alert("Submit failed: " + String(err));
-    }finally{
-      btn.disabled = false;
-      btn.textContent = "Submit to Google Sheet";
-    }
-  }
-
-  // =========================
-  // TRENDS
-  // =========================
-  async function fetchAllRows(){
-    const res = await fetch(SCRIPT_URL, { method: "GET" });
-    const data = await res.json();
-    if(!data.ok) throw new Error(data.error || "Failed to load rows");
-    return data.rows || [];
-  }
-
-  function parseDateMaybe(d){
-    const dt = new Date(d);
-    return isNaN(dt.getTime()) ? null : dt;
-  }
-
-  function startOfMonth(dt){ return new Date(dt.getFullYear(), dt.getMonth(), 1); }
-  function startOfYear(dt){ return new Date(dt.getFullYear(), 0, 1); }
-
-  function applyTrendFilters(rows){
-    const orgLevel = document.getElementById("trendOrgLevel").value;
-    const fromStr = document.getElementById("dateFrom").value;
-    const toStr = document.getElementById("dateTo").value;
-
-    const from = fromStr ? new Date(fromStr + "T00:00:00") : null;
-    const to = toStr ? new Date(toStr + "T23:59:59") : null;
-
-    const focusId = state.meta.weeklyFocus;
-
-    return rows.filter(r => {
-      if(orgLevel !== "all" && r.org_level !== orgLevel) return false;
-      if(r.weekly_focus_area_id && r.weekly_focus_area_id !== focusId) return false;
-
-      const ts = parseDateMaybe(r.timestamp_iso) || parseDateMaybe(r.week_of);
-      if(!ts) return false;
-      if(from && ts < from) return false;
-      if(to && ts > to) return false;
-
-      return true;
-    });
-  }
-
-  function avgScore(rows){
-    if(!rows.length) return 0;
-    const sum = rows.reduce((a, r) => a + (Number(r.status_score) || 0), 0);
-    return sum / rows.length;
-  }
-
-  function scoreLabel(avg){
-    if(avg >= 2.5) return "Green";
-    if(avg >= 1.75) return "Yellow";
-    if(avg > 0) return "Red";
-    return "No data";
-  }
-
-  function computeRollups(rows){
     const now = new Date();
-    const monthStart = startOfMonth(now);
-    const yearStart = startOfYear(now);
+    const yearStart = new Date(now.getFullYear(), 0, 1);
 
-    const weekOf = state.meta.weekOf ? new Date(state.meta.weekOf + "T00:00:00") : null;
-    let weeklyRows = [];
-    if(weekOf){
-      weeklyRows = rows.filter(r => String(r.week_of).slice(0,10) === String(state.meta.weekOf).slice(0,10));
-    } else {
-      const sevenDaysAgo = new Date(now.getTime() - 7*24*60*60*1000);
-      weeklyRows = rows.filter(r => {
-        const ts = parseDateMaybe(r.timestamp_iso);
-        return ts && ts >= sevenDaysAgo;
-      });
-    }
-
-    const monthlyRows = rows.filter(r => {
-      const ts = parseDateMaybe(r.timestamp_iso);
-      return ts && ts >= monthStart;
-    });
-
-    const ytdRows = rows.filter(r => {
-      const ts = parseDateMaybe(r.timestamp_iso);
+    const filterYTD = (r) => {
+      const ts = parseDateMaybe(r.timestamp_iso) || parseDateMaybe(r.week_of);
       return ts && ts >= yearStart;
-    });
-
-    return {
-      weekly: avgScore(weeklyRows),
-      monthly: avgScore(monthlyRows),
-      ytd: avgScore(ytdRows)
     };
+    const filterWeek = (r) => String(r.week_of || "").slice(0,10) === week;
+
+    const schoolWeekAvg = avgScore(schoolRows.filter(filterWeek));
+    const districtWeekAvg = avgScore(districtRows.filter(filterWeek));
+    const schoolYtdAvg = avgScore(schoolRows.filter(filterYTD));
+    const districtYtdAvg = avgScore(districtRows.filter(filterYTD));
+
+    analytics.bar.current.school = schoolWeekAvg || 0;
+    analytics.bar.current.district = districtWeekAvg || 0;
+    analytics.bar.ytd.school = schoolYtdAvg || 0;
+    analytics.bar.ytd.district = districtYtdAvg || 0;
+
+    // 2) Pie: Core question ratings (School + District) from LOCAL state (current form)
+    const counts = { green:0, yellow:0, red:0 };
+    CORE_FRAMING_QUESTIONS.forEach(q => {
+      const s = getRoleAnswer("core", q.id, "school").rating;
+      const d = getRoleAnswer("core", q.id, "district").rating;
+      if(s === "green" || s === "yellow" || s === "red") counts[s] += 1;
+      if(d === "green" || d === "yellow" || d === "red") counts[d] += 1;
+    });
+
+    analytics.pie = counts;
+
+    // Pill
+    const pill = document.getElementById("analyticsPill");
+    const hasAny = (analytics.bar.current.school || analytics.bar.current.district || analytics.bar.ytd.school || analytics.bar.ytd.district || counts.green || counts.yellow || counts.red);
+    pill.textContent = hasAny ? "Live" : "No data";
   }
 
-  function renderRollups(rollups){
-    document.getElementById("rollupWeekly").textContent =
-      rollups.weekly ? `${rollups.weekly.toFixed(2)} (${scoreLabel(rollups.weekly)})` : "No data";
-    document.getElementById("rollupMonthly").textContent =
-      rollups.monthly ? `${rollups.monthly.toFixed(2)} (${scoreLabel(rollups.monthly)})` : "No data";
-    document.getElementById("rollupYtd").textContent =
-      rollups.ytd ? `${rollups.ytd.toFixed(2)} (${scoreLabel(rollups.ytd)})` : "No data";
+  function animateCharts(){
+    chartAnim.barT = 0;
+    chartAnim.pieT = 0;
+    if(chartAnim.raf) cancelAnimationFrame(chartAnim.raf);
+
+    const start = performance.now();
+    const dur = 520; // tight, snappy
+
+    const step = (t) => {
+      const p = Math.min(1, (t - start) / dur);
+      const eased = 1 - Math.pow(1 - p, 3); // easeOutCubic
+
+      drawBarChart(document.getElementById("barStatus"), eased);
+      drawPieChart(document.getElementById("pieCore"), eased);
+
+      if(p < 1){
+        chartAnim.raf = requestAnimationFrame(step);
+      }
+    };
+    chartAnim.raf = requestAnimationFrame(step);
   }
 
-  function renderTrendsTable(rows){
-    const tbody = document.getElementById("trendsTableBody");
-    tbody.innerHTML = "";
+  function ensureHiDpiCanvas(canvas){
+    const rect = canvas.getBoundingClientRect();
+    const dpr = window.devicePixelRatio || 1;
+    const w = Math.max(10, Math.floor(rect.width * dpr));
+    const h = Math.max(10, Math.floor(rect.height * dpr));
+    if(canvas.width !== w || canvas.height !== h){
+      canvas.width = w;
+      canvas.height = h;
+    }
+    const ctx = canvas.getContext("2d");
+    ctx.setTransform(dpr,0,0,dpr,0,0); // draw in CSS pixels
+    return ctx;
+  }
 
-    setSubmissionCache(rows);
+  function drawBarChart(canvas, t){
+    if(!canvas) return;
+    const ctx = ensureHiDpiCanvas(canvas);
+    const w = canvas.getBoundingClientRect().width;
+    const h = canvas.getBoundingClientRect().height;
 
-    const sorted = [...rows].sort((a,b) => String(b.timestamp_iso).localeCompare(String(a.timestamp_iso)));
-    sorted.slice(0, 250).forEach(r => {
-      const tr = document.createElement("tr");
+    ctx.clearRect(0,0,w,h);
 
-      tr.innerHTML = `
-        <td>${escapeHtml(String(r.timestamp_iso || "").replace("T"," ").slice(0,16))}</td>
-        <td>${escapeHtml(r.org_level || "")}</td>
-        <td>${escapeHtml(r.school || "")}</td>
-        <td>${escapeHtml(r.weekly_focus_area_title || r.weekly_focus_area_id || "")}</td>
-        <td>${escapeHtml(String(r.status || "").toUpperCase())}</td>
-        <td>${escapeHtml(r.metric1 || "")}</td>
-        <td>${escapeHtml(r.metric2 || "")}</td>
-        <td>${escapeHtml(r.metric3 || "")}</td>
-        <td>
-          <button class="miniBtn primary" style="padding:8px 10px;">View Evidence</button>
-        </td>
-      `;
+    // frame
+    roundRect(ctx, 0.5, 0.5, w-1, h-1, 12);
+    ctx.fillStyle = "rgba(245,245,247,0.55)";
+    ctx.fill();
+    ctx.strokeStyle = "rgba(0,0,0,0.10)";
+    ctx.stroke();
 
-      const btn = tr.querySelector("button");
-      btn.addEventListener("click", () => {
-        openEvidenceModal({
-          week_of: r.week_of,
-          school: r.school,
-          weekly_focus_area_id: r.weekly_focus_area_id,
-          weekly_focus_area_title: r.weekly_focus_area_title,
-          org_level: r.org_level,
-          status: r.status
-        });
-      });
+    // bars: 4 bars (School week, District week, School YTD, District YTD), scale 0..3
+    const vals = [
+      { label:"School", sub:"Week", v: analytics.bar.current.school },
+      { label:"District", sub:"Week", v: analytics.bar.current.district },
+      { label:"School", sub:"YTD", v: analytics.bar.ytd.school },
+      { label:"District", sub:"YTD", v: analytics.bar.ytd.district }
+    ];
 
-      tbody.appendChild(tr);
+    const pad = 12;
+    const innerW = w - pad*2;
+    const innerH = h - pad*2;
+    const baseY = pad + innerH - 18; // leave space for labels
+
+    const barW = innerW / vals.length * 0.64;
+    const gap = innerW / vals.length * 0.36;
+    const maxV = 3;
+
+    // axis line
+    ctx.strokeStyle = "rgba(0,0,0,0.10)";
+    ctx.beginPath();
+    ctx.moveTo(pad, baseY);
+    ctx.lineTo(w - pad, baseY);
+    ctx.stroke();
+
+    vals.forEach((b, i) => {
+      const xCenter = pad + (i + 0.5) * (innerW / vals.length);
+      const x = xCenter - barW/2;
+      const barMaxH = innerH - 28;
+      const barH = (Math.max(0, Math.min(maxV, b.v)) / maxV) * barMaxH * t;
+
+      // color by value
+      const cls = (b.v >= 2.5) ? "green" : (b.v >= 1.75 ? "yellow" : (b.v > 0 ? "red" : "gray"));
+      const fill = cls === "green" ? "rgba(22,163,74,0.55)"
+                : cls === "yellow" ? "rgba(245,158,11,0.60)"
+                : cls === "red" ? "rgba(220,38,38,0.55)"
+                : "rgba(107,114,128,0.35)";
+      const stroke = cls === "green" ? "rgba(22,163,74,0.85)"
+                  : cls === "yellow" ? "rgba(245,158,11,0.90)"
+                  : cls === "red" ? "rgba(220,38,38,0.85)"
+                  : "rgba(107,114,128,0.55)";
+
+      roundRect(ctx, x, baseY - barH, barW, barH, 10);
+      ctx.fillStyle = fill;
+      ctx.fill();
+      ctx.strokeStyle = stroke;
+      ctx.lineWidth = 1;
+      ctx.stroke();
+
+      // value
+      ctx.fillStyle = "rgba(17,17,17,0.85)";
+      ctx.font = "900 11px Inter, system-ui, Arial";
+      const vText = (b.v ? b.v.toFixed(2) : "0.00");
+      ctx.fillText(vText, x + 6, baseY - barH - 6);
+
+      // labels
+      ctx.fillStyle = "rgba(107,114,128,1)";
+      ctx.font = "900 10px Inter, system-ui, Arial";
+      ctx.fillText(b.label, x + 2, h - 16);
+      ctx.font = "800 9px Inter, system-ui, Arial";
+      ctx.fillText(b.sub, x + 2, h - 6);
     });
   }
 
-  async function refreshTrends(){
-    try{
-      const all = await fetchAllRows();
-      const filtered = applyTrendFilters(all);
-      const rollups = computeRollups(filtered);
-      renderRollups(rollups);
-      renderTrendsTable(filtered);
-      alert("Trends refreshed.");
-    }catch(err){
-      alert("Trend refresh failed: " + String(err));
+  function drawPieChart(canvas, t){
+    if(!canvas) return;
+    const ctx = ensureHiDpiCanvas(canvas);
+    const w = canvas.getBoundingClientRect().width;
+    const h = canvas.getBoundingClientRect().height;
+
+    ctx.clearRect(0,0,w,h);
+
+    // frame
+    roundRect(ctx, 0.5, 0.5, w-1, h-1, 12);
+    ctx.fillStyle = "rgba(245,245,247,0.55)";
+    ctx.fill();
+    ctx.strokeStyle = "rgba(0,0,0,0.10)";
+    ctx.stroke();
+
+    const counts = analytics.pie || {green:0,yellow:0,red:0};
+    const total = (counts.green || 0) + (counts.yellow || 0) + (counts.red || 0);
+
+    const cx = w * 0.33;
+    const cy = h * 0.52;
+    const r = Math.min(w, h) * 0.30;
+
+    // if no data, draw ring + text
+    if(!total){
+      ctx.beginPath();
+      ctx.arc(cx, cy, r, 0, Math.PI*2);
+      ctx.strokeStyle = "rgba(107,114,128,0.35)";
+      ctx.lineWidth = 10;
+      ctx.stroke();
+
+      ctx.fillStyle = "rgba(107,114,128,1)";
+      ctx.font = "900 11px Inter, system-ui, Arial";
+      ctx.fillText("No ratings yet", w*0.55, h*0.52);
+      ctx.font = "800 10px Inter, system-ui, Arial";
+      ctx.fillText("Rate core questions", w*0.55, h*0.52 + 14);
+      return;
     }
+
+    const slices = [
+      { key:"green", val: counts.green, color:"rgba(22,163,74,0.65)", stroke:"rgba(22,163,74,0.95)" },
+      { key:"yellow", val: counts.yellow, color:"rgba(245,158,11,0.70)", stroke:"rgba(245,158,11,0.98)" },
+      { key:"red", val: counts.red, color:"rgba(220,38,38,0.65)", stroke:"rgba(220,38,38,0.95)" }
+    ];
+
+    let start = -Math.PI/2;
+    const endCap = start + (Math.PI*2 * t);
+
+    slices.forEach(s => {
+      if(!s.val) return;
+      const frac = s.val / total;
+      const ang = Math.PI*2 * frac;
+
+      const sliceStart = start;
+      const sliceEnd = start + ang;
+
+      // animate by clipping the visible arc to endCap
+      const visEnd = Math.min(sliceEnd, endCap);
+      if(visEnd <= sliceStart){
+        start += ang;
+        return;
+      }
+
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.arc(cx, cy, r, sliceStart, visEnd);
+      ctx.closePath();
+      ctx.fillStyle = s.color;
+      ctx.fill();
+      ctx.strokeStyle = s.stroke;
+      ctx.lineWidth = 1;
+      ctx.stroke();
+
+      start += ang;
+    });
+
+    // donut hole
+    ctx.beginPath();
+    ctx.arc(cx, cy, r*0.58, 0, Math.PI*2);
+    ctx.fillStyle = "rgba(255,255,255,0.95)";
+    ctx.fill();
+
+    // center label
+    ctx.fillStyle = "rgba(17,17,17,0.90)";
+    ctx.font = "900 12px Inter, system-ui, Arial";
+    ctx.fillText(String(total), cx - 6, cy + 4);
+    ctx.fillStyle = "rgba(107,114,128,1)";
+    ctx.font = "900 10px Inter, system-ui, Arial";
+    ctx.fillText("ratings", cx - 18, cy + 18);
+
+    // legend on right
+    const lx = w * 0.58;
+    const ly = h * 0.28;
+    const items = [
+      { name:"Green", val: counts.green, dot:"rgba(22,163,74,0.95)" },
+      { name:"Yellow", val: counts.yellow, dot:"rgba(245,158,11,0.98)" },
+      { name:"Red", val: counts.red, dot:"rgba(220,38,38,0.95)" }
+    ];
+    ctx.font = "900 11px Inter, system-ui, Arial";
+    items.forEach((it, idx) => {
+      const y = ly + idx*22;
+      ctx.fillStyle = it.dot;
+      ctx.beginPath();
+      ctx.arc(lx, y, 5, 0, Math.PI*2);
+      ctx.fill();
+      ctx.fillStyle = "rgba(17,17,17,0.90)";
+      ctx.fillText(`${it.name}: ${it.val || 0}`, lx + 12, y + 4);
+    });
+  }
+
+  function roundRect(ctx, x, y, w, h, r){
+    const rr = Math.min(r, w/2, h/2);
+    ctx.beginPath();
+    ctx.moveTo(x+rr, y);
+    ctx.arcTo(x+w, y, x+w, y+h, rr);
+    ctx.arcTo(x+w, y+h, x, y+h, rr);
+    ctx.arcTo(x, y+h, x, y, rr);
+    ctx.arcTo(x, y, x+w, y, rr);
+    ctx.closePath();
   }
 
   // =========================
@@ -2050,35 +2427,38 @@
     const meta = FOCUS_META[focusId];
     document.getElementById("pageTitle").textContent = `Weekly Focus: ${meta ? meta.title : "Focus Area"}`;
     document.getElementById("pageContext").textContent =
-      "Each question includes a School box. District structure exists for validation and support. District comment drawers only open when District adds a comment or evidence (or when Contributor is District).";
+      "Each question includes School and District sections. Core questions now include RYG ratings (School and District) to make signal strength visible, not assumed.";
 
     document.getElementById("focusTitle").textContent = `Focus Area Questions: ${meta ? meta.title : ""}`;
     document.getElementById("focusHint").textContent = meta ? meta.hint : "";
 
-    renderQuestionList("coreQuestions", "core", CORE_FRAMING_QUESTIONS);
-    renderQuestionList("focusQuestions", "focus", FOCUS_QUESTIONS[focusId] || []);
-    renderQuestionList("closingQuestion", "closing", [CLOSING_QUESTION]);
+    // Core questions: WITH ratings (red/yellow/green)
+    renderQuestionList("coreQuestions", "core", CORE_FRAMING_QUESTIONS, true);
+
+    // Focus questions: no ratings by default (keep clean). If you want ratings here too, flip this to true.
+    renderQuestionList("focusQuestions", "focus", FOCUS_QUESTIONS[focusId] || [], false);
+
+    // Closing: no ratings
+    renderQuestionList("closingQuestion", "closing", [CLOSING_QUESTION], false);
 
     renderSummaryBar();
 
+    // Auto-expand district panels for district contributors
     if(isDistrictContributor()){
-      forceExpandAllDistrictPanels();
+      document.querySelectorAll(".districtBody").forEach(body => body.classList.remove("collapsed"));
+      document.querySelectorAll('[data-action="toggleDistrict"]').forEach(btn => btn.textContent = "Hide District");
+      CORE_FRAMING_QUESTIONS.forEach(q => setDistrictExpanded("core", q.id, true));
+      (FOCUS_QUESTIONS[focusId] || []).forEach(q => setDistrictExpanded("focus", q.id, true));
+      setDistrictExpanded("closing", "closing", true);
+    }else{
+      // collapse district panels by default for school users
+      if(AUTO_COLLAPSE_DISTRICT_FOR_SCHOOL){
+        // keep any user-opened panels as-is
+      }
     }
-  }
 
-  function forceExpandAllDistrictPanels(){
-    document.querySelectorAll(".districtBody").forEach(body => body.classList.remove("collapsed"));
-    document.querySelectorAll('[data-action="toggleDistrict"]').forEach(btn => {
-      btn.textContent = "Hide District";
-    });
-
-    const focusId = state.meta.weeklyFocus;
-    const allQs = [
-      ...CORE_FRAMING_QUESTIONS.map(q => ({bucket:"core", id:q.id})),
-      ...((FOCUS_QUESTIONS[focusId] || []).map(q => ({bucket:"focus", id:q.id}))),
-      {bucket:"closing", id:"closing"}
-    ];
-    allQs.forEach(x => setDistrictExpanded(x.bucket, x.id, true));
+    // analytics update
+    requestAnalyticsUpdate("render");
   }
 
   // =========================
@@ -2124,6 +2504,13 @@
         saveState();
       });
     });
+
+    // When trends filters change, keep charts responsive (but don't fetch automatically)
+    ["trendOrgLevel","dateFrom","dateTo"].forEach(id => {
+      document.getElementById(id).addEventListener("change", () => requestAnalyticsUpdate("filters"));
+    });
+
+    window.addEventListener("resize", () => requestAnalyticsUpdate("resize"));
   }
 
   function wireButtons(){
@@ -2176,7 +2563,7 @@
     });
 
     document.getElementById("submitToSheetBtn").addEventListener("click", submitToSheet);
-    document.getElementById("refreshTrendsBtn").addEventListener("click", refreshTrends);
+    document.getElementById("refreshTrendsBtn").addEventListener("click", () => refreshTrends(false));
   }
 
   // =========================
@@ -2185,6 +2572,10 @@
   wireMeta();
   wireButtons();
   renderPage();
+
+  // Optional: auto-load trends once per session so analytics aren't empty.
+  // If you do NOT want this, delete the next line.
+  refreshTrends(true);
 </script>
 </body>
 </html>
