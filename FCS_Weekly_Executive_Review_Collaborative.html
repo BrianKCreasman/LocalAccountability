@@ -4,6 +4,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>FCS Weekly Executive Review (Collaborative)</title>
+
+  <!-- Charts (animated) -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
   <style>
     :root{
       --black:#111111;
@@ -54,24 +58,24 @@
       overflow:auto;
     }
 
-    /* NEW: Compass logo above brand box */
-    .logoWrap{
+    /* Logo + Brand */
+    .brandLogoWrap{
       display:flex;
-      justify-content:center;
       align-items:center;
-      margin: 4px 0 14px 0;
+      justify-content:center;
+      padding:12px 10px 10px 10px;
+      border-radius: 18px;
+      background: #fff;
+      border: 1px solid rgba(0,0,0,0.10);
+      box-shadow: 0 12px 26px rgba(0,0,0,0.12);
+      margin-bottom:12px;
     }
-    .logoWrap img{
+    .brandLogo{
       width: 210px;
       max-width: 100%;
       height: auto;
-      border-radius: 18px;
-      background:#ffffff;
-      padding: 10px 12px;
-      border: 1px solid rgba(0,0,0,0.10);
-      box-shadow:
-        0 14px 36px rgba(0,0,0,0.14),
-        0 6px 14px rgba(0,0,0,0.10);
+      display:block;
+      filter: drop-shadow(0 10px 14px rgba(0,0,0,0.16));
     }
 
     .brand{
@@ -139,6 +143,22 @@
       padding:22px 22px 44px 22px;
       overflow:auto;
     }
+
+    /* Analytics layout */
+    .dash{
+      display:grid;
+      grid-template-columns: 320px 1fr 320px;
+      gap:14px;
+      align-items:start;
+    }
+    .rail{
+      position: sticky;
+      top: 14px;
+      height: calc(100vh - 28px);
+      overflow:auto;
+      padding-bottom: 20px;
+    }
+    .center{ min-width:0; }
 
     .topbar{
       display:flex;
@@ -267,6 +287,18 @@
     }
     .qItem:hover .tip{ display:block; }
 
+    /* Core per-question RYG selector */
+    .qItem select[data-action="qStatus"]{
+      border-radius: 12px;
+      padding:8px 10px;
+      border: var(--border);
+      background:#fff;
+      font-weight:700;
+      font-size:12px;
+      width:auto;
+      min-width: 110px;
+    }
+
     /* Two-role layout */
     .roleStack{
       display:grid;
@@ -320,10 +352,8 @@
       border-color: rgba(37,99,235,0.22);
     }
 
-    /* NEW: District auto-collapse */
-    .districtWrap{
-      margin-top: 8px;
-    }
+    /* District auto-collapse */
+    .districtWrap{ margin-top: 8px; }
     .districtBanner{
       display:flex;
       align-items:center;
@@ -454,6 +484,20 @@
       line-height:1.35;
     }
 
+    /* Chart canvases */
+    canvas{
+      width: 100% !important;
+      height: 240px !important;
+    }
+    #barByAreaYtd{
+      height: 320px !important;
+    }
+
+    @media (max-width: 1240px){
+      .dash{ grid-template-columns: 1fr; }
+      .rail{ position:relative; height:auto; top:auto; }
+    }
+
     @media (max-width: 980px){
       .app{ grid-template-columns: 1fr; }
       .sidebar{ position:relative; height:auto; }
@@ -466,6 +510,8 @@
       body{ background:#fff; }
       .card{ box-shadow:none; }
       .districtBody.collapsed{ display:block !important; }
+      .rail{ display:none !important; }
+      .dash{ grid-template-columns: 1fr !important; }
     }
 
     /* Evidence Modal */
@@ -566,10 +612,9 @@
 <body>
   <div class="app">
     <aside class="sidebar">
-
-      <!-- NEW: Logo above the brand rectangle -->
-      <div class="logoWrap">
-        <img src="https://i.postimg.cc/JhPCnwDT/Compass_Logo.png" alt="Compass Review Logo">
+      <!-- Logo inserted above the brand rectangle -->
+      <div class="brandLogoWrap">
+        <img class="brandLogo" src="https://i.postimg.cc/JhPCnwDT/Compass_Logo.png" alt="Compass Logo">
       </div>
 
       <div class="brand">
@@ -654,6 +699,7 @@
       <div class="tools">
         <button class="btn" id="submitToSheetBtn">Submit to Google Sheet</button>
         <button class="btn secondary" id="refreshTrendsBtn">Refresh trends</button>
+        <button class="btn secondary" id="refreshAnalyticsBtn">Refresh analytics</button>
       </div>
 
       <div class="footerNote">
@@ -662,146 +708,211 @@
     </aside>
 
     <main class="content">
-      <div class="topbar">
-        <div>
-          <h2 id="pageTitle">Loading...</h2>
-          <div class="context" id="pageContext"></div>
-          <div class="summaryBar" id="summaryBar"></div>
-        </div>
-
-        <div style="min-width:280px;">
-          <div class="card" style="padding:14px;">
-            <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:12px;">
+      <div class="dash">
+        <!-- LEFT RAIL -->
+        <aside class="rail">
+          <div class="card">
+            <div class="cardHeader">
               <div>
-                <div style="font-weight:800; font-size:13px;">Status</div>
-                <div class="muted">Must match evidence.</div>
+                <h3>School vs District</h3>
+                <div class="muted">Current week and YTD, all focus areas.</div>
               </div>
-              <div class="pill" id="completionPill">0% complete</div>
+              <div class="pill">Animated</div>
             </div>
 
-            <div class="inline" style="margin-top:10px;">
-              <span class="statusDot" id="statusDot"></span>
-              <select id="statusSelect">
-                <option value="green">Green (on track)</option>
-                <option value="yellow">Yellow (at risk, plan in place)</option>
-                <option value="red">Red (off track, need help)</option>
-              </select>
-            </div>
-
-            <div class="laneRow" style="margin-top:10px;">
+            <div style="display:flex; flex-direction:column; gap:12px;">
               <div>
-                <label>Key metric 1</label>
-                <input id="metric1" type="text" placeholder="Example: % evidence updated"/>
+                <div class="muted" style="margin-bottom:6px;">Current week status mix</div>
+                <canvas id="pieCurrent"></canvas>
               </div>
               <div>
-                <label>Key metric 2</label>
-                <input id="metric2" type="text" placeholder="Example: BPA calibration done"/>
+                <div class="muted" style="margin-bottom:6px;">YTD status mix</div>
+                <canvas id="pieYtd"></canvas>
+              </div>
+
+              <div class="footerNote" style="margin-top:4px;">
+                These charts pull School submissions for the selected school, and District submissions for the same week and year-to-date.
+              </div>
+            </div>
+          </div>
+        </aside>
+
+        <!-- CENTER -->
+        <section class="center">
+          <div class="topbar">
+            <div>
+              <h2 id="pageTitle">Loading...</h2>
+              <div class="context" id="pageContext"></div>
+              <div class="summaryBar" id="summaryBar"></div>
+            </div>
+
+            <div style="min-width:280px;">
+              <div class="card" style="padding:14px;">
+                <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:12px;">
+                  <div>
+                    <div style="font-weight:800; font-size:13px;">Status</div>
+                    <div class="muted">Must match evidence.</div>
+                  </div>
+                  <div class="pill" id="completionPill">0% complete</div>
+                </div>
+
+                <div class="inline" style="margin-top:10px;">
+                  <span class="statusDot" id="statusDot"></span>
+                  <select id="statusSelect">
+                    <option value="green">Green (on track)</option>
+                    <option value="yellow">Yellow (at risk, plan in place)</option>
+                    <option value="red">Red (off track, need help)</option>
+                  </select>
+                </div>
+
+                <div class="laneRow" style="margin-top:10px;">
+                  <div>
+                    <label>Key metric 1</label>
+                    <input id="metric1" type="text" placeholder="Example: % evidence updated"/>
+                  </div>
+                  <div>
+                    <label>Key metric 2</label>
+                    <input id="metric2" type="text" placeholder="Example: BPA calibration done"/>
+                  </div>
+                  <div>
+                    <label>Key metric 3</label>
+                    <input id="metric3" type="text" placeholder="Example: WAC artifacts published"/>
+                  </div>
+                </div>
+
+                <div style="margin-top:10px;">
+                  <label>Lane owner</label>
+                  <input id="laneOwner" type="text" placeholder="Name"/>
+                </div>
+
+                <div class="muted" style="margin-top:10px;">
+                  Tip: District panels auto-collapse for School contributors. Use "Show District" when needed.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid">
+            <section class="card">
+              <div class="cardHeader">
+                <div>
+                  <h3>Core Framing Questions (Every Area, Every Week)</h3>
+                  <div class="muted">These never change. Clarity is the goal. Evidence is the requirement.</div>
+                </div>
+                <div class="pill" id="coreDonePill">0/0 answered</div>
+              </div>
+              <div class="qList" id="coreQuestions"></div>
+            </section>
+
+            <section class="card">
+              <div class="cardHeader">
+                <div>
+                  <h3 id="focusTitle">Focus Area Questions</h3>
+                  <div class="muted" id="focusHint"></div>
+                </div>
+                <div class="pill" id="focusDonePill">0/0 answered</div>
+              </div>
+              <div class="qList" id="focusQuestions"></div>
+            </section>
+
+            <section class="card">
+              <div class="cardHeader">
+                <div>
+                  <h3>Closing Mulally Question (Always Last)</h3>
+                  <div class="muted">If this is fuzzy, the system is not aligned yet.</div>
+                </div>
+                <div class="pill" id="closeDonePill">Not answered</div>
+              </div>
+              <div class="qList" id="closingQuestion"></div>
+            </section>
+
+            <section class="card">
+              <div class="cardHeader">
+                <div>
+                  <h3>Trends and rollups (from Google Sheet)</h3>
+                  <div class="muted">Filter by school, focus area, org level, and date range.</div>
+                </div>
+                <div class="pill">Green=3, Yellow=2, Red=1</div>
+              </div>
+
+              <div class="laneRow">
+                <div>
+                  <label>Trends: Org level</label>
+                  <select id="trendOrgLevel">
+                    <option value="all">All</option>
+                    <option value="School">School</option>
+                    <option value="District">District</option>
+                  </select>
+                </div>
+                <div>
+                  <label>Trends: From</label>
+                  <input id="dateFrom" type="date"/>
+                </div>
+                <div>
+                  <label>Trends: To</label>
+                  <input id="dateTo" type="date"/>
+                </div>
+              </div>
+
+              <div class="laneRow" style="margin-top:10px;">
+                <div class="chip"><span class="statusDot"></span><span>Weekly: <b id="rollupWeekly">No data</b></span></div>
+                <div class="chip"><span class="statusDot"></span><span>Monthly: <b id="rollupMonthly">No data</b></span></div>
+                <div class="chip"><span class="statusDot"></span><span>YTD: <b id="rollupYtd">No data</b></span></div>
+              </div>
+
+              <div class="tableWrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Time</th>
+                      <th>Org</th>
+                      <th>School</th>
+                      <th>Focus Area</th>
+                      <th>Status</th>
+                      <th>Metric 1</th>
+                      <th>Metric 2</th>
+                      <th>Metric 3</th>
+                      <th>Evidence</th>
+                    </tr>
+                  </thead>
+                  <tbody id="trendsTableBody"></tbody>
+                </table>
+              </div>
+            </section>
+          </div>
+        </section>
+
+        <!-- RIGHT RAIL -->
+        <aside class="rail">
+          <div class="card">
+            <div class="cardHeader">
+              <div>
+                <h3>Scores</h3>
+                <div class="muted">Green=3, Yellow=2, Red=1</div>
+              </div>
+              <div class="pill">All areas</div>
+            </div>
+
+            <div style="display:flex; flex-direction:column; gap:14px;">
+              <div>
+                <div class="muted" style="margin-bottom:6px;">Current week avg score (All areas)</div>
+                <canvas id="barCurrent"></canvas>
               </div>
               <div>
-                <label>Key metric 3</label>
-                <input id="metric3" type="text" placeholder="Example: WAC artifacts published"/>
+                <div class="muted" style="margin-bottom:6px;">YTD avg score (All areas)</div>
+                <canvas id="barYtd"></canvas>
+              </div>
+              <div>
+                <div class="muted" style="margin-bottom:6px;">By focus area (YTD avg)</div>
+                <canvas id="barByAreaYtd"></canvas>
+              </div>
+
+              <div class="footerNote" style="margin-top:4px;">
+                If a bar is 0, there were no submissions matching the filter for that slice.
               </div>
             </div>
-
-            <div style="margin-top:10px;">
-              <label>Lane owner</label>
-              <input id="laneOwner" type="text" placeholder="Name"/>
-            </div>
-
-            <div class="muted" style="margin-top:10px;">
-              Tip: District panels auto-collapse for School contributors. Use "Show District" when needed.
-            </div>
           </div>
-        </div>
-      </div>
-
-      <div class="grid">
-        <section class="card">
-          <div class="cardHeader">
-            <div>
-              <h3>Core Framing Questions (Every Area, Every Week)</h3>
-              <div class="muted">These never change. Clarity is the goal. Evidence is the requirement.</div>
-            </div>
-            <div class="pill" id="coreDonePill">0/0 answered</div>
-          </div>
-          <div class="qList" id="coreQuestions"></div>
-        </section>
-
-        <section class="card">
-          <div class="cardHeader">
-            <div>
-              <h3 id="focusTitle">Focus Area Questions</h3>
-              <div class="muted" id="focusHint"></div>
-            </div>
-            <div class="pill" id="focusDonePill">0/0 answered</div>
-          </div>
-          <div class="qList" id="focusQuestions"></div>
-        </section>
-
-        <section class="card">
-          <div class="cardHeader">
-            <div>
-              <h3>Closing Mulally Question (Always Last)</h3>
-              <div class="muted">If this is fuzzy, the system is not aligned yet.</div>
-            </div>
-            <div class="pill" id="closeDonePill">Not answered</div>
-          </div>
-          <div class="qList" id="closingQuestion"></div>
-        </section>
-
-        <section class="card">
-          <div class="cardHeader">
-            <div>
-              <h3>Trends and rollups (from Google Sheet)</h3>
-              <div class="muted">Filter by school, focus area, org level, and date range.</div>
-            </div>
-            <div class="pill">Green=3, Yellow=2, Red=1</div>
-          </div>
-
-          <div class="laneRow">
-            <div>
-              <label>Trends: Org level</label>
-              <select id="trendOrgLevel">
-                <option value="all">All</option>
-                <option value="School">School</option>
-                <option value="District">District</option>
-              </select>
-            </div>
-            <div>
-              <label>Trends: From</label>
-              <input id="dateFrom" type="date"/>
-            </div>
-            <div>
-              <label>Trends: To</label>
-              <input id="dateTo" type="date"/>
-            </div>
-          </div>
-
-          <div class="laneRow" style="margin-top:10px;">
-            <div class="chip"><span class="statusDot"></span><span>Weekly: <b id="rollupWeekly">No data</b></span></div>
-            <div class="chip"><span class="statusDot"></span><span>Monthly: <b id="rollupMonthly">No data</b></span></div>
-            <div class="chip"><span class="statusDot"></span><span>YTD: <b id="rollupYtd">No data</b></span></div>
-          </div>
-
-          <div class="tableWrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>Time</th>
-                  <th>Org</th>
-                  <th>School</th>
-                  <th>Focus Area</th>
-                  <th>Status</th>
-                  <th>Metric 1</th>
-                  <th>Metric 2</th>
-                  <th>Metric 3</th>
-                  <th>Evidence</th>
-                </tr>
-              </thead>
-              <tbody id="trendsTableBody"></tbody>
-            </table>
-          </div>
-        </section>
+        </aside>
       </div>
     </main>
   </div>
@@ -834,7 +945,7 @@
   // CONFIG
   // =========================
   const SCRIPT_URL = "https://script.google.com/a/macros/fleming.kyschools.us/s/AKfycbzNVN8AiQzPBzE1CMdDzy9bWGzlq9_p4qALlzwuEDkUxIzazgIHK70pS61nswTX0T_B6w/exec";
-  const STORAGE_KEY = "fcs_weekly_exec_review_collab_v3_autocollapse";
+  const STORAGE_KEY = "fcs_weekly_exec_review_collab_v4_analytics_ryg";
 
   // If true: District panels start collapsed unless Contributor=District
   const AUTO_COLLAPSE_DISTRICT_FOR_SCHOOL = true;
@@ -951,7 +1062,8 @@
         core: {},
         focus: {},
         closing: {}
-      }
+      },
+      _districtExpandMap: {}
     };
   }
 
@@ -998,9 +1110,7 @@
         });
       });
 
-      // restore collapse state map if present
       districtExpandMap = merged._districtExpandMap || {};
-
       return merged;
     }catch(e){
       return defaultState();
@@ -1008,7 +1118,6 @@
   }
 
   function saveState(){
-    // persist collapse map too
     state._districtExpandMap = districtExpandMap;
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
   }
@@ -1066,7 +1175,6 @@
 
   function isDistrictExpanded(bucket, qid){
     if(isDistrictContributor()) return true;
-
     const key = districtKey(bucket, qid);
     if(typeof districtExpandMap[key] === "boolean"){
       return districtExpandMap[key];
@@ -1080,9 +1188,33 @@
   }
 
   // =========================
+  // PER-QUESTION CORE RYG
+  // =========================
+  function ensureQuestionMeta(bucket, qid){
+    ensureRoleAnswer(bucket, qid);
+    state.answers[bucket][qid] = state.answers[bucket][qid] || {};
+    if(!state.answers[bucket][qid]._meta){
+      state.answers[bucket][qid]._meta = { qStatus: "green" };
+    }
+    return state.answers[bucket][qid]._meta;
+  }
+
+  function getQuestionStatus(bucket, qid){
+    const meta = ensureQuestionMeta(bucket, qid);
+    return meta.qStatus || "green";
+  }
+
+  function setQuestionStatus(bucket, qid, val){
+    const meta = ensureQuestionMeta(bucket, qid);
+    meta.qStatus = val;
+    saveState();
+  }
+
+  // =========================
   // ROLE ANSWER SHAPE
   // =========================
   function ensureRoleAnswer(bucket, qid){
+    state.answers[bucket] = state.answers[bucket] || {};
     if(!state.answers[bucket][qid]){
       state.answers[bucket][qid] = { school: blankRoleAnswer(), district: blankRoleAnswer() };
       return state.answers[bucket][qid];
@@ -1100,7 +1232,7 @@
   }
 
   // =========================
-  // EVIDENCE MODAL (same as prior)
+  // EVIDENCE MODAL
   // =========================
   let SUBMISSION_CACHE = [];
 
@@ -1269,7 +1401,7 @@
   }
 
   // =========================
-  // RENDER QUESTIONS (with District auto-collapse)
+  // RENDER QUESTIONS (with District auto-collapse + Core RYG)
   // =========================
   function renderQuestionList(containerId, bucket, questions){
     const container = document.getElementById(containerId);
@@ -1289,6 +1421,17 @@
             <div class="qPrompt">${escapeHtml(q.prompt)}</div>
             <div class="tip">Tip: ${escapeHtml(q.tip || "")}</div>
           </div>
+
+          ${bucket === "core" ? `
+            <div class="inline" style="gap:8px; align-items:center;">
+              <span class="statusDot ${statusClass(getQuestionStatus(bucket, q.id))}"></span>
+              <select data-action="qStatus" data-bucket="${bucket}" data-qid="${q.id}">
+                <option value="green">Green</option>
+                <option value="yellow">Yellow</option>
+                <option value="red">Red</option>
+              </select>
+            </div>
+          ` : ``}
         </div>
 
         <div class="roleStack">
@@ -1390,11 +1533,28 @@
 
       container.appendChild(el);
 
+      // Hydrate Core RYG selector
+      if(bucket === "core"){
+        const sel = el.querySelector(`select[data-action="qStatus"][data-bucket="${bucket}"][data-qid="${q.id}"]`);
+        if(sel){
+          sel.value = getQuestionStatus(bucket, q.id);
+          sel.addEventListener("change", () => {
+            setQuestionStatus(bucket, q.id, sel.value);
+            const dot = sel.parentElement.querySelector(".statusDot");
+            if(dot){
+              dot.className = "statusDot " + statusClass(sel.value);
+            }
+          });
+        }
+      }
+
+      // Hydrate values + artifacts
       hydrateRolePanel(bucket, q.id, "school", el);
       hydrateRolePanel(bucket, q.id, "district", el);
       renderArtifacts(bucket, q.id, "school");
       renderArtifacts(bucket, q.id, "district");
 
+      // Auto-collapse logic
       if(defaultDistrictCollapsed() && !isDistrictExpanded(bucket, q.id)){
         const body = el.querySelector(`#${bucket}_${q.id}_districtBody`);
         if(body) body.classList.add("collapsed");
@@ -1449,6 +1609,7 @@
   }
 
   function wireQuestionEvents(scopeEl){
+    // inputs/textarea
     scopeEl.querySelectorAll("[data-field]").forEach(el => {
       const bucket = el.getAttribute("data-bucket");
       const qid = el.getAttribute("data-qid");
@@ -1470,6 +1631,7 @@
       el.addEventListener(field === "checked" ? "change" : "input", handler);
     });
 
+    // actions
     scopeEl.querySelectorAll("[data-action]").forEach(el => {
       const action = el.getAttribute("data-action");
       const bucket = el.getAttribute("data-bucket");
@@ -1557,6 +1719,9 @@
     });
   }
 
+  // =========================
+  // COMPLETION INDICATORS
+  // =========================
   function countAnswered(bucket, questions){
     let answered = 0;
     questions.forEach(q => {
@@ -1603,6 +1768,9 @@
     document.getElementById("completionPill").textContent = `${pct}% complete`;
   }
 
+  // =========================
+  // PAGE RENDER
+  // =========================
   function renderSummaryBar(){
     const bar = document.getElementById("summaryBar");
     bar.innerHTML = "";
@@ -1635,6 +1803,9 @@
     return d;
   }
 
+  // =========================
+  // ARTIFACT UPLOAD (Drive via Apps Script)
+  // =========================
   function readFileAsBase64(file){
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -1674,6 +1845,9 @@
     return data.file;
   }
 
+  // =========================
+  // SHEET SUBMISSION
+  // =========================
   function buildSubmissionPayload(){
     const focusId = state.meta.weeklyFocus;
     const focusTitle = FOCUS_META[focusId]?.title || focusId;
@@ -1685,6 +1859,10 @@
     (FOCUS_QUESTIONS[focusId] || []).forEach(q => focus_answers[q.id] = ensureRoleAnswer("focus", q.id));
 
     const closing_answers = { closing: ensureRoleAnswer("closing", "closing") };
+
+    // Optional: include core per-question RYG statuses in evidence_blob (simple, non-breaking)
+    const coreStatusBlob = {};
+    CORE_FRAMING_QUESTIONS.forEach(q => coreStatusBlob[q.id] = getQuestionStatus("core", q.id));
 
     return {
       week_of: state.meta.weekOf,
@@ -1706,7 +1884,10 @@
 
       core_answers,
       focus_answers,
-      closing_answers
+      closing_answers,
+
+      // does not break your sheet schema if you store it in evidence_blob
+      evidence_blob: JSON.stringify({ core_question_status: coreStatusBlob })
     };
   }
 
@@ -1726,6 +1907,8 @@
       const data = await res.json();
       if(!data.ok) throw new Error(data.error || "Submit failed.");
       alert("Submitted to Google Sheet.");
+      // After a submit, refresh trends and analytics so the new row shows up
+      await refreshAnalytics();
     }catch(err){
       alert("Submit failed: " + String(err));
     }finally{
@@ -1734,6 +1917,9 @@
     }
   }
 
+  // =========================
+  // TRENDS
+  // =========================
   async function fetchAllRows(){
     const res = await fetch(SCRIPT_URL, { method: "GET" });
     const data = await res.json();
@@ -1881,6 +2067,185 @@
     }
   }
 
+  // =========================
+  // ANALYTICS (Charts)
+  // =========================
+  let charts = {
+    pieCurrent: null,
+    pieYtd: null,
+    barCurrent: null,
+    barYtd: null,
+    barByAreaYtd: null
+  };
+
+  function matchesSchoolRow(r, schoolName){
+    return (r.org_level === "School" && (r.school || "") === schoolName);
+  }
+  function matchesDistrictRow(r){
+    return (r.org_level === "District");
+  }
+  function matchesWeek(r, weekOfIso){
+    return String(r.week_of || "").slice(0,10) === String(weekOfIso || "").slice(0,10);
+  }
+  function isYtd(r){
+    const ts = parseDateMaybe(r.timestamp_iso) || parseDateMaybe(r.week_of);
+    if(!ts) return false;
+    const y0 = new Date(new Date().getFullYear(), 0, 1);
+    return ts >= y0;
+  }
+
+  function statusCounts(rows){
+    const c = { green:0, yellow:0, red:0 };
+    rows.forEach(r => {
+      const s = String(r.status || "").toLowerCase();
+      if(c[s] !== undefined) c[s] += 1;
+    });
+    return c;
+  }
+
+  function avgScoreAll(rows){
+    if(!rows.length) return 0;
+    const sum = rows.reduce((a,r) => a + statusToScore(r.status), 0);
+    return sum / rows.length;
+  }
+
+  function groupByFocusAvg(rows){
+    const map = {};
+    rows.forEach(r => {
+      const id = r.weekly_focus_area_id || "unknown";
+      map[id] = map[id] || [];
+      map[id].push(r);
+    });
+    const out = {};
+    Object.keys(FOCUS_META).forEach(id => {
+      const bucket = map[id] || [];
+      out[id] = bucket.length ? avgScoreAll(bucket) : 0;
+    });
+    return out;
+  }
+
+  function ensureChart(ctx, existing, type, data, options){
+    if(existing){
+      existing.data = data;
+      existing.options = options;
+      existing.update();
+      return existing;
+    }
+    return new Chart(ctx, { type, data, options });
+  }
+
+  async function refreshAnalytics(){
+    let rows = [];
+    try{
+      rows = await fetchAllRows();
+    }catch(e){
+      rows = [];
+    }
+
+    const schoolName = state.meta.school;
+    const weekOf = state.meta.weekOf;
+
+    const schoolWeek = rows.filter(r => matchesSchoolRow(r, schoolName) && matchesWeek(r, weekOf));
+    const districtWeek = rows.filter(r => matchesDistrictRow(r) && matchesWeek(r, weekOf));
+
+    const schoolYtd = rows.filter(r => matchesSchoolRow(r, schoolName) && isYtd(r));
+    const districtYtd = rows.filter(r => matchesDistrictRow(r) && isYtd(r));
+
+    const sw = statusCounts(schoolWeek);
+    const dw = statusCounts(districtWeek);
+    const sy = statusCounts(schoolYtd);
+    const dy = statusCounts(districtYtd);
+
+    const swAvg = avgScoreAll(schoolWeek);
+    const dwAvg = avgScoreAll(districtWeek);
+    const syAvg = avgScoreAll(schoolYtd);
+    const dyAvg = avgScoreAll(districtYtd);
+
+    const schoolByArea = groupByFocusAvg(schoolYtd);
+    const districtByArea = groupByFocusAvg(districtYtd);
+
+    const pieOpts = {
+      responsive:true,
+      animation: { duration: 700 },
+      plugins: { legend: { display:false } }
+    };
+
+    const pieCurrentData = {
+      labels: ["School Green","School Yellow","School Red","District Green","District Yellow","District Red"],
+      datasets: [{ data: [sw.green, sw.yellow, sw.red, dw.green, dw.yellow, dw.red] }]
+    };
+    const pieCurrentCtx = document.getElementById("pieCurrent");
+    if(pieCurrentCtx){
+      charts.pieCurrent = ensureChart(pieCurrentCtx, charts.pieCurrent, "pie", pieCurrentData, pieOpts);
+    }
+
+    const pieYtdData = {
+      labels: ["School Green","School Yellow","School Red","District Green","District Yellow","District Red"],
+      datasets: [{ data: [sy.green, sy.yellow, sy.red, dy.green, dy.yellow, dy.red] }]
+    };
+    const pieYtdCtx = document.getElementById("pieYtd");
+    if(pieYtdCtx){
+      charts.pieYtd = ensureChart(pieYtdCtx, charts.pieYtd, "pie", pieYtdData, pieOpts);
+    }
+
+    const barOpts = {
+      responsive:true,
+      animation: { duration: 700 },
+      scales: { y: { beginAtZero:true, suggestedMax:3 } },
+      plugins: { legend: { display:false } }
+    };
+
+    const barCurrentData = {
+      labels: ["School", "District"],
+      datasets: [{ label:"Avg score", data: [swAvg, dwAvg] }]
+    };
+    const barCurrentCtx = document.getElementById("barCurrent");
+    if(barCurrentCtx){
+      charts.barCurrent = ensureChart(barCurrentCtx, charts.barCurrent, "bar", barCurrentData, barOpts);
+    }
+
+    const barYtdData = {
+      labels: ["School YTD", "District YTD"],
+      datasets: [{ label:"Avg score", data: [syAvg, dyAvg] }]
+    };
+    const barYtdCtx = document.getElementById("barYtd");
+    if(barYtdCtx){
+      charts.barYtd = ensureChart(barYtdCtx, charts.barYtd, "bar", barYtdData, barOpts);
+    }
+
+    const areaLabels = Object.keys(FOCUS_META).map(id => (FOCUS_META[id]?.title || id));
+    const areaIds = Object.keys(FOCUS_META);
+
+    const schoolSeries = areaIds.map(id => schoolByArea[id] || 0);
+    const districtSeries = areaIds.map(id => districtByArea[id] || 0);
+
+    const barByAreaData = {
+      labels: areaLabels,
+      datasets: [
+        { label: "School YTD", data: schoolSeries },
+        { label: "District YTD", data: districtSeries }
+      ]
+    };
+
+    const barByAreaOpts = {
+      responsive:true,
+      animation: { duration: 700 },
+      scales: {
+        y: { beginAtZero:true, suggestedMax:3 },
+        x: { ticks: { autoSkip: false, maxRotation: 90, minRotation: 60 } }
+      },
+      plugins: { legend: { display:true } }
+    };
+
+    const barByAreaCtx = document.getElementById("barByAreaYtd");
+    if(barByAreaCtx){
+      charts.barByAreaYtd = ensureChart(barByAreaCtx, charts.barByAreaYtd, "bar", barByAreaData, barByAreaOpts);
+    }
+  }
+
+  // =========================
+  // PAGE RENDER
+  // =========================
   function renderPage(){
     document.getElementById("weekOf").value = state.meta.weekOf;
     document.getElementById("viewMode").value = state.meta.viewMode;
@@ -1904,7 +2269,7 @@
     const meta = FOCUS_META[focusId];
     document.getElementById("pageTitle").textContent = `Weekly Focus: ${meta ? meta.title : "Focus Area"}`;
     document.getElementById("pageContext").textContent =
-      "Each question includes a School box. District boxes are available for validation and support. For School contributors, District panels stay collapsed unless you open them.";
+      "Each question includes a School box. District boxes are available for validation and support. For School contributors, District panels stay collapsed unless you open them. Analytics show the selected school and district across all areas.";
 
     document.getElementById("focusTitle").textContent = `Focus Area Questions: ${meta ? meta.title : ""}`;
     document.getElementById("focusHint").textContent = meta ? meta.hint : "";
@@ -1935,21 +2300,37 @@
     allQs.forEach(x => setDistrictExpanded(x.bucket, x.id, true));
   }
 
+  // =========================
+  // WIRES
+  // =========================
   function wireMeta(){
     const bind = (id, fn, evt="change") => document.getElementById(id).addEventListener(evt, fn);
 
-    bind("weekOf", () => { state.meta.weekOf = document.getElementById("weekOf").value; saveState(); });
+    bind("weekOf", async () => {
+      state.meta.weekOf = document.getElementById("weekOf").value;
+      saveState();
+      await refreshAnalytics();
+    });
+
     bind("viewMode", () => { state.meta.viewMode = document.getElementById("viewMode").value; saveState(); });
 
-    bind("orgLevel", () => {
+    bind("orgLevel", async () => {
       state.meta.orgLevel = document.getElementById("orgLevel").value;
       setSchoolVisibility();
       saveState();
       renderPage();
+      await refreshAnalytics();
     });
 
-    bind("schoolSelect", () => { state.meta.school = document.getElementById("schoolSelect").value; saveState(); renderSummaryBar(); });
+    bind("schoolSelect", async () => {
+      state.meta.school = document.getElementById("schoolSelect").value;
+      saveState();
+      renderSummaryBar();
+      await refreshAnalytics();
+    });
+
     bind("submitterRole", () => { state.meta.submitterRole = document.getElementById("submitterRole").value; saveState(); });
+
     document.getElementById("submitterName").addEventListener("input", () => {
       state.meta.submitterName = document.getElementById("submitterName").value;
       saveState();
@@ -2011,6 +2392,7 @@
         districtExpandMap = state._districtExpandMap || {};
         saveState();
         renderPage();
+        await refreshAnalytics();
         alert("Imported.");
       }catch(err){
         alert("Import failed: " + String(err));
@@ -2023,15 +2405,21 @@
       districtExpandMap = {};
       saveState();
       renderPage();
+      refreshAnalytics();
     });
 
     document.getElementById("submitToSheetBtn").addEventListener("click", submitToSheet);
     document.getElementById("refreshTrendsBtn").addEventListener("click", refreshTrends);
+    document.getElementById("refreshAnalyticsBtn").addEventListener("click", refreshAnalytics);
   }
 
+  // =========================
+  // INIT
+  // =========================
   wireMeta();
   wireButtons();
   renderPage();
+  refreshAnalytics();
 </script>
 </body>
 </html>
