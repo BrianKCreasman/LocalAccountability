@@ -345,6 +345,99 @@
       body{ background:#fff; }
       .card{ box-shadow:none; }
     }
+
+    /* Evidence Modal */
+    .modal.hidden { display: none; }
+    .modal { position: fixed; inset: 0; z-index: 9999; }
+
+    .modal-backdrop {
+      position: absolute; inset: 0;
+      background: rgba(0,0,0,0.45);
+    }
+
+    .modal-card{
+      position: relative;
+      width: min(920px, calc(100vw - 32px));
+      max-height: calc(100vh - 64px);
+      overflow: auto;
+      margin: 32px auto;
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 18px 45px rgba(0,0,0,0.22);
+      border: 1px solid rgba(0,0,0,0.12);
+    }
+
+    .modal-header{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap: 16px;
+      padding: 18px 18px 12px 18px;
+      border-bottom: 1px solid rgba(0,0,0,0.10);
+    }
+
+    .modal-title{ font-size: 18px; font-weight: 800; color:#111; }
+    .modal-subtitle{ font-size: 13px; color:#6b7280; margin-top: 2px; }
+
+    .modal-body{ padding: 14px 18px 18px 18px; }
+
+    .evidence-summary{
+      display:flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .pillMini{
+      display:inline-flex;
+      align-items:center;
+      gap: 8px;
+      padding: 8px 10px;
+      border-radius: 999px;
+      background: #f5f5f7;
+      border: 1px solid rgba(0,0,0,0.10);
+      font-size: 12px;
+      color: #111;
+    }
+
+    .evidence-list{
+      display:flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .evidence-item{
+      display:flex;
+      align-items:flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(0,0,0,0.12);
+      background: #fff;
+    }
+
+    .evidence-item .meta{
+      display:flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .evidence-item .title{
+      font-weight: 800;
+      color:#111;
+      font-size: 14px;
+    }
+
+    .evidence-item .hint{
+      color:#6b7280;
+      font-size: 12px;
+    }
+
+    .evidence-item a{
+      white-space: nowrap;
+      text-decoration: none;
+    }
   </style>
 </head>
 
@@ -366,7 +459,7 @@
         <div class="field">
           <label for="viewMode">View</label>
           <select id="viewMode">
-            <option value="prep">Prep (Tue–Fri)</option>
+            <option value="prep">Prep (Tue-Fri)</option>
             <option value="monday">Monday Review</option>
           </select>
         </div>
@@ -574,6 +667,7 @@
                   <th>Metric 1</th>
                   <th>Metric 2</th>
                   <th>Metric 3</th>
+                  <th>Evidence</th>
                 </tr>
               </thead>
               <tbody id="trendsTableBody"></tbody>
@@ -582,6 +676,29 @@
         </section>
       </div>
     </main>
+  </div>
+
+  <!-- Evidence Modal -->
+  <div id="evidenceModal" class="modal hidden" aria-hidden="true">
+    <div class="modal-backdrop" onclick="closeEvidenceModal()"></div>
+
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="evidenceTitle">
+      <div class="modal-header">
+        <div>
+          <div id="evidenceTitle" class="modal-title">Evidence</div>
+          <div id="evidenceSubtitle" class="modal-subtitle"></div>
+        </div>
+        <button class="btn secondary" onclick="closeEvidenceModal()">Close</button>
+      </div>
+
+      <div class="modal-body">
+        <div id="evidenceSummary" class="evidence-summary"></div>
+        <div id="evidenceList" class="evidence-list"></div>
+        <div class="footerNote" style="margin-top:12px;">
+          Note: This list shows links saved in the submission (uploaded artifacts and pasted links). If a link is missing, it was not attached to the submission.
+        </div>
+      </div>
+    </div>
   </div>
 
 <script>
@@ -758,6 +875,160 @@
     const org = document.getElementById("orgLevel").value;
     const schoolField = document.getElementById("schoolField");
     schoolField.style.display = (org === "School") ? "block" : "none";
+  }
+
+  // =========================
+  // EVIDENCE (Modal + extraction)
+  // =========================
+  let SUBMISSION_CACHE = [];
+
+  function setSubmissionCache(rows){
+    SUBMISSION_CACHE = Array.isArray(rows) ? rows : [];
+  }
+
+  function safeJsonParse(maybeJson){
+    if(!maybeJson) return null;
+    if(typeof maybeJson === "object") return maybeJson;
+    try{ return JSON.parse(maybeJson); }catch(e){ return null; }
+  }
+
+  function extractUrlsFromText(text){
+    const t = String(text || "");
+    const urls = t.match(/https?:\/\/[^\s)"]+/g) || [];
+    return Array.from(new Set(urls));
+  }
+
+  function extractArtifactLinksFromAnswerObj(ans){
+    const links = [];
+    if(!ans) return links;
+
+    if(Array.isArray(ans.artifacts)){
+      ans.artifacts.forEach(a => {
+        if(a && a.url) links.push({ url: a.url, label: a.label || a.name || "Artifact", kind: a.kind || "artifact" });
+      });
+    }
+
+    extractUrlsFromText(ans.text).forEach(u => links.push({ url: u, label: "Link in answer", kind: "inline" }));
+    extractUrlsFromText(ans.notes).forEach(u => links.push({ url: u, label: "Link in note", kind: "inline" }));
+
+    return links;
+  }
+
+  function extractEvidenceLinksFromRow(row){
+    const all = [];
+
+    const core = safeJsonParse(row.core_answers_json);
+    const focus = safeJsonParse(row.focus_answers_json);
+    const closing = safeJsonParse(row.closing_answers_json);
+
+    if(core && typeof core === "object"){
+      Object.values(core).forEach(ans => all.push(...extractArtifactLinksFromAnswerObj(ans)));
+    }
+    if(focus && typeof focus === "object"){
+      Object.values(focus).forEach(ans => all.push(...extractArtifactLinksFromAnswerObj(ans)));
+    }
+    if(closing && typeof closing === "object"){
+      Object.values(closing).forEach(ans => all.push(...extractArtifactLinksFromAnswerObj(ans)));
+    }
+
+    extractUrlsFromText(row.evidence_blob).forEach(u => all.push({ url: u, label: "Evidence link", kind: "blob" }));
+
+    const seen = new Set();
+    return all.filter(x => {
+      if(!x.url) return false;
+      if(seen.has(x.url)) return false;
+      seen.add(x.url);
+      return true;
+    });
+  }
+
+  function openEvidenceModal(context){
+    const week = String(context.week_of || "").trim();
+    const school = String(context.school || "").trim();
+    const focusId = String(context.weekly_focus_area_id || "").trim();
+    const focusTitle = String(context.weekly_focus_area_title || "").trim();
+    const orgLevel = String(context.org_level || "").trim();
+
+    const modal = document.getElementById("evidenceModal");
+    const titleEl = document.getElementById("evidenceTitle");
+    const subEl = document.getElementById("evidenceSubtitle");
+    const summaryEl = document.getElementById("evidenceSummary");
+    const listEl = document.getElementById("evidenceList");
+
+    titleEl.textContent = "Evidence";
+    subEl.textContent = `${orgLevel || "Org"} | ${school || "School"} | ${focusTitle || focusId || "Focus"} | ${week || "Week"}`;
+
+    const matchedRows = SUBMISSION_CACHE.filter(r => {
+      if(week && String(r.week_of || "").slice(0,10) !== week.slice(0,10)) return false;
+      if(focusId && String(r.weekly_focus_area_id || "") !== focusId) return false;
+
+      const rOrg = String(r.org_level || "");
+      const rSchool = String(r.school || "");
+
+      if(rOrg === "District") return true;
+      return rSchool === school;
+    });
+
+    let links = [];
+    matchedRows.forEach(r => { links = links.concat(extractEvidenceLinksFromRow(r)); });
+
+    summaryEl.innerHTML = "";
+    const pills = [
+      { label: "Rows matched", value: matchedRows.length },
+      { label: "Artifacts found", value: links.length },
+      { label: "Status", value: String(context.status || "").toUpperCase() || "N/A" }
+    ];
+    pills.forEach(p => {
+      const div = document.createElement("div");
+      div.className = "pillMini";
+      div.textContent = `${p.label}: ${p.value}`;
+      summaryEl.appendChild(div);
+    });
+
+    listEl.innerHTML = "";
+    if(!links.length){
+      const empty = document.createElement("div");
+      empty.className = "evidence-item";
+      empty.innerHTML = `
+        <div class="meta">
+          <div class="title">No artifacts found for this week and focus yet</div>
+          <div class="hint">Upload or add a link inside any question, then submit again.</div>
+        </div>
+      `;
+      listEl.appendChild(empty);
+    }else{
+      links.forEach((l, idx) => {
+        const item = document.createElement("div");
+        item.className = "evidence-item";
+
+        const isDrive = String(l.url).includes("drive.google.com");
+        const label = l.label || (isDrive ? `Drive Artifact ${idx+1}` : `Evidence Link ${idx+1}`);
+
+        item.innerHTML = `
+          <div class="meta">
+            <div class="title">${escapeHtml(label)}</div>
+            <div class="hint">${escapeHtml(l.kind || "")}${isDrive ? " | Google Drive" : ""}</div>
+          </div>
+          <a class="btn secondary" href="${escapeHtml(l.url)}" target="_blank" rel="noopener">Open</a>
+        `;
+        listEl.appendChild(item);
+      });
+    }
+
+    modal.classList.remove("hidden");
+    modal.setAttribute("aria-hidden", "false");
+    document.addEventListener("keydown", escCloseEvidenceOnce);
+  }
+
+  function escCloseEvidenceOnce(e){
+    if(e.key === "Escape") closeEvidenceModal();
+  }
+
+  function closeEvidenceModal(){
+    const modal = document.getElementById("evidenceModal");
+    modal.classList.add("hidden");
+    modal.setAttribute("aria-hidden", "true");
+    document.removeEventListener("keydown", escCloseEvidenceOnce);
   }
 
   // =========================
@@ -1254,9 +1525,12 @@
     const tbody = document.getElementById("trendsTableBody");
     tbody.innerHTML = "";
 
+    setSubmissionCache(rows);
+
     const sorted = [...rows].sort((a,b) => String(b.timestamp_iso).localeCompare(String(a.timestamp_iso)));
     sorted.slice(0, 250).forEach(r => {
       const tr = document.createElement("tr");
+
       tr.innerHTML = `
         <td>${escapeHtml(String(r.timestamp_iso || "").replace("T"," ").slice(0,16))}</td>
         <td>${escapeHtml(r.org_level || "")}</td>
@@ -1266,7 +1540,23 @@
         <td>${escapeHtml(r.metric1 || "")}</td>
         <td>${escapeHtml(r.metric2 || "")}</td>
         <td>${escapeHtml(r.metric3 || "")}</td>
+        <td>
+          <button class="miniBtn primary" style="padding:8px 10px;">View Evidence</button>
+        </td>
       `;
+
+      const btn = tr.querySelector("button");
+      btn.addEventListener("click", () => {
+        openEvidenceModal({
+          week_of: r.week_of,
+          school: r.school,
+          weekly_focus_area_id: r.weekly_focus_area_id,
+          weekly_focus_area_title: r.weekly_focus_area_title,
+          org_level: r.org_level,
+          status: r.status
+        });
+      });
+
       tbody.appendChild(tr);
     });
   }
