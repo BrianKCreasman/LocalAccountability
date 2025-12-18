@@ -3,11 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>FCS Weekly Executive Review</title>
-
-  <!-- Charts (animated) -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-
+  <title>FCS Weekly Executive Review (Collaborative)</title>
   <style>
     :root{
       --black:#111111;
@@ -25,6 +21,19 @@
       --yellow:#f59e0b;
       --red:#dc2626;
       --blue:#2563eb;
+
+      /* role colors */
+      --school-bg: rgba(219,213,155,0.22);
+      --school-border: rgba(0,0,0,0.16);
+
+      /* keep district blue theme for the "district exists" banner */
+      --district-bg: rgba(37,99,235,0.10);
+      --district-border: rgba(37,99,235,0.22);
+
+      /* optional district drawer purple */
+      --purple:#6d28d9;
+      --purple-soft: rgba(109,40,217,.10);
+      --purple-border: rgba(109,40,217,.22);
     }
 
     *{ box-sizing:border-box; }
@@ -41,7 +50,6 @@
       min-height:100vh;
     }
 
-    /* LEFT SIDEBAR */
     .sidebar{
       background: var(--white);
       border-right: var(--border);
@@ -52,36 +60,47 @@
       overflow:auto;
     }
 
-    .brandLogoWrap{
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding:12px 10px 10px 10px;
-      border-radius: 18px;
-      background: #fff;
-      border: 1px solid rgba(0,0,0,0.10);
-      box-shadow: 0 12px 26px rgba(0,0,0,0.12);
-      margin-bottom:12px;
-    }
-    .brandLogo{
-      width: 210px;
-      max-width: 100%;
-      height: auto;
-      display:block;
-      filter: drop-shadow(0 10px 14px rgba(0,0,0,0.16));
-    }
-
     .brand{
       display:flex;
       flex-direction:column;
-      gap:6px;
-      padding:12px 12px 14px 12px;
+      gap:10px;
+      padding:14px 12px 14px 12px;
       border-radius: var(--radius-sm);
       border: var(--border);
       background: linear-gradient(180deg, rgba(219,213,155,0.28), rgba(255,255,255,1));
       box-shadow: var(--shadow-soft);
       margin-bottom:14px;
+      overflow:hidden;
     }
+
+    /* Logo that visually blends with the rounded rectangle.
+       If your PNG already has transparency, this will look perfect.
+       If it does not, the soft white "logoPlate" helps it still blend. */
+    .brandLogoWrap{
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      padding:8px 8px 0 8px;
+    }
+    .logoPlate{
+      border-radius: 18px;
+      padding:10px 14px;
+      background: rgba(255,255,255,0.78);
+      border: 1px solid rgba(0,0,0,0.10);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.10);
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      width: 100%;
+    }
+    .brandLogo{
+      max-width: 240px;
+      width: 100%;
+      height: auto;
+      display:block;
+      filter: drop-shadow(0 10px 14px rgba(0,0,0,0.14));
+    }
+
     .brand h1{ margin:0; font-size:16px; letter-spacing:0.2px; }
     .brand .sub{ font-size:12px; color: var(--gray); line-height:1.35; }
 
@@ -132,14 +151,6 @@
     .btn.danger{ background: var(--red); color:#fff; }
     .btn:disabled{ opacity:.55; cursor:not-allowed; transform:none; box-shadow:none; }
 
-    .footerNote{
-      margin-top:12px;
-      color: var(--gray);
-      font-size:11px;
-      line-height:1.35;
-    }
-
-    /* MAIN CONTENT */
     .content{
       padding:22px 22px 44px 22px;
       overflow:auto;
@@ -181,6 +192,33 @@
     .card h3{ margin:0; font-size:14px; letter-spacing:0.2px; }
     .muted{ color: var(--gray); font-size:12px; line-height:1.35; }
 
+    .summaryBar{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-top:10px;
+    }
+    .chip{
+      border: var(--border);
+      border-radius:999px;
+      padding:8px 10px;
+      background:#fff;
+      font-size:12px;
+      display:flex;
+      align-items:center;
+      gap:8px;
+      white-space:nowrap;
+    }
+    .statusDot{
+      width:10px; height:10px; border-radius:99px;
+      background: rgba(107,114,128,.5);
+      box-shadow: 0 0 0 3px rgba(107,114,128,.12);
+      flex:0 0 auto;
+    }
+    .statusDot.green{ background: var(--green); box-shadow: 0 0 0 3px rgba(22,163,74,.14); }
+    .statusDot.yellow{ background: var(--yellow); box-shadow: 0 0 0 3px rgba(245,158,11,.16); }
+    .statusDot.red{ background: var(--red); box-shadow: 0 0 0 3px rgba(220,38,38,.14); }
+
     .pill{
       font-size:11px;
       padding:5px 10px;
@@ -190,111 +228,29 @@
       white-space:nowrap;
     }
 
-    /* COLLAPSIBLE ANALYTICS (SIDEBAR) */
-    details.analytics{
-      border: var(--border);
-      border-radius: 18px;
-      background:#fff;
-      box-shadow: var(--shadow-soft);
-      overflow:hidden;
+    .laneRow{
+      display:grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap:12px;
       margin-top:12px;
     }
-    details.analytics summary{
-      list-style:none;
-      cursor:pointer;
-      padding:12px 12px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-      user-select:none;
-    }
-    details.analytics summary::-webkit-details-marker{ display:none; }
 
-    .analyticsTitle{
-      display:flex;
-      flex-direction:column;
-      gap:4px;
-    }
-    .analyticsTitle .t{ font-weight:900; font-size:12px; letter-spacing:0.2px; }
-    .analyticsTitle .d{ color:var(--gray); font-size:11px; line-height:1.25; }
-    .chev{
-      width:28px; height:28px;
-      border-radius: 10px;
-      border: var(--border);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      font-weight:900;
-      background:#fff;
-      transition: transform .12s ease;
-      font-size:12px;
-    }
-    details.analytics[open] .chev{ transform: rotate(180deg); }
-
-    .analyticsBody{
-      padding: 0 12px 12px 12px;
-    }
-    .chartsGrid{
-      display:grid;
-      grid-template-columns: 1fr;
-      gap:10px;
-      margin-top: 6px;
-    }
-    .chartCard{
-      border: var(--border);
-      border-radius: 16px;
-      padding: 10px;
-      background: rgba(245,245,247,.55);
-    }
-    .chartCard .label{
-      font-weight:900;
-      font-size:11px;
-      margin-bottom:4px;
-    }
-    .chartCard .hint{
-      color: var(--gray);
-      font-size:10px;
-      margin-bottom:6px;
-      line-height:1.25;
-    }
-    /* tighter charts in sidebar */
-    canvas{ width:100% !important; height:160px !important; }
-
-    @media (max-width: 980px){
-      .app{ grid-template-columns: 1fr; }
-      .sidebar{ position:relative; height:auto; }
-      canvas{ height:190px !important; }
-    }
-
-    /* STATUS DOTS */
-    .statusDot{
-      width:10px; height:10px; border-radius:99px;
-      background: rgba(107,114,128,.5);
-      box-shadow: 0 0 0 3px rgba(107,114,128,.12);
-      flex:0 0 auto;
-      display:inline-block;
-      vertical-align:middle;
-      margin-right:8px;
-    }
-    .statusDot.green{ background: var(--green); box-shadow: 0 0 0 3px rgba(22,163,74,.14); }
-    .statusDot.yellow{ background: var(--yellow); box-shadow: 0 0 0 3px rgba(245,158,11,.16); }
-    .statusDot.red{ background: var(--red); box-shadow: 0 0 0 3px rgba(220,38,38,.14); }
-
-    /* QUESTIONS */
     .qList{ display:flex; flex-direction:column; gap:10px; }
+
     .qItem{
       border: var(--border);
       border-radius: 16px;
       padding:12px;
       background: rgba(245,245,247,.6);
       transition: transform .12s ease, box-shadow .12s ease, background .12s ease;
+      position:relative;
     }
     .qItem:hover{
       transform: translateY(-2px);
       box-shadow: var(--shadow-soft);
       background: rgba(219,213,155,.18);
     }
+
     .qTop{
       display:flex;
       align-items:flex-start;
@@ -304,9 +260,21 @@
     }
     .qPrompt{
       font-size:13px;
-      font-weight:800;
+      font-weight:700;
       line-height:1.35;
     }
+
+    .checkWrap{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      font-size:12px;
+      color: var(--gray);
+      user-select:none;
+      cursor:pointer;
+    }
+    .checkWrap input{ width:16px; height:16px; }
+
     .tip{
       font-size:11px;
       color: var(--gray);
@@ -315,30 +283,346 @@
     }
     .qItem:hover .tip{ display:block; }
 
-    /* Core per-question RYG selector */
-    .qItem select[data-action="qStatus"]{
-      border-radius: 12px;
-      padding:8px 10px;
-      border: var(--border);
-      background:#fff;
-      font-weight:900;
-      font-size:12px;
-      width:auto;
-      min-width: 110px;
-    }
-
-    .qAnswer{ width:100%; min-height: 110px; }
-
-    .inline{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
-
-    .laneRow{
+    /* Two-role layout */
+    .roleStack{
       display:grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap:12px;
+      grid-template-columns: 1fr 1fr;
+      gap:10px;
       margin-top:10px;
     }
+    .rolePanel{
+      border-radius: 16px;
+      padding:10px;
+      border: 1px solid rgba(0,0,0,0.12);
+      background: #fff;
+      position: relative;
+      overflow: hidden;
+    }
+    .roleHeader{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:10px;
+      margin-bottom:8px;
+    }
+    .roleTitle{
+      font-weight:900;
+      font-size:12px;
+      letter-spacing:0.2px;
+    }
+    .roleBadge{
+      font-size:10px;
+      font-weight:900;
+      padding:6px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(0,0,0,0.10);
+      background:#fff;
+      white-space:nowrap;
+    }
+
+    .rolePanel.school{
+      background: var(--school-bg);
+      border-color: var(--school-border);
+    }
+    .rolePanel.district{
+      background: var(--district-bg);
+      border-color: var(--district-border);
+    }
+    .rolePanel.school .roleBadge{
+      background: rgba(219,213,155,0.45);
+    }
+    .rolePanel.district .roleBadge{
+      background: rgba(37,99,235,0.14);
+      border-color: rgba(37,99,235,0.22);
+    }
+
+    /* District auto-collapse (structure stays visible) */
+    .districtWrap{ margin-top: 8px; }
+    .districtBanner{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      padding:10px 12px;
+      border-radius: 14px;
+      border: 1px dashed rgba(37,99,235,0.35);
+      background: rgba(37,99,235,0.08);
+      margin-bottom: 10px;
+    }
+    .districtBanner .left{
+      display:flex;
+      flex-direction:column;
+      gap:2px;
+    }
+    .districtBanner .title{
+      font-weight:900;
+      font-size:12px;
+      color:#111;
+      letter-spacing:0.2px;
+    }
+    .districtBanner .desc{
+      font-size:11px;
+      color: var(--gray);
+      line-height:1.25;
+    }
+    .toggleLink{
+      border: 1px solid rgba(37,99,235,0.25);
+      background:#fff;
+      border-radius: 999px;
+      padding:8px 10px;
+      font-weight:900;
+      font-size:11px;
+      cursor:pointer;
+      white-space:nowrap;
+      transition: transform .12s ease, box-shadow .12s ease;
+    }
+    .toggleLink:hover{ transform: translateY(-1px); box-shadow: var(--shadow-soft); }
+    .districtBody.collapsed{ display:none; }
+
+    .qAnswer{
+      width:100%;
+      min-height: 110px;
+    }
+
+    .qActions{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-top:10px;
+      align-items:center;
+    }
+
+    .miniBtn{
+      border: var(--border);
+      background:#fff;
+      border-radius: 14px;
+      padding:8px 10px;
+      cursor:pointer;
+      font-weight:700;
+      font-size:12px;
+      transition: transform .12s ease, box-shadow .12s ease;
+    }
+    .miniBtn:hover{ transform: translateY(-1px); box-shadow: var(--shadow-soft); }
+    .miniBtn.primary{
+      background: var(--gold);
+      border-color: rgba(0,0,0,0.15);
+    }
+
+    .artifactList{
+      margin-top:10px;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+    .artifact{
+      border: var(--border);
+      background:#fff;
+      border-radius: 14px;
+      padding:10px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      font-size:12px;
+    }
+    .artifact a{ color: var(--blue); text-decoration:none; }
+    .artifact a:hover{ text-decoration:underline; }
+    .artifact .right{
+      display:flex;
+      gap:8px;
+      align-items:center;
+      flex:0 0 auto;
+    }
+
+    .inline{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      flex-wrap:wrap;
+    }
+
+    .tableWrap{
+      margin-top:10px;
+      overflow:auto;
+      border: var(--border);
+      border-radius: 16px;
+    }
+    table{
+      width:100%;
+      border-collapse:collapse;
+      font-size:12px;
+    }
+    th, td{
+      text-align:left;
+      padding:10px;
+      border-bottom: var(--border);
+      vertical-align:top;
+    }
+    thead{ background: rgba(245,245,247,.9); }
+
+    .footerNote{
+      margin-top:12px;
+      color: var(--gray);
+      font-size:11px;
+      line-height:1.35;
+    }
+
     @media (max-width: 980px){
+      .app{ grid-template-columns: 1fr; }
+      .sidebar{ position:relative; height:auto; }
       .laneRow{ grid-template-columns: 1fr; }
+      .roleStack{ grid-template-columns: 1fr; }
+    }
+
+    @media print{
+      .sidebar, .tools, .footerNote, .miniBtn, .toggleLink{ display:none !important; }
+      body{ background:#fff; }
+      .card{ box-shadow:none; }
+      .districtBody.collapsed{ display:block !important; }
+    }
+
+    /* Evidence Modal */
+    .modal.hidden { display: none; }
+    .modal { position: fixed; inset: 0; z-index: 9999; }
+
+    .modal-backdrop {
+      position: absolute; inset: 0;
+      background: rgba(0,0,0,0.45);
+    }
+
+    .modal-card{
+      position: relative;
+      width: min(920px, calc(100vw - 32px));
+      max-height: calc(100vh - 64px);
+      overflow: auto;
+      margin: 32px auto;
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 18px 45px rgba(0,0,0,0.22);
+      border: 1px solid rgba(0,0,0,0.12);
+    }
+
+    .modal-header{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap: 16px;
+      padding: 18px 18px 12px 18px;
+      border-bottom: 1px solid rgba(0,0,0,0.10);
+    }
+
+    .modal-title{ font-size: 18px; font-weight: 800; color:#111; }
+    .modal-subtitle{ font-size: 13px; color:#6b7280; margin-top: 2px; }
+
+    .modal-body{ padding: 14px 18px 18px 18px; }
+
+    .evidence-summary{
+      display:flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .pillMini{
+      display:inline-flex;
+      align-items:center;
+      gap: 8px;
+      padding: 8px 10px;
+      border-radius: 999px;
+      background: #f5f5f7;
+      border: 1px solid rgba(0,0,0,0.10);
+      font-size: 12px;
+      color: #111;
+    }
+
+    .evidence-list{
+      display:flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .evidence-item{
+      display:flex;
+      align-items:flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(0,0,0,0.12);
+      background: #fff;
+    }
+
+    .evidence-item .meta{
+      display:flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .evidence-item .title{
+      font-weight: 800;
+      color:#111;
+      font-size: 14px;
+    }
+
+    .evidence-item .hint{
+      color:#6b7280;
+      font-size: 12px;
+    }
+
+    .evidence-item a{
+      white-space: nowrap;
+      text-decoration: none;
+    }
+
+    /* =========================
+       OPTIONAL DISTRICT DRAWER
+       ========================= */
+    .districtDetails{
+      margin-top:10px;
+      border-radius: 14px;
+      border: 1px dashed rgba(109,40,217,.35);
+      background: rgba(109,40,217,.06);
+      overflow:hidden;
+    }
+
+    .districtDetails > summary{
+      list-style:none;
+      cursor:pointer;
+      padding:10px 12px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      font-weight:900;
+      font-size:12px;
+      color:#111;
+    }
+
+    .districtDetails > summary::-webkit-details-marker{ display:none; }
+
+    .districtDetails .sumLeft{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+
+    .purpleDotSmall{
+      width:9px; height:9px; border-radius:99px;
+      background:#6d28d9;
+      box-shadow: 0 0 0 3px rgba(109,40,217,.14);
+    }
+
+    .districtDetails .sumHint{
+      font-weight:600;
+      font-size:11px;
+      color: var(--gray);
+    }
+
+    .districtDetails .drawer{
+      padding: 10px 12px 12px 12px;
+      border-top: 1px solid rgba(109,40,217,.20);
+      background: rgba(255,255,255,.75);
     }
   </style>
 </head>
@@ -346,13 +630,19 @@
 <body>
   <div class="app">
     <aside class="sidebar">
-      <div class="brandLogoWrap">
-        <img class="brandLogo" src="https://i.postimg.cc/JhPCnwDT/Compass_Logo.png" alt="Compass Logo">
-      </div>
-
       <div class="brand">
-        <h1>FCS Weekly Executive Review</h1>
-        <div class="sub">Same questions. Better answers. Evidence first.</div>
+        <div class="brandLogoWrap">
+          <div class="logoPlate" aria-label="Compass logo">
+            <img class="brandLogo" src="https://i.postimg.cc/JhPCnwDT/Compass_Logo.png" alt="Compass Logo">
+          </div>
+        </div>
+
+        <div>
+          <h1>FCS Weekly Executive Review</h1>
+          <div class="sub">
+            Collaborative weekly discipline. Same questions. Better answers. Evidence first.
+          </div>
+        </div>
       </div>
 
       <div class="meta">
@@ -387,7 +677,7 @@
           </select>
         </div>
 
-        <div class="field" style="grid-column: 1 / span 2;">
+        <div class="field span2">
           <label for="weeklyFocus">Weekly focus area</label>
           <select id="weeklyFocus">
             <option value="vibrant_learning">Vibrant Learning (Real-World, Interdisciplinary Learning)</option>
@@ -429,54 +719,11 @@
 
       <div class="tools">
         <button class="btn" id="submitToSheetBtn">Submit to Google Sheet</button>
-        <button class="btn secondary" id="refreshAnalyticsBtn">Refresh analytics</button>
+        <button class="btn secondary" id="refreshTrendsBtn">Refresh trends</button>
       </div>
 
-      <!-- MOVED HERE: Collapsible Analytics under left submit buttons -->
-      <details class="analytics" id="analyticsPanel" open>
-        <summary>
-          <div class="analyticsTitle">
-            <div class="t">School vs District Analytics</div>
-            <div class="d">Current week and YTD. Updates when week or school changes.</div>
-          </div>
-          <div class="chev">^</div>
-        </summary>
-
-        <div class="analyticsBody">
-          <div class="chartsGrid">
-            <div class="chartCard">
-              <div class="label">Current week status mix</div>
-              <div class="hint">School and District counts for Green, Yellow, Red.</div>
-              <canvas id="pieCurrent"></canvas>
-            </div>
-
-            <div class="chartCard">
-              <div class="label">YTD status mix</div>
-              <div class="hint">School and District counts for Green, Yellow, Red.</div>
-              <canvas id="pieYtd"></canvas>
-            </div>
-
-            <div class="chartCard">
-              <div class="label">Current week average score</div>
-              <div class="hint">Green=3, Yellow=2, Red=1. School vs District.</div>
-              <canvas id="barCurrent"></canvas>
-            </div>
-
-            <div class="chartCard">
-              <div class="label">YTD average score</div>
-              <div class="hint">Green=3, Yellow=2, Red=1. School vs District.</div>
-              <canvas id="barYtd"></canvas>
-            </div>
-          </div>
-
-          <div class="footerNote" style="margin-top:10px;">
-            Blank or near-zero charts usually mean no submissions yet for that slice.
-          </div>
-        </div>
-      </details>
-
       <div class="footerNote">
-        Yellow or Red requires a clear plan, owner, due date, and help needed.
+        Rule: Yellow or Red requires a clear plan, owner, due date, and help needed.
       </div>
     </aside>
 
@@ -485,13 +732,14 @@
         <div>
           <h2 id="pageTitle">Loading...</h2>
           <div class="context" id="pageContext"></div>
+          <div class="summaryBar" id="summaryBar"></div>
         </div>
 
         <div style="min-width:280px;">
           <div class="card" style="padding:14px;">
             <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:12px;">
               <div>
-                <div style="font-weight:900; font-size:13px;">Status</div>
+                <div style="font-weight:800; font-size:13px;">Status</div>
                 <div class="muted">Must match evidence.</div>
               </div>
               <div class="pill" id="completionPill">0% complete</div>
@@ -506,7 +754,7 @@
               </select>
             </div>
 
-            <div class="laneRow">
+            <div class="laneRow" style="margin-top:10px;">
               <div>
                 <label>Key metric 1</label>
                 <input id="metric1" type="text" placeholder="Example: % evidence updated"/>
@@ -525,6 +773,10 @@
               <label>Lane owner</label>
               <input id="laneOwner" type="text" placeholder="Name"/>
             </div>
+
+            <div class="muted" style="margin-top:10px;">
+              Tip: District panels auto-collapse for School contributors. District comments expand only when needed.
+            </div>
           </div>
         </div>
       </div>
@@ -534,7 +786,7 @@
           <div class="cardHeader">
             <div>
               <h3>Core Framing Questions (Every Area, Every Week)</h3>
-              <div class="muted">Added RYG per question so leaders can see where clarity is strong or weak.</div>
+              <div class="muted">These never change. Clarity is the goal. Evidence is the requirement.</div>
             </div>
             <div class="pill" id="coreDonePill">0/0 answered</div>
           </div>
@@ -544,7 +796,7 @@
         <section class="card">
           <div class="cardHeader">
             <div>
-              <h3 id="focusTitle">Weekly Focus Questions</h3>
+              <h3 id="focusTitle">Focus Area Questions</h3>
               <div class="muted" id="focusHint"></div>
             </div>
             <div class="pill" id="focusDonePill">0/0 answered</div>
@@ -555,28 +807,112 @@
         <section class="card">
           <div class="cardHeader">
             <div>
-              <h3>Closing Question</h3>
-              <div class="muted">Always last.</div>
+              <h3>Closing Mulally Question (Always Last)</h3>
+              <div class="muted">If this is fuzzy, the system is not aligned yet.</div>
             </div>
             <div class="pill" id="closeDonePill">Not answered</div>
           </div>
           <div class="qList" id="closingQuestion"></div>
         </section>
+
+        <section class="card">
+          <div class="cardHeader">
+            <div>
+              <h3>Trends and rollups (from Google Sheet)</h3>
+              <div class="muted">Filter by school, focus area, org level, and date range.</div>
+            </div>
+            <div class="pill">Green=3, Yellow=2, Red=1</div>
+          </div>
+
+          <div class="laneRow">
+            <div>
+              <label>Trends: Org level</label>
+              <select id="trendOrgLevel">
+                <option value="all">All</option>
+                <option value="School">School</option>
+                <option value="District">District</option>
+              </select>
+            </div>
+            <div>
+              <label>Trends: From</label>
+              <input id="dateFrom" type="date"/>
+            </div>
+            <div>
+              <label>Trends: To</label>
+              <input id="dateTo" type="date"/>
+            </div>
+          </div>
+
+          <div class="laneRow" style="margin-top:10px;">
+            <div class="chip"><span class="statusDot"></span><span>Weekly: <b id="rollupWeekly">No data</b></span></div>
+            <div class="chip"><span class="statusDot"></span><span>Monthly: <b id="rollupMonthly">No data</b></span></div>
+            <div class="chip"><span class="statusDot"></span><span>YTD: <b id="rollupYtd">No data</b></span></div>
+          </div>
+
+          <div class="tableWrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Time</th>
+                  <th>Org</th>
+                  <th>School</th>
+                  <th>Focus Area</th>
+                  <th>Status</th>
+                  <th>Metric 1</th>
+                  <th>Metric 2</th>
+                  <th>Metric 3</th>
+                  <th>Evidence</th>
+                </tr>
+              </thead>
+              <tbody id="trendsTableBody"></tbody>
+            </table>
+          </div>
+        </section>
       </div>
     </main>
   </div>
 
-<script>
-  // ====== CONFIG ======
-  const SCRIPT_URL = "https://script.google.com/a/macros/fleming.kyschools.us/s/AKfycbzNVN8AiQzPBzE1CMdDzy9bWGzlq9_p4qALlzwuEDkUxIzazgIHK70pS61nswTX0T_B6w/exec";
-  const STORAGE_KEY = "fcs_weekly_exec_review_clean_sidebar_analytics_v1";
+  <!-- Evidence Modal -->
+  <div id="evidenceModal" class="modal hidden" aria-hidden="true">
+    <div class="modal-backdrop" onclick="closeEvidenceModal()"></div>
 
-  // ====== QUESTIONS ======
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="evidenceTitle">
+      <div class="modal-header">
+        <div>
+          <div id="evidenceTitle" class="modal-title">Evidence</div>
+          <div id="evidenceSubtitle" class="modal-subtitle"></div>
+        </div>
+        <button class="btn secondary" onclick="closeEvidenceModal()">Close</button>
+      </div>
+
+      <div class="modal-body">
+        <div id="evidenceSummary" class="evidence-summary"></div>
+        <div id="evidenceList" class="evidence-list"></div>
+        <div class="footerNote" style="margin-top:12px;">
+          Note: This list shows links saved in the submission (uploaded artifacts and pasted links). If a link is missing, it was not attached to the submission.
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+  // =========================
+  // CONFIG
+  // =========================
+  const SCRIPT_URL = "https://script.google.com/a/macros/fleming.kyschools.us/s/AKfycbzNVN8AiQzPBzE1CMdDzy9bWGzlq9_p4qALlzwuEDkUxIzazgIHK70pS61nswTX0T_B6w/exec";
+  const STORAGE_KEY = "fcs_weekly_exec_review_collab_v3_autocollapse";
+
+  // If true: District panels start collapsed unless Contributor=District
+  const AUTO_COLLAPSE_DISTRICT_FOR_SCHOOL = true;
+
+  // =========================
+  // QUESTIONS
+  // =========================
   const CORE_FRAMING_QUESTIONS = [
     { id:"plan", prompt:"What is the plan for this area of focus? If the plan cannot be stated in two to three sentences, it is not clear enough yet.", tip:"Write it as a tight plan statement. If it is long, it is not clear yet." },
     { id:"happened", prompt:"What actually happened this week? Not what was intended, not what is usually true. What evidence shows what students and classrooms experienced.", tip:"Name specific evidence. Student work, walkthrough notes, BPI artifacts, BPA products, WAC samples." },
     { id:"status_why", prompt:"Are we on track, at risk, or off track? Why? Status must be tied directly to observable evidence, not perception.", tip:"If you cannot cite evidence, stay Yellow until the evidence is real." },
-    { id:"threat", prompt:"What is the one thing that most threatens progress right now?", tip:"One thing. Not five." },
+    { id:"threat", prompt:"What is the one thing that most threatens progress right now? This keeps the conversation from drifting into laundry lists.", tip:"One thing. Not five." },
     { id:"address", prompt:"What is the plan to address it? Who owns it, what is changing next week, and how will we know it worked.", tip:"Owner + next step + success signal." },
     { id:"help", prompt:"Where do you need help? Leaders are expected to ask for help early, not after failure.", tip:"Be explicit: decision needed, support needed, barrier removal." }
   ];
@@ -588,57 +924,78 @@
   };
 
   const FOCUS_META = {
-    vibrant_learning: { title:"Vibrant Learning (Real-World, Interdisciplinary Learning)", hint:"Visibility beats vibes. Name what students did and what they produced." },
-    priority_standards: { title:"Priority Standards and Proficiency Scales", hint:"If standards are not visible, alignment is not real." },
-    bim_workshop: { title:"BRIDGE Instructional Model (Workshop Model)", hint:"Process discipline matters. Show what was done and what improved." },
-    bpa: { title:"BRIDGE Performance Assessments (BPAs)", hint:"Results must match intent. Show products and rubric evidence." },
-    bpi_websites: { title:"BRIDGE Performance Indicators and Student BPI Websites", hint:"Evidence has to be published and current, or it cannot function as accountability." },
-    wac: { title:"Writing Across the Content (WAC)", hint:"Writing should deepen thinking, not just document work." },
-    compelling_evidence: { title:"Compelling Evidence and Local Accountability", hint:"Conflicts between data and artifacts are signals, not problems to hide." }
+    vibrant_learning: { title:"Vibrant Learning (Real-World, Interdisciplinary Learning)", hint:"Mulally would not ask if learning was 'good'. He would ask if it was visible and aligned." },
+    priority_standards: { title:"Priority Standards and Proficiency Scales", hint:"This mirrors Ford’s obsession with alignment to the plan." },
+    bim_workshop: { title:"BRIDGE Instructional Model (Workshop Model)", hint:"Mulally cared deeply about process discipline. This is your process." },
+    bpa: { title:"BRIDGE Performance Assessments (BPAs)", hint:"Ford’s BPRs always asked if results matched intent." },
+    bpi_websites: { title:"BRIDGE Performance Indicators and Student BPI Websites", hint:"This is where the visibility principle maps perfectly to your work." },
+    wac: { title:"Writing Across the Content (WAC)", hint:"Mulally would ask whether communication improved decision-making. Same here." },
+    compelling_evidence: { title:"Compelling Evidence and Local Accountability", hint:"This keeps the system honest." }
   };
 
   const FOCUS_QUESTIONS = {
     vibrant_learning: [
       { id:"rw_context", prompt:"Where did students apply learning to a real-world context this week?", tip:"Name the real context and the student product." },
       { id:"thinking_evidence", prompt:"What evidence shows students were thinking, not just completing tasks?", tip:"Look for reasoning, explanation, revision, transfer." },
-      { id:"bright_spots", prompt:"Which classrooms best represent our vision of vibrant learning right now?", tip:"Name the bright spots and what we can learn from them." }
+      { id:"bright_spots", prompt:"Which classrooms best represent our vision of vibrant learning right now?", tip:"Name the bright spots and what we can learn from them." },
+      { id:"transactional", prompt:"Where is learning still too transactional, and why?", tip:"Name the condition, not the person." },
+      { id:"adjustment", prompt:"What is one adjustment you are making next week to increase relevance or depth?", tip:"One adjustment, then watch for one signal." }
     ],
     priority_standards: [
       { id:"visible_standards", prompt:"Which priority standards were most visible in classrooms this week?", tip:"Name 1-3 standards and where they showed up." },
       { id:"mastery_evidence", prompt:"How do we know students were working toward mastery of those standards?", tip:"Cite evidence. What did students do that proves it." },
+      { id:"scale_clarity", prompt:"Where are proficiency scales helping clarify expectations for students?", tip:"Where did students self-assess or reference the scale." },
+      { id:"scale_gap", prompt:"Where are they still not shaping instruction or assessment?", tip:"Name the gap and why it is happening." },
       { id:"student_explain", prompt:"What evidence shows students can explain where they are on the scale?", tip:"Student explanation is the signal, not teacher opinion." }
     ],
     bim_workshop: [
       { id:"model_visible", prompt:"Where did the Workshop Model clearly drive learning this week?", tip:"Point to mini-lesson, workshop, conferring, debrief evidence." },
       { id:"mini_lesson_align", prompt:"What evidence shows mini-lessons were aligned to priority standards?", tip:"Alignment is visible in target, task, and feedback." },
+      { id:"workshop_use", prompt:"How did workshop time allow students to practice, apply, or create?", tip:"Practice is not just worksheets. Look for application." },
+      { id:"breakdown", prompt:"Where did the model break down, and what caused it?", tip:"Name the condition and the cause so it can be fixed." },
       { id:"fidelity_adjust", prompt:"What is one concrete adjustment being made to strengthen fidelity?", tip:"One change next week, and one signal you will check." }
     ],
     bpa: [
       { id:"in_progress", prompt:"Which BPAs were in progress or completed this week?", tip:"Name the BPA(s) and where they are in the process." },
+      { id:"multiple_ways", prompt:"How do these assessments allow students to demonstrate learning in multiple ways?", tip:"Show choice, pathways, modalities, durable skills." },
       { id:"alignment", prompt:"What evidence shows alignment to standards and durable skills?", tip:"Rubric and student products must match the standards." },
+      { id:"project_vs_assess", prompt:"Where are BPAs still feeling like 'projects' instead of assessments?", tip:"Look for unclear criteria, weak alignment, or missing feedback loops." },
       { id:"support_needed", prompt:"What support is needed to strengthen quality or consistency?", tip:"Calibration, exemplars, rubric tuning, coaching, time." }
     ],
     bpi_websites: [
       { id:"new_evidence", prompt:"What new evidence was added to student BPI websites this week?", tip:"Name what was added and what it shows." },
       { id:"growth_over_time", prompt:"How does that evidence show growth, mastery, or readiness over time?", tip:"Compare over time, not a single artifact." },
-      { id:"thin_evidence", prompt:"Where is evidence thin, unclear, or missing?", tip:"Name the evidence gaps so next steps are obvious." }
+      { id:"storytelling", prompt:"Where are students telling their learning story clearly?", tip:"Student voice matters. Look for clarity and reflection." },
+      { id:"thin_evidence", prompt:"Where is evidence thin, unclear, or missing?", tip:"Name the evidence gaps so next steps are obvious." },
+      { id:"quality_plan", prompt:"What is the plan to improve evidence quality next week?", tip:"What will be uploaded, by whom, by when, with what quality bar." }
     ],
     wac: [
       { id:"explain_thinking", prompt:"Where did students write to explain thinking, not just respond?", tip:"Look for explanation, justification, and reasoning." },
       { id:"deepen_understanding", prompt:"What evidence shows writing deepened understanding of content?", tip:"Writing should improve thinking, not just record it." },
-      { id:"authentic_comm", prompt:"How are students using writing to communicate learning authentically?", tip:"Audience, purpose, revision, publishing are strong signals." }
+      { id:"authentic_comm", prompt:"How are students using writing to communicate learning authentically?", tip:"Audience, purpose, revision, publishing are strong signals." },
+      { id:"add_on", prompt:"Where is writing still treated as an add-on?", tip:"Name the barrier and the condition causing it." },
+      { id:"next_shift", prompt:"What shift will be made next week to strengthen writing as a learning tool?", tip:"One shift, one signal." }
     ],
     compelling_evidence: [
       { id:"best_evidence", prompt:"What evidence best represents the reality of learning this week?", tip:"Pick the evidence that tells the truth, not the most flattering." },
-      { id:"conflict", prompt:"Where do sources conflict, and why?", tip:"Conflicts show where the system is unclear." },
-      { id:"next_lookfors", prompt:"What will we look for next week to confirm progress?", tip:"Define the next signal." }
+      { id:"assumptions", prompt:"What assumptions were challenged by actual student work?", tip:"Name what you thought and what the evidence showed." },
+      { id:"same_story", prompt:"Where do dashboards, walkthroughs, and artifacts tell the same story?", tip:"Alignment across sources builds trust." },
+      { id:"conflict", prompt:"Where do they conflict, and why?", tip:"Conflicts are gifts. They show where the system is unclear." },
+      { id:"next_lookfors", prompt:"What will we look for next week to confirm progress?", tip:"Be specific. Define the next signal." }
     ]
   };
 
-  // ====== STATE ======
+  // =========================
+  // STATE
+  // =========================
+  function blankRoleAnswer(){
+    return { text:"", checked:false, notes:"", artifacts:[] };
+  }
+
   function defaultState(){
     const today = new Date();
     const iso = new Date(today.getTime() - today.getTimezoneOffset()*60000).toISOString().slice(0,10);
+
     return {
       meta: {
         weekOf: iso,
@@ -666,21 +1023,62 @@
 
   let state = loadState();
 
+  // Keep per-question district collapse state so toggles persist
+  // key: `${bucket}:${qid}` => boolean (true = expanded)
+  let districtExpandMap = {};
+
+  function migrateOldAnswerShape(obj){
+    if(!obj || typeof obj !== "object") return null;
+
+    const hasRole = (obj.school && obj.district);
+    if(hasRole) return obj;
+
+    const looksOld = ("text" in obj) || ("checked" in obj) || ("notes" in obj) || ("artifacts" in obj);
+    if(looksOld){
+      return {
+        school: { ...blankRoleAnswer(), ...obj },
+        district: { ...blankRoleAnswer() }
+      };
+    }
+
+    return {
+      school: { ...blankRoleAnswer(), ...(obj.school || {}) },
+      district: { ...blankRoleAnswer(), ...(obj.district || {}) }
+    };
+  }
+
   function loadState(){
     try{
       const raw = localStorage.getItem(STORAGE_KEY);
       if(!raw) return defaultState();
       const parsed = JSON.parse(raw);
-      return { ...defaultState(), ...parsed };
+      const merged = { ...defaultState(), ...parsed };
+
+      ["core","focus","closing"].forEach(bucket => {
+        merged.answers[bucket] = merged.answers[bucket] || {};
+        Object.keys(merged.answers[bucket]).forEach(qid => {
+          merged.answers[bucket][qid] = migrateOldAnswerShape(merged.answers[bucket][qid]) || {
+            school: blankRoleAnswer(),
+            district: blankRoleAnswer()
+          };
+        });
+      });
+
+      districtExpandMap = merged._districtExpandMap || {};
+      return merged;
     }catch(e){
       return defaultState();
     }
   }
 
   function saveState(){
+    state._districtExpandMap = districtExpandMap;
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
   }
 
+  // =========================
+  // HELPERS
+  // =========================
   function escapeHtml(str){
     return String(str || "")
       .replaceAll("&","&amp;")
@@ -688,6 +1086,14 @@
       .replaceAll(">","&gt;")
       .replaceAll('"',"&quot;")
       .replaceAll("'","&#039;");
+  }
+
+  function statusToScore(status){
+    const s = (status || "").toLowerCase();
+    if(s === "green") return 3;
+    if(s === "yellow") return 2;
+    if(s === "red") return 1;
+    return 0;
   }
 
   function statusClass(s){
@@ -704,24 +1110,256 @@
 
   function setSchoolVisibility(){
     const org = document.getElementById("orgLevel").value;
-    document.getElementById("schoolField").style.display = (org === "School") ? "block" : "none";
+    const schoolField = document.getElementById("schoolField");
+    schoolField.style.display = (org === "School") ? "block" : "none";
   }
 
-  // ====== CORE RYG PER QUESTION ======
-  function ensureQMeta(bucket, qid){
-    state.answers[bucket] = state.answers[bucket] || {};
-    state.answers[bucket][qid] = state.answers[bucket][qid] || { text:"", qStatus:"green" };
-    if(!state.answers[bucket][qid].qStatus) state.answers[bucket][qid].qStatus = "green";
+  function isDistrictContributor(){
+    return (state.meta.orgLevel || "").toLowerCase() === "district";
+  }
+
+  function defaultDistrictCollapsed(){
+    if(!AUTO_COLLAPSE_DISTRICT_FOR_SCHOOL) return false;
+    return !isDistrictContributor();
+  }
+
+  function districtKey(bucket, qid){
+    return `${bucket}:${qid}`;
+  }
+
+  function isDistrictExpanded(bucket, qid){
+    if(isDistrictContributor()) return true;
+    const key = districtKey(bucket, qid);
+    if(typeof districtExpandMap[key] === "boolean"){
+      return districtExpandMap[key];
+    }
+    return false;
+  }
+
+  function setDistrictExpanded(bucket, qid, expanded){
+    districtExpandMap[districtKey(bucket, qid)] = !!expanded;
+    saveState();
+  }
+
+  // =========================
+  // ROLE ANSWER SHAPE
+  // =========================
+  function ensureRoleAnswer(bucket, qid){
+    if(!state.answers[bucket][qid]){
+      state.answers[bucket][qid] = { school: blankRoleAnswer(), district: blankRoleAnswer() };
+      return state.answers[bucket][qid];
+    }
+    state.answers[bucket][qid] = migrateOldAnswerShape(state.answers[bucket][qid]) || {
+      school: blankRoleAnswer(),
+      district: blankRoleAnswer()
+    };
     return state.answers[bucket][qid];
   }
 
-  // ====== RENDER QUESTIONS ======
-  function renderQuestionList(containerId, bucket, questions, allowRyg){
+  function getRoleAnswer(bucket, qid, role){
+    const a = ensureRoleAnswer(bucket, qid);
+    return a[role];
+  }
+
+  // =========================
+  // OPTIONAL DISTRICT DRAWER LOGIC
+  // =========================
+  function districtHasAnyContent(bucket, qid){
+    const d = getRoleAnswer(bucket, qid, "district");
+    const hasText = (d.text || "").trim().length > 0;
+    const hasNote = (d.notes || "").trim().length > 0;
+    const hasArtifacts = Array.isArray(d.artifacts) && d.artifacts.length > 0;
+    const hasChecked = !!d.checked;
+    return hasText || hasNote || hasArtifacts || hasChecked;
+  }
+
+  function setDistrictDetailsAutoOpen(bucket, qid){
+    const det = document.getElementById(`${bucket}_${qid}_districtDetails`);
+    if(!det) return;
+    det.open = isDistrictContributor() || districtHasAnyContent(bucket, qid);
+  }
+
+  // =========================
+  // EVIDENCE MODAL
+  // =========================
+  let SUBMISSION_CACHE = [];
+
+  function setSubmissionCache(rows){
+    SUBMISSION_CACHE = Array.isArray(rows) ? rows : [];
+  }
+
+  function safeJsonParse(maybeJson){
+    if(!maybeJson) return null;
+    if(typeof maybeJson === "object") return maybeJson;
+    try{ return JSON.parse(maybeJson); }catch(e){ return null; }
+  }
+
+  function extractUrlsFromText(text){
+    const t = String(text || "");
+    const urls = t.match(/https?:\/\/[^\s)"]+/g) || [];
+    return Array.from(new Set(urls));
+  }
+
+  function extractArtifactLinksFromRoleAnswer(ans){
+    const links = [];
+    if(!ans) return links;
+
+    if(Array.isArray(ans.artifacts)){
+      ans.artifacts.forEach(a => {
+        if(a && a.url) links.push({ url: a.url, label: a.label || a.name || "Artifact", kind: a.kind || "artifact" });
+      });
+    }
+
+    extractUrlsFromText(ans.text).forEach(u => links.push({ url: u, label: "Link in answer", kind: "inline" }));
+    extractUrlsFromText(ans.notes).forEach(u => links.push({ url: u, label: "Link in note", kind: "inline" }));
+
+    return links;
+  }
+
+  function extractArtifactLinksFromAnswerObj(ans){
+    const links = [];
+    if(!ans) return links;
+
+    const normalized = migrateOldAnswerShape(ans);
+    if(normalized && normalized.school && normalized.district){
+      links.push(...extractArtifactLinksFromRoleAnswer(normalized.school));
+      links.push(...extractArtifactLinksFromRoleAnswer(normalized.district));
+      return links;
+    }
+
+    links.push(...extractArtifactLinksFromRoleAnswer(ans));
+    return links;
+  }
+
+  function extractEvidenceLinksFromRow(row){
+    const all = [];
+
+    const core = safeJsonParse(row.core_answers_json);
+    const focus = safeJsonParse(row.focus_answers_json);
+    const closing = safeJsonParse(row.closing_answers_json);
+
+    if(core && typeof core === "object"){
+      Object.values(core).forEach(ans => all.push(...extractArtifactLinksFromAnswerObj(ans)));
+    }
+    if(focus && typeof focus === "object"){
+      Object.values(focus).forEach(ans => all.push(...extractArtifactLinksFromAnswerObj(ans)));
+    }
+    if(closing && typeof closing === "object"){
+      Object.values(closing).forEach(ans => all.push(...extractArtifactLinksFromAnswerObj(ans)));
+    }
+
+    extractUrlsFromText(row.evidence_blob).forEach(u => all.push({ url: u, label: "Evidence link", kind: "blob" }));
+
+    const seen = new Set();
+    return all.filter(x => {
+      if(!x.url) return false;
+      if(seen.has(x.url)) return false;
+      seen.add(x.url);
+      return true;
+    });
+  }
+
+  function openEvidenceModal(context){
+    const week = String(context.week_of || "").trim();
+    const school = String(context.school || "").trim();
+    const focusId = String(context.weekly_focus_area_id || "").trim();
+    const focusTitle = String(context.weekly_focus_area_title || "").trim();
+    const orgLevel = String(context.org_level || "").trim();
+
+    const modal = document.getElementById("evidenceModal");
+    const titleEl = document.getElementById("evidenceTitle");
+    const subEl = document.getElementById("evidenceSubtitle");
+    const summaryEl = document.getElementById("evidenceSummary");
+    const listEl = document.getElementById("evidenceList");
+
+    titleEl.textContent = "Evidence";
+    subEl.textContent = `${orgLevel || "Org"} | ${school || "School"} | ${focusTitle || focusId || "Focus"} | ${week || "Week"}`;
+
+    const matchedRows = SUBMISSION_CACHE.filter(r => {
+      if(week && String(r.week_of || "").slice(0,10) !== week.slice(0,10)) return false;
+      if(focusId && String(r.weekly_focus_area_id || "") !== focusId) return false;
+
+      const rOrg = String(r.org_level || "");
+      const rSchool = String(r.school || "");
+
+      if(rOrg === "District") return true;
+      return rSchool === school;
+    });
+
+    let links = [];
+    matchedRows.forEach(r => { links = links.concat(extractEvidenceLinksFromRow(r)); });
+
+    summaryEl.innerHTML = "";
+    const pills = [
+      { label: "Rows matched", value: matchedRows.length },
+      { label: "Artifacts found", value: links.length },
+      { label: "Status", value: String(context.status || "").toUpperCase() || "N/A" }
+    ];
+    pills.forEach(p => {
+      const div = document.createElement("div");
+      div.className = "pillMini";
+      div.textContent = `${p.label}: ${p.value}`;
+      summaryEl.appendChild(div);
+    });
+
+    listEl.innerHTML = "";
+    if(!links.length){
+      const empty = document.createElement("div");
+      empty.className = "evidence-item";
+      empty.innerHTML = `
+        <div class="meta">
+          <div class="title">No artifacts found for this week and focus yet</div>
+          <div class="hint">Upload or add a link inside any School or District box, then submit again.</div>
+        </div>
+      `;
+      listEl.appendChild(empty);
+    }else{
+      links.forEach((l, idx) => {
+        const item = document.createElement("div");
+        item.className = "evidence-item";
+
+        const isDrive = String(l.url).includes("drive.google.com");
+        const label = l.label || (isDrive ? `Drive Artifact ${idx+1}` : `Evidence Link ${idx+1}`);
+
+        item.innerHTML = `
+          <div class="meta">
+            <div class="title">${escapeHtml(label)}</div>
+            <div class="hint">${escapeHtml(l.kind || "")}${isDrive ? " | Google Drive" : ""}</div>
+          </div>
+          <a class="btn secondary" href="${escapeHtml(l.url)}" target="_blank" rel="noopener">Open</a>
+        `;
+        listEl.appendChild(item);
+      });
+    }
+
+    modal.classList.remove("hidden");
+    modal.setAttribute("aria-hidden", "false");
+    document.addEventListener("keydown", escCloseEvidenceOnce);
+  }
+
+  function escCloseEvidenceOnce(e){
+    if(e.key === "Escape") closeEvidenceModal();
+  }
+
+  function closeEvidenceModal(){
+    const modal = document.getElementById("evidenceModal");
+    modal.classList.add("hidden");
+    modal.setAttribute("aria-hidden", "true");
+    document.removeEventListener("keydown", escCloseEvidenceOnce);
+  }
+
+  // =========================
+  // RENDER QUESTIONS
+  // =========================
+  function renderQuestionList(containerId, bucket, questions){
     const container = document.getElementById(containerId);
     container.innerHTML = "";
 
     questions.forEach(q => {
-      const a = ensureQMeta(bucket, q.id);
+      ensureRoleAnswer(bucket, q.id);
+
+      const expanded = isDistrictExpanded(bucket, q.id);
+      const collapseClass = expanded ? "" : "collapsed";
 
       const el = document.createElement("div");
       el.className = "qItem";
@@ -731,54 +1369,334 @@
             <div class="qPrompt">${escapeHtml(q.prompt)}</div>
             <div class="tip">Tip: ${escapeHtml(q.tip || "")}</div>
           </div>
-
-          ${allowRyg ? `
-            <div class="inline" style="gap:8px; align-items:center;">
-              <span class="statusDot ${statusClass(a.qStatus)}"></span>
-              <select data-action="qStatus" data-bucket="${bucket}" data-qid="${q.id}">
-                <option value="green">Green</option>
-                <option value="yellow">Yellow</option>
-                <option value="red">Red</option>
-              </select>
-            </div>
-          ` : ``}
         </div>
 
-        <textarea class="qAnswer" data-bucket="${bucket}" data-qid="${q.id}" placeholder="Evidence-backed response."></textarea>
+        <div class="roleStack">
+          <!-- SCHOOL -->
+          <div class="rolePanel school">
+            <div class="roleHeader">
+              <div>
+                <div class="roleTitle">School Leader</div>
+                <div class="muted">What you saw and what students produced this week.</div>
+              </div>
+              <div class="roleBadge">SCHOOL</div>
+            </div>
+
+            <label class="checkWrap" title="Mark as clear and evidence-backed">
+              <input type="checkbox"
+                data-bucket="${bucket}" data-qid="${q.id}" data-role="school" data-field="checked"/>
+              Clear
+            </label>
+
+            <textarea class="qAnswer"
+              data-bucket="${bucket}" data-qid="${q.id}" data-role="school" data-field="text"
+              placeholder="School leader response (evidence-backed specifics)."></textarea>
+
+            <div class="qActions">
+              <button class="miniBtn" data-action="addNote" data-bucket="${bucket}" data-qid="${q.id}" data-role="school">Add note</button>
+
+              <button class="miniBtn primary" data-action="addLink" data-bucket="${bucket}" data-qid="${q.id}" data-role="school">
+                Add artifact link
+              </button>
+
+              <label class="miniBtn primary" style="display:inline-flex; align-items:center; gap:8px;">
+                Upload artifact
+                <input type="file" style="display:none;" data-action="upload" data-bucket="${bucket}" data-qid="${q.id}" data-role="school"/>
+              </label>
+
+              <span class="muted" id="${bucket}_${q.id}_school_noteHint"></span>
+            </div>
+
+            <div class="artifactList" id="${bucket}_${q.id}_school_artifacts"></div>
+          </div>
+
+          <!-- DISTRICT (Structure visible + optional per-question drawer) -->
+          <div class="rolePanel district">
+            <div class="districtWrap">
+              <div class="districtBanner">
+                <div class="left">
+                  <div class="title">District panel exists</div>
+                  <div class="desc">Used for validation, patterns, supports, and barrier removal.</div>
+                </div>
+                <button class="toggleLink"
+                  type="button"
+                  data-action="toggleDistrict"
+                  data-bucket="${bucket}"
+                  data-qid="${q.id}">
+                  ${expanded ? "Hide District" : "Show District"}
+                </button>
+              </div>
+
+              <div class="districtBody ${collapseClass}" id="${bucket}_${q.id}_districtBody">
+
+                <details class="districtDetails" id="${bucket}_${q.id}_districtDetails">
+                  <summary>
+                    <div class="sumLeft">
+                      <span class="purpleDotSmall"></span>
+                      <span>District leader comment (optional)</span>
+                      <span class="sumHint">Expand only if needed</span>
+                    </div>
+                    <span class="toggleLink" style="padding:6px 10px; border-color: rgba(109,40,217,.25);">Open</span>
+                  </summary>
+
+                  <div class="drawer">
+                    <div class="roleHeader" style="margin-bottom:6px;">
+                      <div>
+                        <div class="roleTitle">District Leader</div>
+                        <div class="muted">Validation, patterns, supports, barrier removal.</div>
+                      </div>
+                      <div class="roleBadge" style="background: rgba(109,40,217,.14); border-color: rgba(109,40,217,.22);">
+                        DISTRICT
+                      </div>
+                    </div>
+
+                    <label class="checkWrap" title="Mark as clear and evidence-backed">
+                      <input type="checkbox"
+                        data-bucket="${bucket}" data-qid="${q.id}" data-role="district" data-field="checked"/>
+                      Clear
+                    </label>
+
+                    <textarea class="qAnswer"
+                      data-bucket="${bucket}" data-qid="${q.id}" data-role="district" data-field="text"
+                      placeholder="District leader comment (only if needed)."></textarea>
+
+                    <div class="qActions">
+                      <button class="miniBtn" data-action="addNote" data-bucket="${bucket}" data-qid="${q.id}" data-role="district">Add note</button>
+
+                      <button class="miniBtn primary" data-action="addLink" data-bucket="${bucket}" data-qid="${q.id}" data-role="district">
+                        Add artifact link
+                      </button>
+
+                      <label class="miniBtn primary" style="display:inline-flex; align-items:center; gap:8px;">
+                        Upload artifact
+                        <input type="file" style="display:none;" data-action="upload" data-bucket="${bucket}" data-qid="${q.id}" data-role="district"/>
+                      </label>
+
+                      <span class="muted" id="${bucket}_${q.id}_district_noteHint"></span>
+                    </div>
+
+                    <div class="artifactList" id="${bucket}_${q.id}_district_artifacts"></div>
+                  </div>
+                </details>
+
+              </div>
+            </div>
+          </div>
+        </div>
       `;
 
       container.appendChild(el);
 
-      const ta = el.querySelector("textarea");
-      ta.value = a.text || "";
-      ta.addEventListener("input", () => {
-        ensureQMeta(bucket, q.id).text = ta.value || "";
-        saveState();
-        updateAnsweredPills();
-        updateCompletion();
-      });
+      // Hydrate values + artifacts
+      hydrateRolePanel(bucket, q.id, "school", el);
+      hydrateRolePanel(bucket, q.id, "district", el);
+      renderArtifacts(bucket, q.id, "school");
+      renderArtifacts(bucket, q.id, "district");
 
-      if(allowRyg){
-        const sel = el.querySelector('select[data-action="qStatus"]');
-        sel.value = a.qStatus;
-        sel.addEventListener("change", () => {
-          ensureQMeta(bucket, q.id).qStatus = sel.value;
-          saveState();
-          const dot = sel.parentElement.querySelector(".statusDot");
-          dot.className = "statusDot " + statusClass(sel.value);
-        });
+      // Auto-open District drawer only when District has content (or contributor=District)
+      setDistrictDetailsAutoOpen(bucket, q.id);
+
+      // Auto-collapse logic: if School contributor, default is collapsed unless previously expanded
+      if(defaultDistrictCollapsed() && !isDistrictExpanded(bucket, q.id)){
+        const body = el.querySelector(`#${bucket}_${q.id}_districtBody`);
+        if(body) body.classList.add("collapsed");
       }
+
+      wireQuestionEvents(el);
     });
 
     updateAnsweredPills();
     updateCompletion();
   }
 
+  function hydrateRolePanel(bucket, qid, role, scopeEl){
+    const a = getRoleAnswer(bucket, qid, role);
+
+    const chk = scopeEl.querySelector(`input[type="checkbox"][data-bucket="${bucket}"][data-qid="${qid}"][data-role="${role}"][data-field="checked"]`);
+    if(chk) chk.checked = !!a.checked;
+
+    const ta = scopeEl.querySelector(`textarea[data-bucket="${bucket}"][data-qid="${qid}"][data-role="${role}"][data-field="text"]`);
+    if(ta) ta.value = a.text || "";
+
+    const hint = document.getElementById(`${bucket}_${qid}_${role}_noteHint`);
+    if(hint) hint.textContent = a.notes ? "Note added" : "";
+  }
+
+  function renderArtifacts(bucket, qid, role){
+    const a = getRoleAnswer(bucket, qid, role);
+    const list = document.getElementById(`${bucket}_${qid}_${role}_artifacts`);
+    if(!list) return;
+
+    list.innerHTML = "";
+    (a.artifacts || []).forEach((art, idx) => {
+      const row = document.createElement("div");
+      row.className = "artifact";
+      const label = art.label || art.name || "Artifact";
+      const linkHtml = art.url ? `<a href="${escapeHtml(art.url)}" target="_blank" rel="noopener">${escapeHtml(label)}</a>` : escapeHtml(label);
+
+      row.innerHTML = `
+        <div>
+          <div style="font-weight:800;">${linkHtml}</div>
+          <div class="muted">${escapeHtml(art.kind || "")}${art.kind ? " | " : ""}${escapeHtml(art.note || "")}</div>
+        </div>
+        <div class="right">
+          <button class="miniBtn"
+            data-action="removeArtifact" data-bucket="${bucket}" data-qid="${qid}" data-role="${role}" data-idx="${idx}">
+            Remove
+          </button>
+        </div>
+      `;
+      list.appendChild(row);
+    });
+  }
+
+  function wireQuestionEvents(scopeEl){
+    // inputs/textarea
+    scopeEl.querySelectorAll("[data-field]").forEach(el => {
+      const bucket = el.getAttribute("data-bucket");
+      const qid = el.getAttribute("data-qid");
+      const role = el.getAttribute("data-role");
+      const field = el.getAttribute("data-field");
+
+      const handler = () => {
+        const a = getRoleAnswer(bucket, qid, role);
+        if(field === "checked"){
+          a.checked = !!el.checked;
+        }else if(field === "text"){
+          a.text = el.value || "";
+        }
+        saveState();
+
+        // If district starts adding content, auto-open the drawer for that question
+        if(role === "district"){
+          setDistrictDetailsAutoOpen(bucket, qid);
+        }
+
+        updateAnsweredPills();
+        updateCompletion();
+      };
+
+      el.addEventListener(field === "checked" ? "change" : "input", handler);
+    });
+
+    // actions
+    scopeEl.querySelectorAll("[data-action]").forEach(el => {
+      const action = el.getAttribute("data-action");
+      const bucket = el.getAttribute("data-bucket");
+      const qid = el.getAttribute("data-qid");
+      const role = el.getAttribute("data-role");
+
+      if(action === "toggleDistrict"){
+        el.addEventListener("click", () => {
+          if(isDistrictContributor()) return;
+
+          const body = document.getElementById(`${bucket}_${qid}_districtBody`);
+          if(!body) return;
+
+          const currentlyCollapsed = body.classList.contains("collapsed");
+          if(currentlyCollapsed){
+            body.classList.remove("collapsed");
+            el.textContent = "Hide District";
+            setDistrictExpanded(bucket, qid, true);
+          }else{
+            body.classList.add("collapsed");
+            el.textContent = "Show District";
+            setDistrictExpanded(bucket, qid, false);
+          }
+        });
+      }
+
+      if(action === "addNote"){
+        el.addEventListener("click", () => {
+          const a = getRoleAnswer(bucket, qid, role);
+          const next = prompt("Add a short note (context, names, reminders):", a.notes || "");
+          if(next === null) return;
+          a.notes = next.trim();
+          saveState();
+
+          const hint = document.getElementById(`${bucket}_${qid}_${role}_noteHint`);
+          if(hint) hint.textContent = a.notes ? "Note added" : "";
+
+          if(role === "district"){
+            setDistrictDetailsAutoOpen(bucket, qid);
+          }
+        });
+      }
+
+      if(action === "addLink"){
+        el.addEventListener("click", () => {
+          const a = getRoleAnswer(bucket, qid, role);
+          const url = prompt("Paste an artifact link (Drive link, BPI page, rubric, student product URL):", "");
+          if(!url) return;
+          const label = prompt("Short label (example: 'BPI sample: Grade 7', 'BPA rubric', 'WAC published piece'):", "Artifact");
+          a.artifacts.push({ kind:"link", url: url.trim(), label: (label || "Artifact").trim(), note:"" });
+          saveState();
+          renderArtifacts(bucket, qid, role);
+
+          if(role === "district"){
+            setDistrictDetailsAutoOpen(bucket, qid);
+          }
+        });
+      }
+
+      if(action === "upload"){
+        el.addEventListener("change", async (evt) => {
+          const file = evt.target.files && evt.target.files[0];
+          evt.target.value = "";
+          if(!file) return;
+
+          try{
+            const a = getRoleAnswer(bucket, qid, role);
+            const uploaded = await uploadArtifactToDrive(file);
+            a.artifacts.push({
+              kind: "upload",
+              url: uploaded.url,
+              label: uploaded.name || file.name,
+              note: uploaded.note || ""
+            });
+
+            saveState();
+            renderArtifacts(bucket, qid, role);
+
+            if(role === "district"){
+              setDistrictDetailsAutoOpen(bucket, qid);
+            }
+
+            alert("Uploaded and linked.");
+          }catch(err){
+            alert("Upload failed: " + String(err));
+          }
+        });
+      }
+
+      if(action === "removeArtifact"){
+        el.addEventListener("click", () => {
+          const idx = Number(el.getAttribute("data-idx"));
+          const a = getRoleAnswer(bucket, qid, role);
+          a.artifacts.splice(idx, 1);
+          saveState();
+          renderArtifacts(bucket, qid, role);
+
+          if(role === "district"){
+            setDistrictDetailsAutoOpen(bucket, qid);
+          }
+        });
+      }
+    });
+  }
+
+  // =========================
+  // COMPLETION INDICATORS
+  // =========================
   function countAnswered(bucket, questions){
     let answered = 0;
     questions.forEach(q => {
-      const a = ensureQMeta(bucket, q.id);
-      if((a.text || "").trim().length > 0) answered += 1;
+      const school = getRoleAnswer(bucket, q.id, "school");
+      const district = getRoleAnswer(bucket, q.id, "district");
+      const hasAnyText =
+        (school.text || "").trim().length > 0 ||
+        (district.text || "").trim().length > 0;
+      if(hasAnyText) answered += 1;
     });
     return { answered, total: questions.length };
   }
@@ -787,191 +1705,136 @@
     const core = countAnswered("core", CORE_FRAMING_QUESTIONS);
     document.getElementById("coreDonePill").textContent = `${core.answered}/${core.total} answered`;
 
-    const focusQs = FOCUS_QUESTIONS[state.meta.weeklyFocus] || [];
+    const focusId = state.meta.weeklyFocus;
+    const focusQs = FOCUS_QUESTIONS[focusId] || [];
     const focus = countAnswered("focus", focusQs);
     document.getElementById("focusDonePill").textContent = `${focus.answered}/${focus.total} answered`;
 
-    const closing = ensureQMeta("closing", "closing");
-    document.getElementById("closeDonePill").textContent =
-      (closing.text || "").trim().length ? "Answered" : "Not answered";
+    const closingSchool = getRoleAnswer("closing", "closing", "school");
+    const closingDistrict = getRoleAnswer("closing", "closing", "district");
+    const closingAnswered = (closingSchool.text || "").trim().length || (closingDistrict.text || "").trim().length;
+    document.getElementById("closeDonePill").textContent = closingAnswered ? "Answered" : "Not answered";
   }
 
   function updateCompletion(){
-    const focusQs = FOCUS_QUESTIONS[state.meta.weeklyFocus] || [];
+    const focusId = state.meta.weeklyFocus;
+    const focusQs = FOCUS_QUESTIONS[focusId] || [];
+
     const core = countAnswered("core", CORE_FRAMING_QUESTIONS);
     const focus = countAnswered("focus", focusQs);
-    const closing = ensureQMeta("closing", "closing");
-    const closingAnswered = (closing.text || "").trim().length ? 1 : 0;
+
+    const closingSchool = getRoleAnswer("closing", "closing", "school");
+    const closingDistrict = getRoleAnswer("closing", "closing", "district");
+    const closingAnswered = ((closingSchool.text || "").trim().length || (closingDistrict.text || "").trim().length) ? 1 : 0;
 
     const total = core.total + focus.total + 1;
     const done = core.answered + focus.answered + closingAnswered;
+
     const pct = total ? Math.round((done/total)*100) : 0;
     document.getElementById("completionPill").textContent = `${pct}% complete`;
   }
 
-  // ====== CHARTS ======
-  let charts = { pieCurrent:null, pieYtd:null, barCurrent:null, barYtd:null };
+  // =========================
+  // SUMMARY BAR
+  // =========================
+  function renderSummaryBar(){
+    const bar = document.getElementById("summaryBar");
+    bar.innerHTML = "";
 
-  function statusToScore(s){
-    s = String(s || "").toLowerCase();
-    if(s === "green") return 3;
-    if(s === "yellow") return 2;
-    if(s === "red") return 1;
-    return 0;
-  }
+    const org = state.meta.orgLevel;
+    const school = (org === "School") ? state.meta.school : "District";
+    const focus = FOCUS_META[state.meta.weeklyFocus]?.title || state.meta.weeklyFocus;
 
-  async function fetchAllRows(){
-    const res = await fetch(SCRIPT_URL, { method:"GET" });
-    const data = await res.json();
-    if(!data.ok) throw new Error(data.error || "Failed to load rows");
-    return data.rows || [];
-  }
+    bar.appendChild(chip(`${org} submission`, "gray"));
+    bar.appendChild(chip(`${school}`, "gray"));
+    bar.appendChild(chip(`${focus}`, "gray"));
 
-  function parseDateMaybe(d){
-    const dt = new Date(d);
-    return isNaN(dt.getTime()) ? null : dt;
+    const score = statusToScore(state.status.status);
+    const sLabel = (state.status.status || "").toUpperCase();
+    bar.appendChild(chip(`Status: ${sLabel} (score ${score})`, state.status.status));
   }
 
-  function isYtd(r){
-    const ts = parseDateMaybe(r.timestamp_iso) || parseDateMaybe(r.week_of);
-    if(!ts) return false;
-    const y0 = new Date(new Date().getFullYear(), 0, 1);
-    return ts >= y0;
+  function chip(text, status){
+    const d = document.createElement("div");
+    d.className = "chip";
+    const dot = document.createElement("span");
+    dot.className = "statusDot " + statusClass(status);
+    dot.style.width = "9px";
+    dot.style.height = "9px";
+    dot.style.boxShadow = "none";
+    d.appendChild(dot);
+    const t = document.createElement("span");
+    t.textContent = text;
+    d.appendChild(t);
+    return d;
   }
 
-  function matchesWeek(r, weekOfIso){
-    return String(r.week_of || "").slice(0,10) === String(weekOfIso || "").slice(0,10);
-  }
-  function matchesSchoolRow(r, schoolName){
-    return (r.org_level === "School" && (r.school || "") === schoolName);
-  }
-  function matchesDistrictRow(r){
-    return (r.org_level === "District");
-  }
-
-  function statusCounts(rows){
-    const c = { green:0, yellow:0, red:0 };
-    rows.forEach(r => {
-      const s = String(r.status || "").toLowerCase();
-      if(c[s] !== undefined) c[s] += 1;
+  // =========================
+  // ARTIFACT UPLOAD (Drive via Apps Script)
+  // =========================
+  function readFileAsBase64(file){
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const result = String(reader.result || "");
+        const parts = result.split(",");
+        if(parts.length < 2) return reject(new Error("Invalid file encoding."));
+        resolve(parts[1]);
+      };
+      reader.onerror = () => reject(reader.error || new Error("File read failed."));
+      reader.readAsDataURL(file);
     });
-    return c;
   }
 
-  function avgScore(rows){
-    if(!rows.length) return 0;
-    const sum = rows.reduce((a,r) => a + statusToScore(r.status), 0);
-    return sum / rows.length;
-  }
+  async function uploadArtifactToDrive(file){
+    const b64 = await readFileAsBase64(file);
 
-  function ensureChart(canvasEl, existing, type, data, options){
-    const ctx = canvasEl.getContext("2d");
-    if(existing){
-      existing.data = data;
-      existing.options = options;
-      existing.update();
-      return existing;
-    }
-    return new Chart(ctx, { type, data, options });
-  }
-
-  async function refreshAnalytics(){
-    let rows = [];
-    try{
-      rows = await fetchAllRows();
-    }catch(e){
-      rows = [];
-    }
-
-    const schoolName = state.meta.school;
-    const weekOf = state.meta.weekOf;
-
-    const schoolWeek = rows.filter(r => matchesSchoolRow(r, schoolName) && matchesWeek(r, weekOf));
-    const districtWeek = rows.filter(r => matchesDistrictRow(r) && matchesWeek(r, weekOf));
-
-    const schoolYtd = rows.filter(r => matchesSchoolRow(r, schoolName) && isYtd(r));
-    const districtYtd = rows.filter(r => matchesDistrictRow(r) && isYtd(r));
-
-    const sw = statusCounts(schoolWeek);
-    const dw = statusCounts(districtWeek);
-    const sy = statusCounts(schoolYtd);
-    const dy = statusCounts(districtYtd);
-
-    const swAvg = avgScore(schoolWeek);
-    const dwAvg = avgScore(districtWeek);
-    const syAvg = avgScore(schoolYtd);
-    const dyAvg = avgScore(districtYtd);
-
-    const pieOpts = {
-      responsive:true,
-      animation: { duration: 650 },
-      plugins: { legend: { display:false } }
+    const payload = {
+      action: "upload",
+      file_name: file.name,
+      mime_type: file.type || "application/octet-stream",
+      base64: b64,
+      week_of: state.meta.weekOf,
+      org_level: state.meta.orgLevel,
+      school: state.meta.orgLevel === "School" ? state.meta.school : "District",
+      focus_area_id: state.meta.weeklyFocus
     };
 
-    charts.pieCurrent = ensureChart(
-      document.getElementById("pieCurrent"),
-      charts.pieCurrent,
-      "pie",
-      {
-        labels: ["School Green","School Yellow","School Red","District Green","District Yellow","District Red"],
-        datasets: [{ data: [sw.green, sw.yellow, sw.red, dw.green, dw.yellow, dw.red] }]
-      },
-      pieOpts
-    );
+    const res = await fetch(SCRIPT_URL, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify(payload)
+    });
 
-    charts.pieYtd = ensureChart(
-      document.getElementById("pieYtd"),
-      charts.pieYtd,
-      "pie",
-      {
-        labels: ["School Green","School Yellow","School Red","District Green","District Yellow","District Red"],
-        datasets: [{ data: [sy.green, sy.yellow, sy.red, dy.green, dy.yellow, dy.red] }]
-      },
-      pieOpts
-    );
-
-    const barOpts = {
-      responsive:true,
-      animation: { duration: 650 },
-      scales: { y: { beginAtZero:true, suggestedMax:3 } },
-      plugins: { legend: { display:false } }
-    };
-
-    charts.barCurrent = ensureChart(
-      document.getElementById("barCurrent"),
-      charts.barCurrent,
-      "bar",
-      { labels: ["School", "District"], datasets: [{ label:"Avg score", data: [swAvg, dwAvg] }] },
-      barOpts
-    );
-
-    charts.barYtd = ensureChart(
-      document.getElementById("barYtd"),
-      charts.barYtd,
-      "bar",
-      { labels: ["School YTD", "District YTD"], datasets: [{ label:"Avg score", data: [syAvg, dyAvg] }] },
-      barOpts
-    );
+    const data = await res.json();
+    if(!data.ok) throw new Error(data.error || "Upload failed.");
+    return data.file;
   }
 
-  // ====== SUBMIT ======
+  // =========================
+  // SHEET SUBMISSION
+  // =========================
   function buildSubmissionPayload(){
     const focusId = state.meta.weeklyFocus;
     const focusTitle = FOCUS_META[focusId]?.title || focusId;
 
     const core_answers = {};
-    CORE_FRAMING_QUESTIONS.forEach(q => core_answers[q.id] = ensureQMeta("core", q.id));
+    CORE_FRAMING_QUESTIONS.forEach(q => core_answers[q.id] = ensureRoleAnswer("core", q.id));
+
     const focus_answers = {};
-    (FOCUS_QUESTIONS[focusId] || []).forEach(q => focus_answers[q.id] = ensureQMeta("focus", q.id));
-    const closing_answers = { closing: ensureQMeta("closing", "closing") };
+    (FOCUS_QUESTIONS[focusId] || []).forEach(q => focus_answers[q.id] = ensureRoleAnswer("focus", q.id));
+
+    const closing_answers = { closing: ensureRoleAnswer("closing", "closing") };
 
     return {
       week_of: state.meta.weekOf,
       view_mode: state.meta.viewMode,
+
       org_level: state.meta.orgLevel,
       school: state.meta.orgLevel === "School" ? state.meta.school : "District",
       submitter_name: state.meta.submitterName,
       submitter_role: state.meta.submitterRole,
+
       weekly_focus_area_id: focusId,
       weekly_focus_area_title: focusTitle,
 
@@ -989,6 +1852,7 @@
 
   async function submitToSheet(){
     const payload = buildSubmissionPayload();
+
     const btn = document.getElementById("submitToSheetBtn");
     btn.disabled = true;
     btn.textContent = "Submitting...";
@@ -1002,7 +1866,6 @@
       const data = await res.json();
       if(!data.ok) throw new Error(data.error || "Submit failed.");
       alert("Submitted to Google Sheet.");
-      await refreshAnalytics();
     }catch(err){
       alert("Submit failed: " + String(err));
     }finally{
@@ -1011,60 +1874,250 @@
     }
   }
 
-  // ====== PAGE RENDER ======
+  // =========================
+  // TRENDS
+  // =========================
+  async function fetchAllRows(){
+    const res = await fetch(SCRIPT_URL, { method: "GET" });
+    const data = await res.json();
+    if(!data.ok) throw new Error(data.error || "Failed to load rows");
+    return data.rows || [];
+  }
+
+  function parseDateMaybe(d){
+    const dt = new Date(d);
+    return isNaN(dt.getTime()) ? null : dt;
+  }
+
+  function startOfMonth(dt){ return new Date(dt.getFullYear(), dt.getMonth(), 1); }
+  function startOfYear(dt){ return new Date(dt.getFullYear(), 0, 1); }
+
+  function applyTrendFilters(rows){
+    const orgLevel = document.getElementById("trendOrgLevel").value;
+    const fromStr = document.getElementById("dateFrom").value;
+    const toStr = document.getElementById("dateTo").value;
+
+    const from = fromStr ? new Date(fromStr + "T00:00:00") : null;
+    const to = toStr ? new Date(toStr + "T23:59:59") : null;
+
+    const focusId = state.meta.weeklyFocus;
+
+    return rows.filter(r => {
+      if(orgLevel !== "all" && r.org_level !== orgLevel) return false;
+      if(r.weekly_focus_area_id && r.weekly_focus_area_id !== focusId) return false;
+
+      const ts = parseDateMaybe(r.timestamp_iso) || parseDateMaybe(r.week_of);
+      if(!ts) return false;
+      if(from && ts < from) return false;
+      if(to && ts > to) return false;
+
+      return true;
+    });
+  }
+
+  function avgScore(rows){
+    if(!rows.length) return 0;
+    const sum = rows.reduce((a, r) => a + (Number(r.status_score) || 0), 0);
+    return sum / rows.length;
+  }
+
+  function scoreLabel(avg){
+    if(avg >= 2.5) return "Green";
+    if(avg >= 1.75) return "Yellow";
+    if(avg > 0) return "Red";
+    return "No data";
+  }
+
+  function computeRollups(rows){
+    const now = new Date();
+    const monthStart = startOfMonth(now);
+    const yearStart = startOfYear(now);
+
+    const weekOf = state.meta.weekOf ? new Date(state.meta.weekOf + "T00:00:00") : null;
+    let weeklyRows = [];
+    if(weekOf){
+      weeklyRows = rows.filter(r => String(r.week_of).slice(0,10) === String(state.meta.weekOf).slice(0,10));
+    } else {
+      const sevenDaysAgo = new Date(now.getTime() - 7*24*60*60*1000);
+      weeklyRows = rows.filter(r => {
+        const ts = parseDateMaybe(r.timestamp_iso);
+        return ts && ts >= sevenDaysAgo;
+      });
+    }
+
+    const monthlyRows = rows.filter(r => {
+      const ts = parseDateMaybe(r.timestamp_iso);
+      return ts && ts >= monthStart;
+    });
+
+    const ytdRows = rows.filter(r => {
+      const ts = parseDateMaybe(r.timestamp_iso);
+      return ts && ts >= yearStart;
+    });
+
+    return {
+      weekly: avgScore(weeklyRows),
+      monthly: avgScore(monthlyRows),
+      ytd: avgScore(ytdRows)
+    };
+  }
+
+  function renderRollups(rollups){
+    document.getElementById("rollupWeekly").textContent =
+      rollups.weekly ? `${rollups.weekly.toFixed(2)} (${scoreLabel(rollups.weekly)})` : "No data";
+    document.getElementById("rollupMonthly").textContent =
+      rollups.monthly ? `${rollups.monthly.toFixed(2)} (${scoreLabel(rollups.monthly)})` : "No data";
+    document.getElementById("rollupYtd").textContent =
+      rollups.ytd ? `${rollups.ytd.toFixed(2)} (${scoreLabel(rollups.ytd)})` : "No data";
+  }
+
+  function renderTrendsTable(rows){
+    const tbody = document.getElementById("trendsTableBody");
+    tbody.innerHTML = "";
+
+    setSubmissionCache(rows);
+
+    const sorted = [...rows].sort((a,b) => String(b.timestamp_iso).localeCompare(String(a.timestamp_iso)));
+    sorted.slice(0, 250).forEach(r => {
+      const tr = document.createElement("tr");
+
+      tr.innerHTML = `
+        <td>${escapeHtml(String(r.timestamp_iso || "").replace("T"," ").slice(0,16))}</td>
+        <td>${escapeHtml(r.org_level || "")}</td>
+        <td>${escapeHtml(r.school || "")}</td>
+        <td>${escapeHtml(r.weekly_focus_area_title || r.weekly_focus_area_id || "")}</td>
+        <td>${escapeHtml(String(r.status || "").toUpperCase())}</td>
+        <td>${escapeHtml(r.metric1 || "")}</td>
+        <td>${escapeHtml(r.metric2 || "")}</td>
+        <td>${escapeHtml(r.metric3 || "")}</td>
+        <td>
+          <button class="miniBtn primary" style="padding:8px 10px;">View Evidence</button>
+        </td>
+      `;
+
+      const btn = tr.querySelector("button");
+      btn.addEventListener("click", () => {
+        openEvidenceModal({
+          week_of: r.week_of,
+          school: r.school,
+          weekly_focus_area_id: r.weekly_focus_area_id,
+          weekly_focus_area_title: r.weekly_focus_area_title,
+          org_level: r.org_level,
+          status: r.status
+        });
+      });
+
+      tbody.appendChild(tr);
+    });
+  }
+
+  async function refreshTrends(){
+    try{
+      const all = await fetchAllRows();
+      const filtered = applyTrendFilters(all);
+      const rollups = computeRollups(filtered);
+      renderRollups(rollups);
+      renderTrendsTable(filtered);
+      alert("Trends refreshed.");
+    }catch(err){
+      alert("Trend refresh failed: " + String(err));
+    }
+  }
+
+  // =========================
+  // PAGE RENDER
+  // =========================
   function renderPage(){
-    weekOf.value = state.meta.weekOf;
-    viewMode.value = state.meta.viewMode;
-    orgLevel.value = state.meta.orgLevel;
-    schoolSelect.value = state.meta.school;
-    submitterRole.value = state.meta.submitterRole;
-    submitterName.value = state.meta.submitterName;
-    weeklyFocus.value = state.meta.weeklyFocus;
+    document.getElementById("weekOf").value = state.meta.weekOf;
+    document.getElementById("viewMode").value = state.meta.viewMode;
+    document.getElementById("orgLevel").value = state.meta.orgLevel;
+    document.getElementById("schoolSelect").value = state.meta.school;
+    document.getElementById("submitterRole").value = state.meta.submitterRole;
+    document.getElementById("submitterName").value = state.meta.submitterName;
+    document.getElementById("weeklyFocus").value = state.meta.weeklyFocus;
 
     setSchoolVisibility();
 
-    statusSelect.value = state.status.status;
-    metric1.value = state.status.metric1;
-    metric2.value = state.status.metric2;
-    metric3.value = state.status.metric3;
-    laneOwner.value = state.status.laneOwner;
+    document.getElementById("statusSelect").value = state.status.status;
+    document.getElementById("metric1").value = state.status.metric1;
+    document.getElementById("metric2").value = state.status.metric2;
+    document.getElementById("metric3").value = state.status.metric3;
+    document.getElementById("laneOwner").value = state.status.laneOwner;
 
     updateStatusDot();
 
     const focusId = state.meta.weeklyFocus;
     const meta = FOCUS_META[focusId];
+    document.getElementById("pageTitle").textContent = `Weekly Focus: ${meta ? meta.title : "Focus Area"}`;
+    document.getElementById("pageContext").textContent =
+      "Each question includes a School box. District structure exists for validation and support. District comment drawers only open when District adds a comment or evidence (or when Contributor is District).";
 
-    pageTitle.textContent = `Weekly Focus: ${meta ? meta.title : "Focus Area"}`;
-    pageContext.textContent =
-      "Charts are in the left sidebar for quick context while you complete the weekly executive review. Change the week or school to update School vs District charts (current week and YTD).";
+    document.getElementById("focusTitle").textContent = `Focus Area Questions: ${meta ? meta.title : ""}`;
+    document.getElementById("focusHint").textContent = meta ? meta.hint : "";
 
-    focusTitle.textContent = `Weekly Focus Questions: ${meta ? meta.title : ""}`;
-    focusHint.textContent = meta ? meta.hint : "";
+    renderQuestionList("coreQuestions", "core", CORE_FRAMING_QUESTIONS);
+    renderQuestionList("focusQuestions", "focus", FOCUS_QUESTIONS[focusId] || []);
+    renderQuestionList("closingQuestion", "closing", [CLOSING_QUESTION]);
 
-    renderQuestionList("coreQuestions", "core", CORE_FRAMING_QUESTIONS, true);
-    renderQuestionList("focusQuestions", "focus", FOCUS_QUESTIONS[focusId] || [], false);
-    renderQuestionList("closingQuestion", "closing", [CLOSING_QUESTION], false);
+    renderSummaryBar();
 
-    refreshAnalytics();
+    if(isDistrictContributor()){
+      forceExpandAllDistrictPanels();
+    }
   }
 
-  // ====== WIRES ======
+  function forceExpandAllDistrictPanels(){
+    document.querySelectorAll(".districtBody").forEach(body => body.classList.remove("collapsed"));
+    document.querySelectorAll('[data-action="toggleDistrict"]').forEach(btn => {
+      btn.textContent = "Hide District";
+    });
+
+    const focusId = state.meta.weeklyFocus;
+    const allQs = [
+      ...CORE_FRAMING_QUESTIONS.map(q => ({bucket:"core", id:q.id})),
+      ...((FOCUS_QUESTIONS[focusId] || []).map(q => ({bucket:"focus", id:q.id}))),
+      {bucket:"closing", id:"closing"}
+    ];
+    allQs.forEach(x => setDistrictExpanded(x.bucket, x.id, true));
+  }
+
+  // =========================
+  // WIRES
+  // =========================
   function wireMeta(){
     const bind = (id, fn, evt="change") => document.getElementById(id).addEventListener(evt, fn);
 
-    bind("weekOf", async () => { state.meta.weekOf = weekOf.value; saveState(); await refreshAnalytics(); });
-    bind("viewMode", () => { state.meta.viewMode = viewMode.value; saveState(); });
-    bind("orgLevel", async () => { state.meta.orgLevel = orgLevel.value; setSchoolVisibility(); saveState(); await refreshAnalytics(); });
+    bind("weekOf", () => { state.meta.weekOf = document.getElementById("weekOf").value; saveState(); });
+    bind("viewMode", () => { state.meta.viewMode = document.getElementById("viewMode").value; saveState(); });
 
-    bind("schoolSelect", async () => { state.meta.school = schoolSelect.value; saveState(); await refreshAnalytics(); });
+    bind("orgLevel", () => {
+      state.meta.orgLevel = document.getElementById("orgLevel").value;
+      setSchoolVisibility();
+      saveState();
+      renderPage();
+    });
 
-    bind("weeklyFocus", () => { state.meta.weeklyFocus = weeklyFocus.value; saveState(); renderPage(); });
+    bind("schoolSelect", () => { state.meta.school = document.getElementById("schoolSelect").value; saveState(); renderSummaryBar(); });
+    bind("submitterRole", () => { state.meta.submitterRole = document.getElementById("submitterRole").value; saveState(); });
 
-    bind("submitterRole", () => { state.meta.submitterRole = submitterRole.value; saveState(); });
+    document.getElementById("submitterName").addEventListener("input", () => {
+      state.meta.submitterName = document.getElementById("submitterName").value;
+      saveState();
+    });
 
-    submitterName.addEventListener("input", () => { state.meta.submitterName = submitterName.value; saveState(); });
+    bind("weeklyFocus", () => {
+      state.meta.weeklyFocus = document.getElementById("weeklyFocus").value;
+      saveState();
+      renderPage();
+    });
 
-    bind("statusSelect", () => { state.status.status = statusSelect.value; saveState(); updateStatusDot(); });
+    bind("statusSelect", () => {
+      state.status.status = document.getElementById("statusSelect").value;
+      saveState();
+      updateStatusDot();
+      renderSummaryBar();
+    });
+
     ["metric1","metric2","metric3","laneOwner"].forEach(id => {
       document.getElementById(id).addEventListener("input", () => {
         state.status[id === "laneOwner" ? "laneOwner" : id] = document.getElementById(id).value;
@@ -1074,10 +2127,17 @@
   }
 
   function wireButtons(){
-    saveLocalBtn.addEventListener("click", () => { saveState(); alert("Saved locally."); });
-    printBtn.addEventListener("click", () => { saveState(); window.print(); });
+    document.getElementById("saveLocalBtn").addEventListener("click", () => {
+      saveState();
+      alert("Saved locally.");
+    });
 
-    exportBtn.addEventListener("click", () => {
+    document.getElementById("printBtn").addEventListener("click", () => {
+      saveState();
+      window.print();
+    });
+
+    document.getElementById("exportBtn").addEventListener("click", () => {
       saveState();
       const blob = new Blob([JSON.stringify(state, null, 2)], { type: "application/json" });
       const url = URL.createObjectURL(blob);
@@ -1090,7 +2150,7 @@
       URL.revokeObjectURL(url);
     });
 
-    importFile.addEventListener("change", async (e) => {
+    document.getElementById("importFile").addEventListener("change", async (e) => {
       const file = e.target.files && e.target.files[0];
       e.target.value = "";
       if(!file) return;
@@ -1098,6 +2158,7 @@
         const text = await file.text();
         const parsed = JSON.parse(text);
         state = { ...defaultState(), ...parsed };
+        districtExpandMap = state._districtExpandMap || {};
         saveState();
         renderPage();
         alert("Imported.");
@@ -1106,18 +2167,21 @@
       }
     });
 
-    resetBtn.addEventListener("click", () => {
+    document.getElementById("resetBtn").addEventListener("click", () => {
       if(!confirm("Reset everything to defaults for this device?")) return;
       state = defaultState();
+      districtExpandMap = {};
       saveState();
       renderPage();
     });
 
-    submitToSheetBtn.addEventListener("click", submitToSheet);
-    refreshAnalyticsBtn.addEventListener("click", refreshAnalytics);
+    document.getElementById("submitToSheetBtn").addEventListener("click", submitToSheet);
+    document.getElementById("refreshTrendsBtn").addEventListener("click", refreshTrends);
   }
 
-  // ====== INIT ======
+  // =========================
+  // INIT
+  // =========================
   wireMeta();
   wireButtons();
   renderPage();
