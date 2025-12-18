@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>FCS Weekly Executive Review (Collaborative)</title>
+  <title>FCS Weekly Executive Review</title>
 
   <!-- Charts (animated) -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
@@ -25,13 +25,6 @@
       --yellow:#f59e0b;
       --red:#dc2626;
       --blue:#2563eb;
-
-      /* role colors */
-      --school-bg: rgba(219,213,155,0.22);
-      --school-border: rgba(0,0,0,0.16);
-
-      --district-bg: rgba(37,99,235,0.10);
-      --district-border: rgba(37,99,235,0.22);
     }
 
     *{ box-sizing:border-box; }
@@ -48,6 +41,7 @@
       min-height:100vh;
     }
 
+    /* LEFT SIDEBAR */
     .sidebar{
       background: var(--white);
       border-right: var(--border);
@@ -58,7 +52,6 @@
       overflow:auto;
     }
 
-    /* Logo + Brand */
     .brandLogoWrap{
       display:flex;
       align-items:center;
@@ -139,26 +132,18 @@
     .btn.danger{ background: var(--red); color:#fff; }
     .btn:disabled{ opacity:.55; cursor:not-allowed; transform:none; box-shadow:none; }
 
+    .footerNote{
+      margin-top:12px;
+      color: var(--gray);
+      font-size:11px;
+      line-height:1.35;
+    }
+
+    /* MAIN CONTENT */
     .content{
       padding:22px 22px 44px 22px;
       overflow:auto;
     }
-
-    /* Analytics layout */
-    .dash{
-      display:grid;
-      grid-template-columns: 320px 1fr 320px;
-      gap:14px;
-      align-items:start;
-    }
-    .rail{
-      position: sticky;
-      top: 14px;
-      height: calc(100vh - 28px);
-      overflow:auto;
-      padding-bottom: 20px;
-    }
-    .center{ min-width:0; }
 
     .topbar{
       display:flex;
@@ -196,33 +181,6 @@
     .card h3{ margin:0; font-size:14px; letter-spacing:0.2px; }
     .muted{ color: var(--gray); font-size:12px; line-height:1.35; }
 
-    .summaryBar{
-      display:flex;
-      flex-wrap:wrap;
-      gap:10px;
-      margin-top:10px;
-    }
-    .chip{
-      border: var(--border);
-      border-radius:999px;
-      padding:8px 10px;
-      background:#fff;
-      font-size:12px;
-      display:flex;
-      align-items:center;
-      gap:8px;
-      white-space:nowrap;
-    }
-    .statusDot{
-      width:10px; height:10px; border-radius:99px;
-      background: rgba(107,114,128,.5);
-      box-shadow: 0 0 0 3px rgba(107,114,128,.12);
-      flex:0 0 auto;
-    }
-    .statusDot.green{ background: var(--green); box-shadow: 0 0 0 3px rgba(22,163,74,.14); }
-    .statusDot.yellow{ background: var(--yellow); box-shadow: 0 0 0 3px rgba(245,158,11,.16); }
-    .statusDot.red{ background: var(--red); box-shadow: 0 0 0 3px rgba(220,38,38,.14); }
-
     .pill{
       font-size:11px;
       padding:5px 10px;
@@ -232,29 +190,111 @@
       white-space:nowrap;
     }
 
-    .laneRow{
-      display:grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap:12px;
+    /* COLLAPSIBLE ANALYTICS (SIDEBAR) */
+    details.analytics{
+      border: var(--border);
+      border-radius: 18px;
+      background:#fff;
+      box-shadow: var(--shadow-soft);
+      overflow:hidden;
       margin-top:12px;
     }
+    details.analytics summary{
+      list-style:none;
+      cursor:pointer;
+      padding:12px 12px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      user-select:none;
+    }
+    details.analytics summary::-webkit-details-marker{ display:none; }
 
+    .analyticsTitle{
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+    }
+    .analyticsTitle .t{ font-weight:900; font-size:12px; letter-spacing:0.2px; }
+    .analyticsTitle .d{ color:var(--gray); font-size:11px; line-height:1.25; }
+    .chev{
+      width:28px; height:28px;
+      border-radius: 10px;
+      border: var(--border);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight:900;
+      background:#fff;
+      transition: transform .12s ease;
+      font-size:12px;
+    }
+    details.analytics[open] .chev{ transform: rotate(180deg); }
+
+    .analyticsBody{
+      padding: 0 12px 12px 12px;
+    }
+    .chartsGrid{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:10px;
+      margin-top: 6px;
+    }
+    .chartCard{
+      border: var(--border);
+      border-radius: 16px;
+      padding: 10px;
+      background: rgba(245,245,247,.55);
+    }
+    .chartCard .label{
+      font-weight:900;
+      font-size:11px;
+      margin-bottom:4px;
+    }
+    .chartCard .hint{
+      color: var(--gray);
+      font-size:10px;
+      margin-bottom:6px;
+      line-height:1.25;
+    }
+    /* tighter charts in sidebar */
+    canvas{ width:100% !important; height:160px !important; }
+
+    @media (max-width: 980px){
+      .app{ grid-template-columns: 1fr; }
+      .sidebar{ position:relative; height:auto; }
+      canvas{ height:190px !important; }
+    }
+
+    /* STATUS DOTS */
+    .statusDot{
+      width:10px; height:10px; border-radius:99px;
+      background: rgba(107,114,128,.5);
+      box-shadow: 0 0 0 3px rgba(107,114,128,.12);
+      flex:0 0 auto;
+      display:inline-block;
+      vertical-align:middle;
+      margin-right:8px;
+    }
+    .statusDot.green{ background: var(--green); box-shadow: 0 0 0 3px rgba(22,163,74,.14); }
+    .statusDot.yellow{ background: var(--yellow); box-shadow: 0 0 0 3px rgba(245,158,11,.16); }
+    .statusDot.red{ background: var(--red); box-shadow: 0 0 0 3px rgba(220,38,38,.14); }
+
+    /* QUESTIONS */
     .qList{ display:flex; flex-direction:column; gap:10px; }
-
     .qItem{
       border: var(--border);
       border-radius: 16px;
       padding:12px;
       background: rgba(245,245,247,.6);
       transition: transform .12s ease, box-shadow .12s ease, background .12s ease;
-      position:relative;
     }
     .qItem:hover{
       transform: translateY(-2px);
       box-shadow: var(--shadow-soft);
       background: rgba(219,213,155,.18);
     }
-
     .qTop{
       display:flex;
       align-items:flex-start;
@@ -264,21 +304,9 @@
     }
     .qPrompt{
       font-size:13px;
-      font-weight:700;
+      font-weight:800;
       line-height:1.35;
     }
-
-    .checkWrap{
-      display:flex;
-      align-items:center;
-      gap:8px;
-      font-size:12px;
-      color: var(--gray);
-      user-select:none;
-      cursor:pointer;
-    }
-    .checkWrap input{ width:16px; height:16px; }
-
     .tip{
       font-size:11px;
       color: var(--gray);
@@ -293,318 +321,24 @@
       padding:8px 10px;
       border: var(--border);
       background:#fff;
-      font-weight:700;
+      font-weight:900;
       font-size:12px;
       width:auto;
       min-width: 110px;
     }
 
-    /* Two-role layout */
-    .roleStack{
+    .qAnswer{ width:100%; min-height: 110px; }
+
+    .inline{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+
+    .laneRow{
       display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap:10px;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap:12px;
       margin-top:10px;
     }
-    .rolePanel{
-      border-radius: 16px;
-      padding:10px;
-      border: 1px solid rgba(0,0,0,0.12);
-      background: #fff;
-      position: relative;
-      overflow: hidden;
-    }
-    .roleHeader{
-      display:flex;
-      align-items:flex-start;
-      justify-content:space-between;
-      gap:10px;
-      margin-bottom:8px;
-    }
-    .roleTitle{
-      font-weight:900;
-      font-size:12px;
-      letter-spacing:0.2px;
-    }
-    .roleBadge{
-      font-size:10px;
-      font-weight:900;
-      padding:6px 10px;
-      border-radius: 999px;
-      border: 1px solid rgba(0,0,0,0.10);
-      background:#fff;
-      white-space:nowrap;
-    }
-
-    .rolePanel.school{
-      background: var(--school-bg);
-      border-color: var(--school-border);
-    }
-    .rolePanel.district{
-      background: var(--district-bg);
-      border-color: var(--district-border);
-    }
-    .rolePanel.school .roleBadge{
-      background: rgba(219,213,155,0.45);
-    }
-    .rolePanel.district .roleBadge{
-      background: rgba(37,99,235,0.14);
-      border-color: rgba(37,99,235,0.22);
-    }
-
-    /* District auto-collapse */
-    .districtWrap{ margin-top: 8px; }
-    .districtBanner{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-      padding:10px 12px;
-      border-radius: 14px;
-      border: 1px dashed rgba(37,99,235,0.35);
-      background: rgba(37,99,235,0.08);
-      margin-bottom: 10px;
-    }
-    .districtBanner .left{
-      display:flex;
-      flex-direction:column;
-      gap:2px;
-    }
-    .districtBanner .title{
-      font-weight:900;
-      font-size:12px;
-      color:#111;
-      letter-spacing:0.2px;
-    }
-    .districtBanner .desc{
-      font-size:11px;
-      color: var(--gray);
-      line-height:1.25;
-    }
-    .toggleLink{
-      border: 1px solid rgba(37,99,235,0.25);
-      background:#fff;
-      border-radius: 999px;
-      padding:8px 10px;
-      font-weight:900;
-      font-size:11px;
-      cursor:pointer;
-      white-space:nowrap;
-      transition: transform .12s ease, box-shadow .12s ease;
-    }
-    .toggleLink:hover{ transform: translateY(-1px); box-shadow: var(--shadow-soft); }
-
-    .districtBody.collapsed{ display:none; }
-
-    .qAnswer{
-      width:100%;
-      min-height: 110px;
-    }
-
-    .qActions{
-      display:flex;
-      flex-wrap:wrap;
-      gap:10px;
-      margin-top:10px;
-      align-items:center;
-    }
-
-    .miniBtn{
-      border: var(--border);
-      background:#fff;
-      border-radius: 14px;
-      padding:8px 10px;
-      cursor:pointer;
-      font-weight:700;
-      font-size:12px;
-      transition: transform .12s ease, box-shadow .12s ease;
-    }
-    .miniBtn:hover{ transform: translateY(-1px); box-shadow: var(--shadow-soft); }
-    .miniBtn.primary{
-      background: var(--gold);
-      border-color: rgba(0,0,0,0.15);
-    }
-
-    .artifactList{
-      margin-top:10px;
-      display:flex;
-      flex-direction:column;
-      gap:8px;
-    }
-    .artifact{
-      border: var(--border);
-      background:#fff;
-      border-radius: 14px;
-      padding:10px;
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:10px;
-      font-size:12px;
-    }
-    .artifact a{ color: var(--blue); text-decoration:none; }
-    .artifact a:hover{ text-decoration:underline; }
-    .artifact .right{
-      display:flex;
-      gap:8px;
-      align-items:center;
-      flex:0 0 auto;
-    }
-
-    .inline{
-      display:flex;
-      gap:10px;
-      align-items:center;
-      flex-wrap:wrap;
-    }
-
-    .tableWrap{
-      margin-top:10px;
-      overflow:auto;
-      border: var(--border);
-      border-radius: 16px;
-    }
-    table{
-      width:100%;
-      border-collapse:collapse;
-      font-size:12px;
-    }
-    th, td{
-      text-align:left;
-      padding:10px;
-      border-bottom: var(--border);
-      vertical-align:top;
-    }
-    thead{ background: rgba(245,245,247,.9); }
-
-    .footerNote{
-      margin-top:12px;
-      color: var(--gray);
-      font-size:11px;
-      line-height:1.35;
-    }
-
-    /* Chart canvases */
-    canvas{
-      width: 100% !important;
-      height: 240px !important;
-    }
-    #barByAreaYtd{
-      height: 320px !important;
-    }
-
-    @media (max-width: 1240px){
-      .dash{ grid-template-columns: 1fr; }
-      .rail{ position:relative; height:auto; top:auto; }
-    }
-
     @media (max-width: 980px){
-      .app{ grid-template-columns: 1fr; }
-      .sidebar{ position:relative; height:auto; }
       .laneRow{ grid-template-columns: 1fr; }
-      .roleStack{ grid-template-columns: 1fr; }
-    }
-
-    @media print{
-      .sidebar, .tools, .footerNote, .miniBtn, .toggleLink{ display:none !important; }
-      body{ background:#fff; }
-      .card{ box-shadow:none; }
-      .districtBody.collapsed{ display:block !important; }
-      .rail{ display:none !important; }
-      .dash{ grid-template-columns: 1fr !important; }
-    }
-
-    /* Evidence Modal */
-    .modal.hidden { display: none; }
-    .modal { position: fixed; inset: 0; z-index: 9999; }
-
-    .modal-backdrop {
-      position: absolute; inset: 0;
-      background: rgba(0,0,0,0.45);
-    }
-
-    .modal-card{
-      position: relative;
-      width: min(920px, calc(100vw - 32px));
-      max-height: calc(100vh - 64px);
-      overflow: auto;
-      margin: 32px auto;
-      background: #fff;
-      border-radius: 18px;
-      box-shadow: 0 18px 45px rgba(0,0,0,0.22);
-      border: 1px solid rgba(0,0,0,0.12);
-    }
-
-    .modal-header{
-      display:flex;
-      align-items:flex-start;
-      justify-content:space-between;
-      gap: 16px;
-      padding: 18px 18px 12px 18px;
-      border-bottom: 1px solid rgba(0,0,0,0.10);
-    }
-
-    .modal-title{ font-size: 18px; font-weight: 800; color:#111; }
-    .modal-subtitle{ font-size: 13px; color:#6b7280; margin-top: 2px; }
-
-    .modal-body{ padding: 14px 18px 18px 18px; }
-
-    .evidence-summary{
-      display:flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-bottom: 12px;
-    }
-
-    .pillMini{
-      display:inline-flex;
-      align-items:center;
-      gap: 8px;
-      padding: 8px 10px;
-      border-radius: 999px;
-      background: #f5f5f7;
-      border: 1px solid rgba(0,0,0,0.10);
-      font-size: 12px;
-      color: #111;
-    }
-
-    .evidence-list{
-      display:flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .evidence-item{
-      display:flex;
-      align-items:flex-start;
-      justify-content: space-between;
-      gap: 12px;
-      padding: 12px;
-      border-radius: 14px;
-      border: 1px solid rgba(0,0,0,0.12);
-      background: #fff;
-    }
-
-    .evidence-item .meta{
-      display:flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-
-    .evidence-item .title{
-      font-weight: 800;
-      color:#111;
-      font-size: 14px;
-    }
-
-    .evidence-item .hint{
-      color:#6b7280;
-      font-size: 12px;
-    }
-
-    .evidence-item a{
-      white-space: nowrap;
-      text-decoration: none;
     }
   </style>
 </head>
@@ -612,16 +346,13 @@
 <body>
   <div class="app">
     <aside class="sidebar">
-      <!-- Logo inserted above the brand rectangle -->
       <div class="brandLogoWrap">
         <img class="brandLogo" src="https://i.postimg.cc/JhPCnwDT/Compass_Logo.png" alt="Compass Logo">
       </div>
 
       <div class="brand">
         <h1>FCS Weekly Executive Review</h1>
-        <div class="sub">
-          Collaborative weekly discipline. Same questions. Better answers. Evidence first.
-        </div>
+        <div class="sub">Same questions. Better answers. Evidence first.</div>
       </div>
 
       <div class="meta">
@@ -656,7 +387,7 @@
           </select>
         </div>
 
-        <div class="field span2">
+        <div class="field" style="grid-column: 1 / span 2;">
           <label for="weeklyFocus">Weekly focus area</label>
           <select id="weeklyFocus">
             <option value="vibrant_learning">Vibrant Learning (Real-World, Interdisciplinary Learning)</option>
@@ -698,266 +429,154 @@
 
       <div class="tools">
         <button class="btn" id="submitToSheetBtn">Submit to Google Sheet</button>
-        <button class="btn secondary" id="refreshTrendsBtn">Refresh trends</button>
         <button class="btn secondary" id="refreshAnalyticsBtn">Refresh analytics</button>
       </div>
 
+      <!-- MOVED HERE: Collapsible Analytics under left submit buttons -->
+      <details class="analytics" id="analyticsPanel" open>
+        <summary>
+          <div class="analyticsTitle">
+            <div class="t">School vs District Analytics</div>
+            <div class="d">Current week and YTD. Updates when week or school changes.</div>
+          </div>
+          <div class="chev">^</div>
+        </summary>
+
+        <div class="analyticsBody">
+          <div class="chartsGrid">
+            <div class="chartCard">
+              <div class="label">Current week status mix</div>
+              <div class="hint">School and District counts for Green, Yellow, Red.</div>
+              <canvas id="pieCurrent"></canvas>
+            </div>
+
+            <div class="chartCard">
+              <div class="label">YTD status mix</div>
+              <div class="hint">School and District counts for Green, Yellow, Red.</div>
+              <canvas id="pieYtd"></canvas>
+            </div>
+
+            <div class="chartCard">
+              <div class="label">Current week average score</div>
+              <div class="hint">Green=3, Yellow=2, Red=1. School vs District.</div>
+              <canvas id="barCurrent"></canvas>
+            </div>
+
+            <div class="chartCard">
+              <div class="label">YTD average score</div>
+              <div class="hint">Green=3, Yellow=2, Red=1. School vs District.</div>
+              <canvas id="barYtd"></canvas>
+            </div>
+          </div>
+
+          <div class="footerNote" style="margin-top:10px;">
+            Blank or near-zero charts usually mean no submissions yet for that slice.
+          </div>
+        </div>
+      </details>
+
       <div class="footerNote">
-        Rule: Yellow or Red requires a clear plan, owner, due date, and help needed.
+        Yellow or Red requires a clear plan, owner, due date, and help needed.
       </div>
     </aside>
 
     <main class="content">
-      <div class="dash">
-        <!-- LEFT RAIL -->
-        <aside class="rail">
-          <div class="card">
-            <div class="cardHeader">
+      <div class="topbar">
+        <div>
+          <h2 id="pageTitle">Loading...</h2>
+          <div class="context" id="pageContext"></div>
+        </div>
+
+        <div style="min-width:280px;">
+          <div class="card" style="padding:14px;">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:12px;">
               <div>
-                <h3>School vs District</h3>
-                <div class="muted">Current week and YTD, all focus areas.</div>
+                <div style="font-weight:900; font-size:13px;">Status</div>
+                <div class="muted">Must match evidence.</div>
               </div>
-              <div class="pill">Animated</div>
+              <div class="pill" id="completionPill">0% complete</div>
             </div>
 
-            <div style="display:flex; flex-direction:column; gap:12px;">
-              <div>
-                <div class="muted" style="margin-bottom:6px;">Current week status mix</div>
-                <canvas id="pieCurrent"></canvas>
-              </div>
-              <div>
-                <div class="muted" style="margin-bottom:6px;">YTD status mix</div>
-                <canvas id="pieYtd"></canvas>
-              </div>
+            <div class="inline" style="margin-top:10px;">
+              <span class="statusDot" id="statusDot"></span>
+              <select id="statusSelect">
+                <option value="green">Green (on track)</option>
+                <option value="yellow">Yellow (at risk, plan in place)</option>
+                <option value="red">Red (off track, need help)</option>
+              </select>
+            </div>
 
-              <div class="footerNote" style="margin-top:4px;">
-                These charts pull School submissions for the selected school, and District submissions for the same week and year-to-date.
+            <div class="laneRow">
+              <div>
+                <label>Key metric 1</label>
+                <input id="metric1" type="text" placeholder="Example: % evidence updated"/>
               </div>
+              <div>
+                <label>Key metric 2</label>
+                <input id="metric2" type="text" placeholder="Example: BPA calibration done"/>
+              </div>
+              <div>
+                <label>Key metric 3</label>
+                <input id="metric3" type="text" placeholder="Example: WAC artifacts published"/>
+              </div>
+            </div>
+
+            <div style="margin-top:10px;">
+              <label>Lane owner</label>
+              <input id="laneOwner" type="text" placeholder="Name"/>
             </div>
           </div>
-        </aside>
+        </div>
+      </div>
 
-        <!-- CENTER -->
-        <section class="center">
-          <div class="topbar">
+      <div class="grid">
+        <section class="card">
+          <div class="cardHeader">
             <div>
-              <h2 id="pageTitle">Loading...</h2>
-              <div class="context" id="pageContext"></div>
-              <div class="summaryBar" id="summaryBar"></div>
+              <h3>Core Framing Questions (Every Area, Every Week)</h3>
+              <div class="muted">Added RYG per question so leaders can see where clarity is strong or weak.</div>
             </div>
-
-            <div style="min-width:280px;">
-              <div class="card" style="padding:14px;">
-                <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:12px;">
-                  <div>
-                    <div style="font-weight:800; font-size:13px;">Status</div>
-                    <div class="muted">Must match evidence.</div>
-                  </div>
-                  <div class="pill" id="completionPill">0% complete</div>
-                </div>
-
-                <div class="inline" style="margin-top:10px;">
-                  <span class="statusDot" id="statusDot"></span>
-                  <select id="statusSelect">
-                    <option value="green">Green (on track)</option>
-                    <option value="yellow">Yellow (at risk, plan in place)</option>
-                    <option value="red">Red (off track, need help)</option>
-                  </select>
-                </div>
-
-                <div class="laneRow" style="margin-top:10px;">
-                  <div>
-                    <label>Key metric 1</label>
-                    <input id="metric1" type="text" placeholder="Example: % evidence updated"/>
-                  </div>
-                  <div>
-                    <label>Key metric 2</label>
-                    <input id="metric2" type="text" placeholder="Example: BPA calibration done"/>
-                  </div>
-                  <div>
-                    <label>Key metric 3</label>
-                    <input id="metric3" type="text" placeholder="Example: WAC artifacts published"/>
-                  </div>
-                </div>
-
-                <div style="margin-top:10px;">
-                  <label>Lane owner</label>
-                  <input id="laneOwner" type="text" placeholder="Name"/>
-                </div>
-
-                <div class="muted" style="margin-top:10px;">
-                  Tip: District panels auto-collapse for School contributors. Use "Show District" when needed.
-                </div>
-              </div>
-            </div>
+            <div class="pill" id="coreDonePill">0/0 answered</div>
           </div>
-
-          <div class="grid">
-            <section class="card">
-              <div class="cardHeader">
-                <div>
-                  <h3>Core Framing Questions (Every Area, Every Week)</h3>
-                  <div class="muted">These never change. Clarity is the goal. Evidence is the requirement.</div>
-                </div>
-                <div class="pill" id="coreDonePill">0/0 answered</div>
-              </div>
-              <div class="qList" id="coreQuestions"></div>
-            </section>
-
-            <section class="card">
-              <div class="cardHeader">
-                <div>
-                  <h3 id="focusTitle">Focus Area Questions</h3>
-                  <div class="muted" id="focusHint"></div>
-                </div>
-                <div class="pill" id="focusDonePill">0/0 answered</div>
-              </div>
-              <div class="qList" id="focusQuestions"></div>
-            </section>
-
-            <section class="card">
-              <div class="cardHeader">
-                <div>
-                  <h3>Closing Mulally Question (Always Last)</h3>
-                  <div class="muted">If this is fuzzy, the system is not aligned yet.</div>
-                </div>
-                <div class="pill" id="closeDonePill">Not answered</div>
-              </div>
-              <div class="qList" id="closingQuestion"></div>
-            </section>
-
-            <section class="card">
-              <div class="cardHeader">
-                <div>
-                  <h3>Trends and rollups (from Google Sheet)</h3>
-                  <div class="muted">Filter by school, focus area, org level, and date range.</div>
-                </div>
-                <div class="pill">Green=3, Yellow=2, Red=1</div>
-              </div>
-
-              <div class="laneRow">
-                <div>
-                  <label>Trends: Org level</label>
-                  <select id="trendOrgLevel">
-                    <option value="all">All</option>
-                    <option value="School">School</option>
-                    <option value="District">District</option>
-                  </select>
-                </div>
-                <div>
-                  <label>Trends: From</label>
-                  <input id="dateFrom" type="date"/>
-                </div>
-                <div>
-                  <label>Trends: To</label>
-                  <input id="dateTo" type="date"/>
-                </div>
-              </div>
-
-              <div class="laneRow" style="margin-top:10px;">
-                <div class="chip"><span class="statusDot"></span><span>Weekly: <b id="rollupWeekly">No data</b></span></div>
-                <div class="chip"><span class="statusDot"></span><span>Monthly: <b id="rollupMonthly">No data</b></span></div>
-                <div class="chip"><span class="statusDot"></span><span>YTD: <b id="rollupYtd">No data</b></span></div>
-              </div>
-
-              <div class="tableWrap">
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Time</th>
-                      <th>Org</th>
-                      <th>School</th>
-                      <th>Focus Area</th>
-                      <th>Status</th>
-                      <th>Metric 1</th>
-                      <th>Metric 2</th>
-                      <th>Metric 3</th>
-                      <th>Evidence</th>
-                    </tr>
-                  </thead>
-                  <tbody id="trendsTableBody"></tbody>
-                </table>
-              </div>
-            </section>
-          </div>
+          <div class="qList" id="coreQuestions"></div>
         </section>
 
-        <!-- RIGHT RAIL -->
-        <aside class="rail">
-          <div class="card">
-            <div class="cardHeader">
-              <div>
-                <h3>Scores</h3>
-                <div class="muted">Green=3, Yellow=2, Red=1</div>
-              </div>
-              <div class="pill">All areas</div>
+        <section class="card">
+          <div class="cardHeader">
+            <div>
+              <h3 id="focusTitle">Weekly Focus Questions</h3>
+              <div class="muted" id="focusHint"></div>
             </div>
-
-            <div style="display:flex; flex-direction:column; gap:14px;">
-              <div>
-                <div class="muted" style="margin-bottom:6px;">Current week avg score (All areas)</div>
-                <canvas id="barCurrent"></canvas>
-              </div>
-              <div>
-                <div class="muted" style="margin-bottom:6px;">YTD avg score (All areas)</div>
-                <canvas id="barYtd"></canvas>
-              </div>
-              <div>
-                <div class="muted" style="margin-bottom:6px;">By focus area (YTD avg)</div>
-                <canvas id="barByAreaYtd"></canvas>
-              </div>
-
-              <div class="footerNote" style="margin-top:4px;">
-                If a bar is 0, there were no submissions matching the filter for that slice.
-              </div>
-            </div>
+            <div class="pill" id="focusDonePill">0/0 answered</div>
           </div>
-        </aside>
+          <div class="qList" id="focusQuestions"></div>
+        </section>
+
+        <section class="card">
+          <div class="cardHeader">
+            <div>
+              <h3>Closing Question</h3>
+              <div class="muted">Always last.</div>
+            </div>
+            <div class="pill" id="closeDonePill">Not answered</div>
+          </div>
+          <div class="qList" id="closingQuestion"></div>
+        </section>
       </div>
     </main>
   </div>
 
-  <!-- Evidence Modal -->
-  <div id="evidenceModal" class="modal hidden" aria-hidden="true">
-    <div class="modal-backdrop" onclick="closeEvidenceModal()"></div>
-
-    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="evidenceTitle">
-      <div class="modal-header">
-        <div>
-          <div id="evidenceTitle" class="modal-title">Evidence</div>
-          <div id="evidenceSubtitle" class="modal-subtitle"></div>
-        </div>
-        <button class="btn secondary" onclick="closeEvidenceModal()">Close</button>
-      </div>
-
-      <div class="modal-body">
-        <div id="evidenceSummary" class="evidence-summary"></div>
-        <div id="evidenceList" class="evidence-list"></div>
-        <div class="footerNote" style="margin-top:12px;">
-          Note: This list shows links saved in the submission (uploaded artifacts and pasted links). If a link is missing, it was not attached to the submission.
-        </div>
-      </div>
-    </div>
-  </div>
-
 <script>
-  // =========================
-  // CONFIG
-  // =========================
+  // ====== CONFIG ======
   const SCRIPT_URL = "https://script.google.com/a/macros/fleming.kyschools.us/s/AKfycbzNVN8AiQzPBzE1CMdDzy9bWGzlq9_p4qALlzwuEDkUxIzazgIHK70pS61nswTX0T_B6w/exec";
-  const STORAGE_KEY = "fcs_weekly_exec_review_collab_v4_analytics_ryg";
+  const STORAGE_KEY = "fcs_weekly_exec_review_clean_sidebar_analytics_v1";
 
-  // If true: District panels start collapsed unless Contributor=District
-  const AUTO_COLLAPSE_DISTRICT_FOR_SCHOOL = true;
-
-  // =========================
-  // QUESTIONS
-  // =========================
+  // ====== QUESTIONS ======
   const CORE_FRAMING_QUESTIONS = [
     { id:"plan", prompt:"What is the plan for this area of focus? If the plan cannot be stated in two to three sentences, it is not clear enough yet.", tip:"Write it as a tight plan statement. If it is long, it is not clear yet." },
     { id:"happened", prompt:"What actually happened this week? Not what was intended, not what is usually true. What evidence shows what students and classrooms experienced.", tip:"Name specific evidence. Student work, walkthrough notes, BPI artifacts, BPA products, WAC samples." },
     { id:"status_why", prompt:"Are we on track, at risk, or off track? Why? Status must be tied directly to observable evidence, not perception.", tip:"If you cannot cite evidence, stay Yellow until the evidence is real." },
-    { id:"threat", prompt:"What is the one thing that most threatens progress right now? This keeps the conversation from drifting into laundry lists.", tip:"One thing. Not five." },
+    { id:"threat", prompt:"What is the one thing that most threatens progress right now?", tip:"One thing. Not five." },
     { id:"address", prompt:"What is the plan to address it? Who owns it, what is changing next week, and how will we know it worked.", tip:"Owner + next step + success signal." },
     { id:"help", prompt:"Where do you need help? Leaders are expected to ask for help early, not after failure.", tip:"Be explicit: decision needed, support needed, barrier removal." }
   ];
@@ -969,78 +588,57 @@
   };
 
   const FOCUS_META = {
-    vibrant_learning: { title:"Vibrant Learning (Real-World, Interdisciplinary Learning)", hint:"Mulally would not ask if learning was 'good'. He would ask if it was visible and aligned." },
-    priority_standards: { title:"Priority Standards and Proficiency Scales", hint:"This mirrors Ford’s obsession with alignment to the plan." },
-    bim_workshop: { title:"BRIDGE Instructional Model (Workshop Model)", hint:"Mulally cared deeply about process discipline. This is your process." },
-    bpa: { title:"BRIDGE Performance Assessments (BPAs)", hint:"Ford’s BPRs always asked if results matched intent." },
-    bpi_websites: { title:"BRIDGE Performance Indicators and Student BPI Websites", hint:"This is where the visibility principle maps perfectly to your work." },
-    wac: { title:"Writing Across the Content (WAC)", hint:"Mulally would ask whether communication improved decision-making. Same here." },
-    compelling_evidence: { title:"Compelling Evidence and Local Accountability", hint:"This keeps the system honest." }
+    vibrant_learning: { title:"Vibrant Learning (Real-World, Interdisciplinary Learning)", hint:"Visibility beats vibes. Name what students did and what they produced." },
+    priority_standards: { title:"Priority Standards and Proficiency Scales", hint:"If standards are not visible, alignment is not real." },
+    bim_workshop: { title:"BRIDGE Instructional Model (Workshop Model)", hint:"Process discipline matters. Show what was done and what improved." },
+    bpa: { title:"BRIDGE Performance Assessments (BPAs)", hint:"Results must match intent. Show products and rubric evidence." },
+    bpi_websites: { title:"BRIDGE Performance Indicators and Student BPI Websites", hint:"Evidence has to be published and current, or it cannot function as accountability." },
+    wac: { title:"Writing Across the Content (WAC)", hint:"Writing should deepen thinking, not just document work." },
+    compelling_evidence: { title:"Compelling Evidence and Local Accountability", hint:"Conflicts between data and artifacts are signals, not problems to hide." }
   };
 
   const FOCUS_QUESTIONS = {
     vibrant_learning: [
       { id:"rw_context", prompt:"Where did students apply learning to a real-world context this week?", tip:"Name the real context and the student product." },
       { id:"thinking_evidence", prompt:"What evidence shows students were thinking, not just completing tasks?", tip:"Look for reasoning, explanation, revision, transfer." },
-      { id:"bright_spots", prompt:"Which classrooms best represent our vision of vibrant learning right now?", tip:"Name the bright spots and what we can learn from them." },
-      { id:"transactional", prompt:"Where is learning still too transactional, and why?", tip:"Name the condition, not the person." },
-      { id:"adjustment", prompt:"What is one adjustment you are making next week to increase relevance or depth?", tip:"One adjustment, then watch for one signal." }
+      { id:"bright_spots", prompt:"Which classrooms best represent our vision of vibrant learning right now?", tip:"Name the bright spots and what we can learn from them." }
     ],
     priority_standards: [
       { id:"visible_standards", prompt:"Which priority standards were most visible in classrooms this week?", tip:"Name 1-3 standards and where they showed up." },
       { id:"mastery_evidence", prompt:"How do we know students were working toward mastery of those standards?", tip:"Cite evidence. What did students do that proves it." },
-      { id:"scale_clarity", prompt:"Where are proficiency scales helping clarify expectations for students?", tip:"Where did students self-assess or reference the scale." },
-      { id:"scale_gap", prompt:"Where are they still not shaping instruction or assessment?", tip:"Name the gap and why it is happening." },
       { id:"student_explain", prompt:"What evidence shows students can explain where they are on the scale?", tip:"Student explanation is the signal, not teacher opinion." }
     ],
     bim_workshop: [
       { id:"model_visible", prompt:"Where did the Workshop Model clearly drive learning this week?", tip:"Point to mini-lesson, workshop, conferring, debrief evidence." },
       { id:"mini_lesson_align", prompt:"What evidence shows mini-lessons were aligned to priority standards?", tip:"Alignment is visible in target, task, and feedback." },
-      { id:"workshop_use", prompt:"How did workshop time allow students to practice, apply, or create?", tip:"Practice is not just worksheets. Look for application." },
-      { id:"breakdown", prompt:"Where did the model break down, and what caused it?", tip:"Name the condition and the cause so it can be fixed." },
       { id:"fidelity_adjust", prompt:"What is one concrete adjustment being made to strengthen fidelity?", tip:"One change next week, and one signal you will check." }
     ],
     bpa: [
       { id:"in_progress", prompt:"Which BPAs were in progress or completed this week?", tip:"Name the BPA(s) and where they are in the process." },
-      { id:"multiple_ways", prompt:"How do these assessments allow students to demonstrate learning in multiple ways?", tip:"Show choice, pathways, modalities, durable skills." },
       { id:"alignment", prompt:"What evidence shows alignment to standards and durable skills?", tip:"Rubric and student products must match the standards." },
-      { id:"project_vs_assess", prompt:"Where are BPAs still feeling like 'projects' instead of assessments?", tip:"Look for unclear criteria, weak alignment, or missing feedback loops." },
       { id:"support_needed", prompt:"What support is needed to strengthen quality or consistency?", tip:"Calibration, exemplars, rubric tuning, coaching, time." }
     ],
     bpi_websites: [
       { id:"new_evidence", prompt:"What new evidence was added to student BPI websites this week?", tip:"Name what was added and what it shows." },
       { id:"growth_over_time", prompt:"How does that evidence show growth, mastery, or readiness over time?", tip:"Compare over time, not a single artifact." },
-      { id:"storytelling", prompt:"Where are students telling their learning story clearly?", tip:"Student voice matters. Look for clarity and reflection." },
-      { id:"thin_evidence", prompt:"Where is evidence thin, unclear, or missing?", tip:"Name the evidence gaps so next steps are obvious." },
-      { id:"quality_plan", prompt:"What is the plan to improve evidence quality next week?", tip:"What will be uploaded, by whom, by when, with what quality bar." }
+      { id:"thin_evidence", prompt:"Where is evidence thin, unclear, or missing?", tip:"Name the evidence gaps so next steps are obvious." }
     ],
     wac: [
       { id:"explain_thinking", prompt:"Where did students write to explain thinking, not just respond?", tip:"Look for explanation, justification, and reasoning." },
       { id:"deepen_understanding", prompt:"What evidence shows writing deepened understanding of content?", tip:"Writing should improve thinking, not just record it." },
-      { id:"authentic_comm", prompt:"How are students using writing to communicate learning authentically?", tip:"Audience, purpose, revision, publishing are strong signals." },
-      { id:"add_on", prompt:"Where is writing still treated as an add-on?", tip:"Name the barrier and the condition causing it." },
-      { id:"next_shift", prompt:"What shift will be made next week to strengthen writing as a learning tool?", tip:"One shift, one signal." }
+      { id:"authentic_comm", prompt:"How are students using writing to communicate learning authentically?", tip:"Audience, purpose, revision, publishing are strong signals." }
     ],
     compelling_evidence: [
       { id:"best_evidence", prompt:"What evidence best represents the reality of learning this week?", tip:"Pick the evidence that tells the truth, not the most flattering." },
-      { id:"assumptions", prompt:"What assumptions were challenged by actual student work?", tip:"Name what you thought and what the evidence showed." },
-      { id:"same_story", prompt:"Where do dashboards, walkthroughs, and artifacts tell the same story?", tip:"Alignment across sources builds trust." },
-      { id:"conflict", prompt:"Where do they conflict, and why?", tip:"Conflicts are gifts. They show where the system is unclear." },
-      { id:"next_lookfors", prompt:"What will we look for next week to confirm progress?", tip:"Be specific. Define the next signal." }
+      { id:"conflict", prompt:"Where do sources conflict, and why?", tip:"Conflicts show where the system is unclear." },
+      { id:"next_lookfors", prompt:"What will we look for next week to confirm progress?", tip:"Define the next signal." }
     ]
   };
 
-  // =========================
-  // STATE
-  // =========================
-  function blankRoleAnswer(){
-    return { text:"", checked:false, notes:"", artifacts:[] };
-  }
-
+  // ====== STATE ======
   function defaultState(){
     const today = new Date();
     const iso = new Date(today.getTime() - today.getTimezoneOffset()*60000).toISOString().slice(0,10);
-
     return {
       meta: {
         weekOf: iso,
@@ -1062,69 +660,27 @@
         core: {},
         focus: {},
         closing: {}
-      },
-      _districtExpandMap: {}
+      }
     };
   }
 
   let state = loadState();
-
-  // Keep per-question district collapse state so toggles persist
-  // key: `${bucket}:${qid}` => boolean (true = expanded)
-  let districtExpandMap = {};
-
-  function migrateOldAnswerShape(obj){
-    if(!obj || typeof obj !== "object") return null;
-
-    const hasRole = (obj.school && obj.district);
-    if(hasRole) return obj;
-
-    const looksOld = ("text" in obj) || ("checked" in obj) || ("notes" in obj) || ("artifacts" in obj);
-    if(looksOld){
-      return {
-        school: { ...blankRoleAnswer(), ...obj },
-        district: { ...blankRoleAnswer() }
-      };
-    }
-
-    return {
-      school: { ...blankRoleAnswer(), ...(obj.school || {}) },
-      district: { ...blankRoleAnswer(), ...(obj.district || {}) }
-    };
-  }
 
   function loadState(){
     try{
       const raw = localStorage.getItem(STORAGE_KEY);
       if(!raw) return defaultState();
       const parsed = JSON.parse(raw);
-      const merged = { ...defaultState(), ...parsed };
-
-      ["core","focus","closing"].forEach(bucket => {
-        merged.answers[bucket] = merged.answers[bucket] || {};
-        Object.keys(merged.answers[bucket]).forEach(qid => {
-          merged.answers[bucket][qid] = migrateOldAnswerShape(merged.answers[bucket][qid]) || {
-            school: blankRoleAnswer(),
-            district: blankRoleAnswer()
-          };
-        });
-      });
-
-      districtExpandMap = merged._districtExpandMap || {};
-      return merged;
+      return { ...defaultState(), ...parsed };
     }catch(e){
       return defaultState();
     }
   }
 
   function saveState(){
-    state._districtExpandMap = districtExpandMap;
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
   }
 
-  // =========================
-  // HELPERS
-  // =========================
   function escapeHtml(str){
     return String(str || "")
       .replaceAll("&","&amp;")
@@ -1132,14 +688,6 @@
       .replaceAll(">","&gt;")
       .replaceAll('"',"&quot;")
       .replaceAll("'","&#039;");
-  }
-
-  function statusToScore(status){
-    const s = (status || "").toLowerCase();
-    if(s === "green") return 3;
-    if(s === "yellow") return 2;
-    if(s === "red") return 1;
-    return 0;
   }
 
   function statusClass(s){
@@ -1156,262 +704,24 @@
 
   function setSchoolVisibility(){
     const org = document.getElementById("orgLevel").value;
-    const schoolField = document.getElementById("schoolField");
-    schoolField.style.display = (org === "School") ? "block" : "none";
+    document.getElementById("schoolField").style.display = (org === "School") ? "block" : "none";
   }
 
-  function isDistrictContributor(){
-    return (state.meta.orgLevel || "").toLowerCase() === "district";
-  }
-
-  function defaultDistrictCollapsed(){
-    if(!AUTO_COLLAPSE_DISTRICT_FOR_SCHOOL) return false;
-    return !isDistrictContributor();
-  }
-
-  function districtKey(bucket, qid){
-    return `${bucket}:${qid}`;
-  }
-
-  function isDistrictExpanded(bucket, qid){
-    if(isDistrictContributor()) return true;
-    const key = districtKey(bucket, qid);
-    if(typeof districtExpandMap[key] === "boolean"){
-      return districtExpandMap[key];
-    }
-    return false;
-  }
-
-  function setDistrictExpanded(bucket, qid, expanded){
-    districtExpandMap[districtKey(bucket, qid)] = !!expanded;
-    saveState();
-  }
-
-  // =========================
-  // PER-QUESTION CORE RYG
-  // =========================
-  function ensureQuestionMeta(bucket, qid){
-    ensureRoleAnswer(bucket, qid);
-    state.answers[bucket][qid] = state.answers[bucket][qid] || {};
-    if(!state.answers[bucket][qid]._meta){
-      state.answers[bucket][qid]._meta = { qStatus: "green" };
-    }
-    return state.answers[bucket][qid]._meta;
-  }
-
-  function getQuestionStatus(bucket, qid){
-    const meta = ensureQuestionMeta(bucket, qid);
-    return meta.qStatus || "green";
-  }
-
-  function setQuestionStatus(bucket, qid, val){
-    const meta = ensureQuestionMeta(bucket, qid);
-    meta.qStatus = val;
-    saveState();
-  }
-
-  // =========================
-  // ROLE ANSWER SHAPE
-  // =========================
-  function ensureRoleAnswer(bucket, qid){
+  // ====== CORE RYG PER QUESTION ======
+  function ensureQMeta(bucket, qid){
     state.answers[bucket] = state.answers[bucket] || {};
-    if(!state.answers[bucket][qid]){
-      state.answers[bucket][qid] = { school: blankRoleAnswer(), district: blankRoleAnswer() };
-      return state.answers[bucket][qid];
-    }
-    state.answers[bucket][qid] = migrateOldAnswerShape(state.answers[bucket][qid]) || {
-      school: blankRoleAnswer(),
-      district: blankRoleAnswer()
-    };
+    state.answers[bucket][qid] = state.answers[bucket][qid] || { text:"", qStatus:"green" };
+    if(!state.answers[bucket][qid].qStatus) state.answers[bucket][qid].qStatus = "green";
     return state.answers[bucket][qid];
   }
 
-  function getRoleAnswer(bucket, qid, role){
-    const a = ensureRoleAnswer(bucket, qid);
-    return a[role];
-  }
-
-  // =========================
-  // EVIDENCE MODAL
-  // =========================
-  let SUBMISSION_CACHE = [];
-
-  function setSubmissionCache(rows){
-    SUBMISSION_CACHE = Array.isArray(rows) ? rows : [];
-  }
-
-  function safeJsonParse(maybeJson){
-    if(!maybeJson) return null;
-    if(typeof maybeJson === "object") return maybeJson;
-    try{ return JSON.parse(maybeJson); }catch(e){ return null; }
-  }
-
-  function extractUrlsFromText(text){
-    const t = String(text || "");
-    const urls = t.match(/https?:\/\/[^\s)"]+/g) || [];
-    return Array.from(new Set(urls));
-  }
-
-  function extractArtifactLinksFromRoleAnswer(ans){
-    const links = [];
-    if(!ans) return links;
-
-    if(Array.isArray(ans.artifacts)){
-      ans.artifacts.forEach(a => {
-        if(a && a.url) links.push({ url: a.url, label: a.label || a.name || "Artifact", kind: a.kind || "artifact" });
-      });
-    }
-
-    extractUrlsFromText(ans.text).forEach(u => links.push({ url: u, label: "Link in answer", kind: "inline" }));
-    extractUrlsFromText(ans.notes).forEach(u => links.push({ url: u, label: "Link in note", kind: "inline" }));
-
-    return links;
-  }
-
-  function extractArtifactLinksFromAnswerObj(ans){
-    const links = [];
-    if(!ans) return links;
-
-    const normalized = migrateOldAnswerShape(ans);
-    if(normalized && normalized.school && normalized.district){
-      links.push(...extractArtifactLinksFromRoleAnswer(normalized.school));
-      links.push(...extractArtifactLinksFromRoleAnswer(normalized.district));
-      return links;
-    }
-
-    links.push(...extractArtifactLinksFromRoleAnswer(ans));
-    return links;
-  }
-
-  function extractEvidenceLinksFromRow(row){
-    const all = [];
-
-    const core = safeJsonParse(row.core_answers_json);
-    const focus = safeJsonParse(row.focus_answers_json);
-    const closing = safeJsonParse(row.closing_answers_json);
-
-    if(core && typeof core === "object"){
-      Object.values(core).forEach(ans => all.push(...extractArtifactLinksFromAnswerObj(ans)));
-    }
-    if(focus && typeof focus === "object"){
-      Object.values(focus).forEach(ans => all.push(...extractArtifactLinksFromAnswerObj(ans)));
-    }
-    if(closing && typeof closing === "object"){
-      Object.values(closing).forEach(ans => all.push(...extractArtifactLinksFromAnswerObj(ans)));
-    }
-
-    extractUrlsFromText(row.evidence_blob).forEach(u => all.push({ url: u, label: "Evidence link", kind: "blob" }));
-
-    const seen = new Set();
-    return all.filter(x => {
-      if(!x.url) return false;
-      if(seen.has(x.url)) return false;
-      seen.add(x.url);
-      return true;
-    });
-  }
-
-  function openEvidenceModal(context){
-    const week = String(context.week_of || "").trim();
-    const school = String(context.school || "").trim();
-    const focusId = String(context.weekly_focus_area_id || "").trim();
-    const focusTitle = String(context.weekly_focus_area_title || "").trim();
-    const orgLevel = String(context.org_level || "").trim();
-
-    const modal = document.getElementById("evidenceModal");
-    const titleEl = document.getElementById("evidenceTitle");
-    const subEl = document.getElementById("evidenceSubtitle");
-    const summaryEl = document.getElementById("evidenceSummary");
-    const listEl = document.getElementById("evidenceList");
-
-    titleEl.textContent = "Evidence";
-    subEl.textContent = `${orgLevel || "Org"} | ${school || "School"} | ${focusTitle || focusId || "Focus"} | ${week || "Week"}`;
-
-    const matchedRows = SUBMISSION_CACHE.filter(r => {
-      if(week && String(r.week_of || "").slice(0,10) !== week.slice(0,10)) return false;
-      if(focusId && String(r.weekly_focus_area_id || "") !== focusId) return false;
-
-      const rOrg = String(r.org_level || "");
-      const rSchool = String(r.school || "");
-
-      if(rOrg === "District") return true;
-      return rSchool === school;
-    });
-
-    let links = [];
-    matchedRows.forEach(r => { links = links.concat(extractEvidenceLinksFromRow(r)); });
-
-    summaryEl.innerHTML = "";
-    const pills = [
-      { label: "Rows matched", value: matchedRows.length },
-      { label: "Artifacts found", value: links.length },
-      { label: "Status", value: String(context.status || "").toUpperCase() || "N/A" }
-    ];
-    pills.forEach(p => {
-      const div = document.createElement("div");
-      div.className = "pillMini";
-      div.textContent = `${p.label}: ${p.value}`;
-      summaryEl.appendChild(div);
-    });
-
-    listEl.innerHTML = "";
-    if(!links.length){
-      const empty = document.createElement("div");
-      empty.className = "evidence-item";
-      empty.innerHTML = `
-        <div class="meta">
-          <div class="title">No artifacts found for this week and focus yet</div>
-          <div class="hint">Upload or add a link inside any School or District box, then submit again.</div>
-        </div>
-      `;
-      listEl.appendChild(empty);
-    }else{
-      links.forEach((l, idx) => {
-        const item = document.createElement("div");
-        item.className = "evidence-item";
-
-        const isDrive = String(l.url).includes("drive.google.com");
-        const label = l.label || (isDrive ? `Drive Artifact ${idx+1}` : `Evidence Link ${idx+1}`);
-
-        item.innerHTML = `
-          <div class="meta">
-            <div class="title">${escapeHtml(label)}</div>
-            <div class="hint">${escapeHtml(l.kind || "")}${isDrive ? " | Google Drive" : ""}</div>
-          </div>
-          <a class="btn secondary" href="${escapeHtml(l.url)}" target="_blank" rel="noopener">Open</a>
-        `;
-        listEl.appendChild(item);
-      });
-    }
-
-    modal.classList.remove("hidden");
-    modal.setAttribute("aria-hidden", "false");
-    document.addEventListener("keydown", escCloseEvidenceOnce);
-  }
-
-  function escCloseEvidenceOnce(e){
-    if(e.key === "Escape") closeEvidenceModal();
-  }
-
-  function closeEvidenceModal(){
-    const modal = document.getElementById("evidenceModal");
-    modal.classList.add("hidden");
-    modal.setAttribute("aria-hidden", "true");
-    document.removeEventListener("keydown", escCloseEvidenceOnce);
-  }
-
-  // =========================
-  // RENDER QUESTIONS (with District auto-collapse + Core RYG)
-  // =========================
-  function renderQuestionList(containerId, bucket, questions){
+  // ====== RENDER QUESTIONS ======
+  function renderQuestionList(containerId, bucket, questions, allowRyg){
     const container = document.getElementById(containerId);
     container.innerHTML = "";
 
     questions.forEach(q => {
-      ensureRoleAnswer(bucket, q.id);
-
-      const expanded = isDistrictExpanded(bucket, q.id);
-      const collapseClass = expanded ? "" : "collapsed";
+      const a = ensureQMeta(bucket, q.id);
 
       const el = document.createElement("div");
       el.className = "qItem";
@@ -1422,9 +732,9 @@
             <div class="tip">Tip: ${escapeHtml(q.tip || "")}</div>
           </div>
 
-          ${bucket === "core" ? `
+          ${allowRyg ? `
             <div class="inline" style="gap:8px; align-items:center;">
-              <span class="statusDot ${statusClass(getQuestionStatus(bucket, q.id))}"></span>
+              <span class="statusDot ${statusClass(a.qStatus)}"></span>
               <select data-action="qStatus" data-bucket="${bucket}" data-qid="${q.id}">
                 <option value="green">Green</option>
                 <option value="yellow">Yellow</option>
@@ -1434,303 +744,41 @@
           ` : ``}
         </div>
 
-        <div class="roleStack">
-          <!-- SCHOOL -->
-          <div class="rolePanel school">
-            <div class="roleHeader">
-              <div>
-                <div class="roleTitle">School Leader</div>
-                <div class="muted">What you saw and what students produced this week.</div>
-              </div>
-              <div class="roleBadge">SCHOOL</div>
-            </div>
-
-            <label class="checkWrap" title="Mark as clear and evidence-backed">
-              <input type="checkbox"
-                data-bucket="${bucket}" data-qid="${q.id}" data-role="school" data-field="checked"/>
-              Clear
-            </label>
-
-            <textarea class="qAnswer"
-              data-bucket="${bucket}" data-qid="${q.id}" data-role="school" data-field="text"
-              placeholder="School leader response (evidence-backed specifics)."></textarea>
-
-            <div class="qActions">
-              <button class="miniBtn" data-action="addNote" data-bucket="${bucket}" data-qid="${q.id}" data-role="school">Add note</button>
-
-              <button class="miniBtn primary" data-action="addLink" data-bucket="${bucket}" data-qid="${q.id}" data-role="school">
-                Add artifact link
-              </button>
-
-              <label class="miniBtn primary" style="display:inline-flex; align-items:center; gap:8px;">
-                Upload artifact
-                <input type="file" style="display:none;" data-action="upload" data-bucket="${bucket}" data-qid="${q.id}" data-role="school"/>
-              </label>
-
-              <span class="muted" id="${bucket}_${q.id}_school_noteHint"></span>
-            </div>
-
-            <div class="artifactList" id="${bucket}_${q.id}_school_artifacts"></div>
-          </div>
-
-          <!-- DISTRICT (Banner + Collapsible Body) -->
-          <div class="rolePanel district">
-            <div class="districtWrap">
-              <div class="districtBanner">
-                <div class="left">
-                  <div class="title">District panel exists</div>
-                  <div class="desc">Used for validation, patterns, supports, and barrier removal.</div>
-                </div>
-                <button class="toggleLink"
-                  type="button"
-                  data-action="toggleDistrict"
-                  data-bucket="${bucket}"
-                  data-qid="${q.id}">
-                  ${expanded ? "Hide District" : "Show District"}
-                </button>
-              </div>
-
-              <div class="districtBody ${collapseClass}" id="${bucket}_${q.id}_districtBody">
-                <div class="roleHeader">
-                  <div>
-                    <div class="roleTitle">District Leader</div>
-                    <div class="muted">What you can validate, support, and remove as barriers.</div>
-                  </div>
-                  <div class="roleBadge">DISTRICT</div>
-                </div>
-
-                <label class="checkWrap" title="Mark as clear and evidence-backed">
-                  <input type="checkbox"
-                    data-bucket="${bucket}" data-qid="${q.id}" data-role="district" data-field="checked"/>
-                  Clear
-                </label>
-
-                <textarea class="qAnswer"
-                  data-bucket="${bucket}" data-qid="${q.id}" data-role="district" data-field="text"
-                  placeholder="District leader response (validation, patterns, supports needed)."></textarea>
-
-                <div class="qActions">
-                  <button class="miniBtn" data-action="addNote" data-bucket="${bucket}" data-qid="${q.id}" data-role="district">Add note</button>
-
-                  <button class="miniBtn primary" data-action="addLink" data-bucket="${bucket}" data-qid="${q.id}" data-role="district">
-                    Add artifact link
-                  </button>
-
-                  <label class="miniBtn primary" style="display:inline-flex; align-items:center; gap:8px;">
-                    Upload artifact
-                    <input type="file" style="display:none;" data-action="upload" data-bucket="${bucket}" data-qid="${q.id}" data-role="district"/>
-                  </label>
-
-                  <span class="muted" id="${bucket}_${q.id}_district_noteHint"></span>
-                </div>
-
-                <div class="artifactList" id="${bucket}_${q.id}_district_artifacts"></div>
-              </div>
-            </div>
-          </div>
-        </div>
+        <textarea class="qAnswer" data-bucket="${bucket}" data-qid="${q.id}" placeholder="Evidence-backed response."></textarea>
       `;
 
       container.appendChild(el);
 
-      // Hydrate Core RYG selector
-      if(bucket === "core"){
-        const sel = el.querySelector(`select[data-action="qStatus"][data-bucket="${bucket}"][data-qid="${q.id}"]`);
-        if(sel){
-          sel.value = getQuestionStatus(bucket, q.id);
-          sel.addEventListener("change", () => {
-            setQuestionStatus(bucket, q.id, sel.value);
-            const dot = sel.parentElement.querySelector(".statusDot");
-            if(dot){
-              dot.className = "statusDot " + statusClass(sel.value);
-            }
-          });
-        }
+      const ta = el.querySelector("textarea");
+      ta.value = a.text || "";
+      ta.addEventListener("input", () => {
+        ensureQMeta(bucket, q.id).text = ta.value || "";
+        saveState();
+        updateAnsweredPills();
+        updateCompletion();
+      });
+
+      if(allowRyg){
+        const sel = el.querySelector('select[data-action="qStatus"]');
+        sel.value = a.qStatus;
+        sel.addEventListener("change", () => {
+          ensureQMeta(bucket, q.id).qStatus = sel.value;
+          saveState();
+          const dot = sel.parentElement.querySelector(".statusDot");
+          dot.className = "statusDot " + statusClass(sel.value);
+        });
       }
-
-      // Hydrate values + artifacts
-      hydrateRolePanel(bucket, q.id, "school", el);
-      hydrateRolePanel(bucket, q.id, "district", el);
-      renderArtifacts(bucket, q.id, "school");
-      renderArtifacts(bucket, q.id, "district");
-
-      // Auto-collapse logic
-      if(defaultDistrictCollapsed() && !isDistrictExpanded(bucket, q.id)){
-        const body = el.querySelector(`#${bucket}_${q.id}_districtBody`);
-        if(body) body.classList.add("collapsed");
-      }
-
-      wireQuestionEvents(el);
     });
 
     updateAnsweredPills();
     updateCompletion();
   }
 
-  function hydrateRolePanel(bucket, qid, role, scopeEl){
-    const a = getRoleAnswer(bucket, qid, role);
-
-    const chk = scopeEl.querySelector(`input[type="checkbox"][data-bucket="${bucket}"][data-qid="${qid}"][data-role="${role}"][data-field="checked"]`);
-    if(chk) chk.checked = !!a.checked;
-
-    const ta = scopeEl.querySelector(`textarea[data-bucket="${bucket}"][data-qid="${qid}"][data-role="${role}"][data-field="text"]`);
-    if(ta) ta.value = a.text || "";
-
-    const hint = document.getElementById(`${bucket}_${qid}_${role}_noteHint`);
-    if(hint) hint.textContent = a.notes ? "Note added" : "";
-  }
-
-  function renderArtifacts(bucket, qid, role){
-    const a = getRoleAnswer(bucket, qid, role);
-    const list = document.getElementById(`${bucket}_${qid}_${role}_artifacts`);
-    if(!list) return;
-
-    list.innerHTML = "";
-    (a.artifacts || []).forEach((art, idx) => {
-      const row = document.createElement("div");
-      row.className = "artifact";
-      const label = art.label || art.name || "Artifact";
-      const linkHtml = art.url ? `<a href="${escapeHtml(art.url)}" target="_blank" rel="noopener">${escapeHtml(label)}</a>` : escapeHtml(label);
-
-      row.innerHTML = `
-        <div>
-          <div style="font-weight:800;">${linkHtml}</div>
-          <div class="muted">${escapeHtml(art.kind || "")}${art.kind ? " | " : ""}${escapeHtml(art.note || "")}</div>
-        </div>
-        <div class="right">
-          <button class="miniBtn"
-            data-action="removeArtifact" data-bucket="${bucket}" data-qid="${qid}" data-role="${role}" data-idx="${idx}">
-            Remove
-          </button>
-        </div>
-      `;
-      list.appendChild(row);
-    });
-  }
-
-  function wireQuestionEvents(scopeEl){
-    // inputs/textarea
-    scopeEl.querySelectorAll("[data-field]").forEach(el => {
-      const bucket = el.getAttribute("data-bucket");
-      const qid = el.getAttribute("data-qid");
-      const role = el.getAttribute("data-role");
-      const field = el.getAttribute("data-field");
-
-      const handler = () => {
-        const a = getRoleAnswer(bucket, qid, role);
-        if(field === "checked"){
-          a.checked = !!el.checked;
-        }else if(field === "text"){
-          a.text = el.value || "";
-        }
-        saveState();
-        updateAnsweredPills();
-        updateCompletion();
-      };
-
-      el.addEventListener(field === "checked" ? "change" : "input", handler);
-    });
-
-    // actions
-    scopeEl.querySelectorAll("[data-action]").forEach(el => {
-      const action = el.getAttribute("data-action");
-      const bucket = el.getAttribute("data-bucket");
-      const qid = el.getAttribute("data-qid");
-      const role = el.getAttribute("data-role");
-
-      if(action === "toggleDistrict"){
-        el.addEventListener("click", () => {
-          if(isDistrictContributor()) return;
-
-          const body = document.getElementById(`${bucket}_${qid}_districtBody`);
-          if(!body) return;
-
-          const currentlyCollapsed = body.classList.contains("collapsed");
-          if(currentlyCollapsed){
-            body.classList.remove("collapsed");
-            el.textContent = "Hide District";
-            setDistrictExpanded(bucket, qid, true);
-          }else{
-            body.classList.add("collapsed");
-            el.textContent = "Show District";
-            setDistrictExpanded(bucket, qid, false);
-          }
-        });
-      }
-
-      if(action === "addNote"){
-        el.addEventListener("click", () => {
-          const a = getRoleAnswer(bucket, qid, role);
-          const next = prompt("Add a short note (context, names, reminders):", a.notes || "");
-          if(next === null) return;
-          a.notes = next.trim();
-          saveState();
-          const hint = document.getElementById(`${bucket}_${qid}_${role}_noteHint`);
-          if(hint) hint.textContent = a.notes ? "Note added" : "";
-        });
-      }
-
-      if(action === "addLink"){
-        el.addEventListener("click", () => {
-          const a = getRoleAnswer(bucket, qid, role);
-          const url = prompt("Paste an artifact link (Drive link, BPI page, rubric, student product URL):", "");
-          if(!url) return;
-          const label = prompt("Short label (example: 'BPI sample: Grade 7', 'BPA rubric', 'WAC published piece'):", "Artifact");
-          a.artifacts.push({ kind:"link", url: url.trim(), label: (label || "Artifact").trim(), note:"" });
-          saveState();
-          renderArtifacts(bucket, qid, role);
-        });
-      }
-
-      if(action === "upload"){
-        el.addEventListener("change", async (evt) => {
-          const file = evt.target.files && evt.target.files[0];
-          evt.target.value = "";
-          if(!file) return;
-
-          try{
-            const a = getRoleAnswer(bucket, qid, role);
-            const uploaded = await uploadArtifactToDrive(file);
-            a.artifacts.push({
-              kind: "upload",
-              url: uploaded.url,
-              label: uploaded.name || file.name,
-              note: uploaded.note || ""
-            });
-
-            saveState();
-            renderArtifacts(bucket, qid, role);
-            alert("Uploaded and linked.");
-          }catch(err){
-            alert("Upload failed: " + String(err));
-          }
-        });
-      }
-
-      if(action === "removeArtifact"){
-        el.addEventListener("click", () => {
-          const idx = Number(el.getAttribute("data-idx"));
-          const a = getRoleAnswer(bucket, qid, role);
-          a.artifacts.splice(idx, 1);
-          saveState();
-          renderArtifacts(bucket, qid, role);
-        });
-      }
-    });
-  }
-
-  // =========================
-  // COMPLETION INDICATORS
-  // =========================
   function countAnswered(bucket, questions){
     let answered = 0;
     questions.forEach(q => {
-      const school = getRoleAnswer(bucket, q.id, "school");
-      const district = getRoleAnswer(bucket, q.id, "district");
-      const hasAnyText =
-        (school.text || "").trim().length > 0 ||
-        (district.text || "").trim().length > 0;
-      if(hasAnyText) answered += 1;
+      const a = ensureQMeta(bucket, q.id);
+      if((a.text || "").trim().length > 0) answered += 1;
     });
     return { answered, total: questions.length };
   }
@@ -1739,189 +787,41 @@
     const core = countAnswered("core", CORE_FRAMING_QUESTIONS);
     document.getElementById("coreDonePill").textContent = `${core.answered}/${core.total} answered`;
 
-    const focusId = state.meta.weeklyFocus;
-    const focusQs = FOCUS_QUESTIONS[focusId] || [];
+    const focusQs = FOCUS_QUESTIONS[state.meta.weeklyFocus] || [];
     const focus = countAnswered("focus", focusQs);
     document.getElementById("focusDonePill").textContent = `${focus.answered}/${focus.total} answered`;
 
-    const closingSchool = getRoleAnswer("closing", "closing", "school");
-    const closingDistrict = getRoleAnswer("closing", "closing", "district");
-    const closingAnswered = (closingSchool.text || "").trim().length || (closingDistrict.text || "").trim().length;
-    document.getElementById("closeDonePill").textContent = closingAnswered ? "Answered" : "Not answered";
+    const closing = ensureQMeta("closing", "closing");
+    document.getElementById("closeDonePill").textContent =
+      (closing.text || "").trim().length ? "Answered" : "Not answered";
   }
 
   function updateCompletion(){
-    const focusId = state.meta.weeklyFocus;
-    const focusQs = FOCUS_QUESTIONS[focusId] || [];
-
+    const focusQs = FOCUS_QUESTIONS[state.meta.weeklyFocus] || [];
     const core = countAnswered("core", CORE_FRAMING_QUESTIONS);
     const focus = countAnswered("focus", focusQs);
-
-    const closingSchool = getRoleAnswer("closing", "closing", "school");
-    const closingDistrict = getRoleAnswer("closing", "closing", "district");
-    const closingAnswered = ((closingSchool.text || "").trim().length || (closingDistrict.text || "").trim().length) ? 1 : 0;
+    const closing = ensureQMeta("closing", "closing");
+    const closingAnswered = (closing.text || "").trim().length ? 1 : 0;
 
     const total = core.total + focus.total + 1;
     const done = core.answered + focus.answered + closingAnswered;
-
     const pct = total ? Math.round((done/total)*100) : 0;
     document.getElementById("completionPill").textContent = `${pct}% complete`;
   }
 
-  // =========================
-  // PAGE RENDER
-  // =========================
-  function renderSummaryBar(){
-    const bar = document.getElementById("summaryBar");
-    bar.innerHTML = "";
+  // ====== CHARTS ======
+  let charts = { pieCurrent:null, pieYtd:null, barCurrent:null, barYtd:null };
 
-    const org = state.meta.orgLevel;
-    const school = (org === "School") ? state.meta.school : "District";
-    const focus = FOCUS_META[state.meta.weeklyFocus]?.title || state.meta.weeklyFocus;
-
-    bar.appendChild(chip(`${org} submission`, "gray"));
-    bar.appendChild(chip(`${school}`, "gray"));
-    bar.appendChild(chip(`${focus}`, "gray"));
-
-    const score = statusToScore(state.status.status);
-    const sLabel = (state.status.status || "").toUpperCase();
-    bar.appendChild(chip(`Status: ${sLabel} (score ${score})`, state.status.status));
+  function statusToScore(s){
+    s = String(s || "").toLowerCase();
+    if(s === "green") return 3;
+    if(s === "yellow") return 2;
+    if(s === "red") return 1;
+    return 0;
   }
 
-  function chip(text, status){
-    const d = document.createElement("div");
-    d.className = "chip";
-    const dot = document.createElement("span");
-    dot.className = "statusDot " + statusClass(status);
-    dot.style.width = "9px";
-    dot.style.height = "9px";
-    dot.style.boxShadow = "none";
-    d.appendChild(dot);
-    const t = document.createElement("span");
-    t.textContent = text;
-    d.appendChild(t);
-    return d;
-  }
-
-  // =========================
-  // ARTIFACT UPLOAD (Drive via Apps Script)
-  // =========================
-  function readFileAsBase64(file){
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => {
-        const result = String(reader.result || "");
-        const parts = result.split(",");
-        if(parts.length < 2) return reject(new Error("Invalid file encoding."));
-        resolve(parts[1]);
-      };
-      reader.onerror = () => reject(reader.error || new Error("File read failed."));
-      reader.readAsDataURL(file);
-    });
-  }
-
-  async function uploadArtifactToDrive(file){
-    const b64 = await readFileAsBase64(file);
-
-    const payload = {
-      action: "upload",
-      file_name: file.name,
-      mime_type: file.type || "application/octet-stream",
-      base64: b64,
-      week_of: state.meta.weekOf,
-      org_level: state.meta.orgLevel,
-      school: state.meta.orgLevel === "School" ? state.meta.school : "District",
-      focus_area_id: state.meta.weeklyFocus
-    };
-
-    const res = await fetch(SCRIPT_URL, {
-      method: "POST",
-      headers: { "Content-Type": "text/plain;charset=utf-8" },
-      body: JSON.stringify(payload)
-    });
-
-    const data = await res.json();
-    if(!data.ok) throw new Error(data.error || "Upload failed.");
-    return data.file;
-  }
-
-  // =========================
-  // SHEET SUBMISSION
-  // =========================
-  function buildSubmissionPayload(){
-    const focusId = state.meta.weeklyFocus;
-    const focusTitle = FOCUS_META[focusId]?.title || focusId;
-
-    const core_answers = {};
-    CORE_FRAMING_QUESTIONS.forEach(q => core_answers[q.id] = ensureRoleAnswer("core", q.id));
-
-    const focus_answers = {};
-    (FOCUS_QUESTIONS[focusId] || []).forEach(q => focus_answers[q.id] = ensureRoleAnswer("focus", q.id));
-
-    const closing_answers = { closing: ensureRoleAnswer("closing", "closing") };
-
-    // Optional: include core per-question RYG statuses in evidence_blob (simple, non-breaking)
-    const coreStatusBlob = {};
-    CORE_FRAMING_QUESTIONS.forEach(q => coreStatusBlob[q.id] = getQuestionStatus("core", q.id));
-
-    return {
-      week_of: state.meta.weekOf,
-      view_mode: state.meta.viewMode,
-
-      org_level: state.meta.orgLevel,
-      school: state.meta.orgLevel === "School" ? state.meta.school : "District",
-      submitter_name: state.meta.submitterName,
-      submitter_role: state.meta.submitterRole,
-
-      weekly_focus_area_id: focusId,
-      weekly_focus_area_title: focusTitle,
-
-      status: state.status.status,
-      metric1: state.status.metric1,
-      metric2: state.status.metric2,
-      metric3: state.status.metric3,
-      lane_owner: state.status.laneOwner,
-
-      core_answers,
-      focus_answers,
-      closing_answers,
-
-      // does not break your sheet schema if you store it in evidence_blob
-      evidence_blob: JSON.stringify({ core_question_status: coreStatusBlob })
-    };
-  }
-
-  async function submitToSheet(){
-    const payload = buildSubmissionPayload();
-
-    const btn = document.getElementById("submitToSheetBtn");
-    btn.disabled = true;
-    btn.textContent = "Submitting...";
-
-    try{
-      const res = await fetch(SCRIPT_URL, {
-        method: "POST",
-        headers: { "Content-Type": "text/plain;charset=utf-8" },
-        body: JSON.stringify(payload)
-      });
-      const data = await res.json();
-      if(!data.ok) throw new Error(data.error || "Submit failed.");
-      alert("Submitted to Google Sheet.");
-      // After a submit, refresh trends and analytics so the new row shows up
-      await refreshAnalytics();
-    }catch(err){
-      alert("Submit failed: " + String(err));
-    }finally{
-      btn.disabled = false;
-      btn.textContent = "Submit to Google Sheet";
-    }
-  }
-
-  // =========================
-  // TRENDS
-  // =========================
   async function fetchAllRows(){
-    const res = await fetch(SCRIPT_URL, { method: "GET" });
+    const res = await fetch(SCRIPT_URL, { method:"GET" });
     const data = await res.json();
     if(!data.ok) throw new Error(data.error || "Failed to load rows");
     return data.rows || [];
@@ -1932,166 +832,21 @@
     return isNaN(dt.getTime()) ? null : dt;
   }
 
-  function startOfMonth(dt){ return new Date(dt.getFullYear(), dt.getMonth(), 1); }
-  function startOfYear(dt){ return new Date(dt.getFullYear(), 0, 1); }
-
-  function applyTrendFilters(rows){
-    const orgLevel = document.getElementById("trendOrgLevel").value;
-    const fromStr = document.getElementById("dateFrom").value;
-    const toStr = document.getElementById("dateTo").value;
-
-    const from = fromStr ? new Date(fromStr + "T00:00:00") : null;
-    const to = toStr ? new Date(toStr + "T23:59:59") : null;
-
-    const focusId = state.meta.weeklyFocus;
-
-    return rows.filter(r => {
-      if(orgLevel !== "all" && r.org_level !== orgLevel) return false;
-      if(r.weekly_focus_area_id && r.weekly_focus_area_id !== focusId) return false;
-
-      const ts = parseDateMaybe(r.timestamp_iso) || parseDateMaybe(r.week_of);
-      if(!ts) return false;
-      if(from && ts < from) return false;
-      if(to && ts > to) return false;
-
-      return true;
-    });
-  }
-
-  function avgScore(rows){
-    if(!rows.length) return 0;
-    const sum = rows.reduce((a, r) => a + (Number(r.status_score) || 0), 0);
-    return sum / rows.length;
-  }
-
-  function scoreLabel(avg){
-    if(avg >= 2.5) return "Green";
-    if(avg >= 1.75) return "Yellow";
-    if(avg > 0) return "Red";
-    return "No data";
-  }
-
-  function computeRollups(rows){
-    const now = new Date();
-    const monthStart = startOfMonth(now);
-    const yearStart = startOfYear(now);
-
-    const weekOf = state.meta.weekOf ? new Date(state.meta.weekOf + "T00:00:00") : null;
-    let weeklyRows = [];
-    if(weekOf){
-      weeklyRows = rows.filter(r => String(r.week_of).slice(0,10) === String(state.meta.weekOf).slice(0,10));
-    } else {
-      const sevenDaysAgo = new Date(now.getTime() - 7*24*60*60*1000);
-      weeklyRows = rows.filter(r => {
-        const ts = parseDateMaybe(r.timestamp_iso);
-        return ts && ts >= sevenDaysAgo;
-      });
-    }
-
-    const monthlyRows = rows.filter(r => {
-      const ts = parseDateMaybe(r.timestamp_iso);
-      return ts && ts >= monthStart;
-    });
-
-    const ytdRows = rows.filter(r => {
-      const ts = parseDateMaybe(r.timestamp_iso);
-      return ts && ts >= yearStart;
-    });
-
-    return {
-      weekly: avgScore(weeklyRows),
-      monthly: avgScore(monthlyRows),
-      ytd: avgScore(ytdRows)
-    };
-  }
-
-  function renderRollups(rollups){
-    document.getElementById("rollupWeekly").textContent =
-      rollups.weekly ? `${rollups.weekly.toFixed(2)} (${scoreLabel(rollups.weekly)})` : "No data";
-    document.getElementById("rollupMonthly").textContent =
-      rollups.monthly ? `${rollups.monthly.toFixed(2)} (${scoreLabel(rollups.monthly)})` : "No data";
-    document.getElementById("rollupYtd").textContent =
-      rollups.ytd ? `${rollups.ytd.toFixed(2)} (${scoreLabel(rollups.ytd)})` : "No data";
-  }
-
-  function renderTrendsTable(rows){
-    const tbody = document.getElementById("trendsTableBody");
-    tbody.innerHTML = "";
-
-    setSubmissionCache(rows);
-
-    const sorted = [...rows].sort((a,b) => String(b.timestamp_iso).localeCompare(String(a.timestamp_iso)));
-    sorted.slice(0, 250).forEach(r => {
-      const tr = document.createElement("tr");
-
-      tr.innerHTML = `
-        <td>${escapeHtml(String(r.timestamp_iso || "").replace("T"," ").slice(0,16))}</td>
-        <td>${escapeHtml(r.org_level || "")}</td>
-        <td>${escapeHtml(r.school || "")}</td>
-        <td>${escapeHtml(r.weekly_focus_area_title || r.weekly_focus_area_id || "")}</td>
-        <td>${escapeHtml(String(r.status || "").toUpperCase())}</td>
-        <td>${escapeHtml(r.metric1 || "")}</td>
-        <td>${escapeHtml(r.metric2 || "")}</td>
-        <td>${escapeHtml(r.metric3 || "")}</td>
-        <td>
-          <button class="miniBtn primary" style="padding:8px 10px;">View Evidence</button>
-        </td>
-      `;
-
-      const btn = tr.querySelector("button");
-      btn.addEventListener("click", () => {
-        openEvidenceModal({
-          week_of: r.week_of,
-          school: r.school,
-          weekly_focus_area_id: r.weekly_focus_area_id,
-          weekly_focus_area_title: r.weekly_focus_area_title,
-          org_level: r.org_level,
-          status: r.status
-        });
-      });
-
-      tbody.appendChild(tr);
-    });
-  }
-
-  async function refreshTrends(){
-    try{
-      const all = await fetchAllRows();
-      const filtered = applyTrendFilters(all);
-      const rollups = computeRollups(filtered);
-      renderRollups(rollups);
-      renderTrendsTable(filtered);
-      alert("Trends refreshed.");
-    }catch(err){
-      alert("Trend refresh failed: " + String(err));
-    }
-  }
-
-  // =========================
-  // ANALYTICS (Charts)
-  // =========================
-  let charts = {
-    pieCurrent: null,
-    pieYtd: null,
-    barCurrent: null,
-    barYtd: null,
-    barByAreaYtd: null
-  };
-
-  function matchesSchoolRow(r, schoolName){
-    return (r.org_level === "School" && (r.school || "") === schoolName);
-  }
-  function matchesDistrictRow(r){
-    return (r.org_level === "District");
-  }
-  function matchesWeek(r, weekOfIso){
-    return String(r.week_of || "").slice(0,10) === String(weekOfIso || "").slice(0,10);
-  }
   function isYtd(r){
     const ts = parseDateMaybe(r.timestamp_iso) || parseDateMaybe(r.week_of);
     if(!ts) return false;
     const y0 = new Date(new Date().getFullYear(), 0, 1);
     return ts >= y0;
+  }
+
+  function matchesWeek(r, weekOfIso){
+    return String(r.week_of || "").slice(0,10) === String(weekOfIso || "").slice(0,10);
+  }
+  function matchesSchoolRow(r, schoolName){
+    return (r.org_level === "School" && (r.school || "") === schoolName);
+  }
+  function matchesDistrictRow(r){
+    return (r.org_level === "District");
   }
 
   function statusCounts(rows){
@@ -2103,28 +858,14 @@
     return c;
   }
 
-  function avgScoreAll(rows){
+  function avgScore(rows){
     if(!rows.length) return 0;
     const sum = rows.reduce((a,r) => a + statusToScore(r.status), 0);
     return sum / rows.length;
   }
 
-  function groupByFocusAvg(rows){
-    const map = {};
-    rows.forEach(r => {
-      const id = r.weekly_focus_area_id || "unknown";
-      map[id] = map[id] || [];
-      map[id].push(r);
-    });
-    const out = {};
-    Object.keys(FOCUS_META).forEach(id => {
-      const bucket = map[id] || [];
-      out[id] = bucket.length ? avgScoreAll(bucket) : 0;
-    });
-    return out;
-  }
-
-  function ensureChart(ctx, existing, type, data, options){
+  function ensureChart(canvasEl, existing, type, data, options){
+    const ctx = canvasEl.getContext("2d");
     if(existing){
       existing.data = data;
       existing.options = options;
@@ -2156,199 +897,174 @@
     const sy = statusCounts(schoolYtd);
     const dy = statusCounts(districtYtd);
 
-    const swAvg = avgScoreAll(schoolWeek);
-    const dwAvg = avgScoreAll(districtWeek);
-    const syAvg = avgScoreAll(schoolYtd);
-    const dyAvg = avgScoreAll(districtYtd);
-
-    const schoolByArea = groupByFocusAvg(schoolYtd);
-    const districtByArea = groupByFocusAvg(districtYtd);
+    const swAvg = avgScore(schoolWeek);
+    const dwAvg = avgScore(districtWeek);
+    const syAvg = avgScore(schoolYtd);
+    const dyAvg = avgScore(districtYtd);
 
     const pieOpts = {
       responsive:true,
-      animation: { duration: 700 },
+      animation: { duration: 650 },
       plugins: { legend: { display:false } }
     };
 
-    const pieCurrentData = {
-      labels: ["School Green","School Yellow","School Red","District Green","District Yellow","District Red"],
-      datasets: [{ data: [sw.green, sw.yellow, sw.red, dw.green, dw.yellow, dw.red] }]
-    };
-    const pieCurrentCtx = document.getElementById("pieCurrent");
-    if(pieCurrentCtx){
-      charts.pieCurrent = ensureChart(pieCurrentCtx, charts.pieCurrent, "pie", pieCurrentData, pieOpts);
-    }
+    charts.pieCurrent = ensureChart(
+      document.getElementById("pieCurrent"),
+      charts.pieCurrent,
+      "pie",
+      {
+        labels: ["School Green","School Yellow","School Red","District Green","District Yellow","District Red"],
+        datasets: [{ data: [sw.green, sw.yellow, sw.red, dw.green, dw.yellow, dw.red] }]
+      },
+      pieOpts
+    );
 
-    const pieYtdData = {
-      labels: ["School Green","School Yellow","School Red","District Green","District Yellow","District Red"],
-      datasets: [{ data: [sy.green, sy.yellow, sy.red, dy.green, dy.yellow, dy.red] }]
-    };
-    const pieYtdCtx = document.getElementById("pieYtd");
-    if(pieYtdCtx){
-      charts.pieYtd = ensureChart(pieYtdCtx, charts.pieYtd, "pie", pieYtdData, pieOpts);
-    }
+    charts.pieYtd = ensureChart(
+      document.getElementById("pieYtd"),
+      charts.pieYtd,
+      "pie",
+      {
+        labels: ["School Green","School Yellow","School Red","District Green","District Yellow","District Red"],
+        datasets: [{ data: [sy.green, sy.yellow, sy.red, dy.green, dy.yellow, dy.red] }]
+      },
+      pieOpts
+    );
 
     const barOpts = {
       responsive:true,
-      animation: { duration: 700 },
+      animation: { duration: 650 },
       scales: { y: { beginAtZero:true, suggestedMax:3 } },
       plugins: { legend: { display:false } }
     };
 
-    const barCurrentData = {
-      labels: ["School", "District"],
-      datasets: [{ label:"Avg score", data: [swAvg, dwAvg] }]
+    charts.barCurrent = ensureChart(
+      document.getElementById("barCurrent"),
+      charts.barCurrent,
+      "bar",
+      { labels: ["School", "District"], datasets: [{ label:"Avg score", data: [swAvg, dwAvg] }] },
+      barOpts
+    );
+
+    charts.barYtd = ensureChart(
+      document.getElementById("barYtd"),
+      charts.barYtd,
+      "bar",
+      { labels: ["School YTD", "District YTD"], datasets: [{ label:"Avg score", data: [syAvg, dyAvg] }] },
+      barOpts
+    );
+  }
+
+  // ====== SUBMIT ======
+  function buildSubmissionPayload(){
+    const focusId = state.meta.weeklyFocus;
+    const focusTitle = FOCUS_META[focusId]?.title || focusId;
+
+    const core_answers = {};
+    CORE_FRAMING_QUESTIONS.forEach(q => core_answers[q.id] = ensureQMeta("core", q.id));
+    const focus_answers = {};
+    (FOCUS_QUESTIONS[focusId] || []).forEach(q => focus_answers[q.id] = ensureQMeta("focus", q.id));
+    const closing_answers = { closing: ensureQMeta("closing", "closing") };
+
+    return {
+      week_of: state.meta.weekOf,
+      view_mode: state.meta.viewMode,
+      org_level: state.meta.orgLevel,
+      school: state.meta.orgLevel === "School" ? state.meta.school : "District",
+      submitter_name: state.meta.submitterName,
+      submitter_role: state.meta.submitterRole,
+      weekly_focus_area_id: focusId,
+      weekly_focus_area_title: focusTitle,
+
+      status: state.status.status,
+      metric1: state.status.metric1,
+      metric2: state.status.metric2,
+      metric3: state.status.metric3,
+      lane_owner: state.status.laneOwner,
+
+      core_answers,
+      focus_answers,
+      closing_answers
     };
-    const barCurrentCtx = document.getElementById("barCurrent");
-    if(barCurrentCtx){
-      charts.barCurrent = ensureChart(barCurrentCtx, charts.barCurrent, "bar", barCurrentData, barOpts);
-    }
+  }
 
-    const barYtdData = {
-      labels: ["School YTD", "District YTD"],
-      datasets: [{ label:"Avg score", data: [syAvg, dyAvg] }]
-    };
-    const barYtdCtx = document.getElementById("barYtd");
-    if(barYtdCtx){
-      charts.barYtd = ensureChart(barYtdCtx, charts.barYtd, "bar", barYtdData, barOpts);
-    }
+  async function submitToSheet(){
+    const payload = buildSubmissionPayload();
+    const btn = document.getElementById("submitToSheetBtn");
+    btn.disabled = true;
+    btn.textContent = "Submitting...";
 
-    const areaLabels = Object.keys(FOCUS_META).map(id => (FOCUS_META[id]?.title || id));
-    const areaIds = Object.keys(FOCUS_META);
-
-    const schoolSeries = areaIds.map(id => schoolByArea[id] || 0);
-    const districtSeries = areaIds.map(id => districtByArea[id] || 0);
-
-    const barByAreaData = {
-      labels: areaLabels,
-      datasets: [
-        { label: "School YTD", data: schoolSeries },
-        { label: "District YTD", data: districtSeries }
-      ]
-    };
-
-    const barByAreaOpts = {
-      responsive:true,
-      animation: { duration: 700 },
-      scales: {
-        y: { beginAtZero:true, suggestedMax:3 },
-        x: { ticks: { autoSkip: false, maxRotation: 90, minRotation: 60 } }
-      },
-      plugins: { legend: { display:true } }
-    };
-
-    const barByAreaCtx = document.getElementById("barByAreaYtd");
-    if(barByAreaCtx){
-      charts.barByAreaYtd = ensureChart(barByAreaCtx, charts.barByAreaYtd, "bar", barByAreaData, barByAreaOpts);
+    try{
+      const res = await fetch(SCRIPT_URL, {
+        method: "POST",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if(!data.ok) throw new Error(data.error || "Submit failed.");
+      alert("Submitted to Google Sheet.");
+      await refreshAnalytics();
+    }catch(err){
+      alert("Submit failed: " + String(err));
+    }finally{
+      btn.disabled = false;
+      btn.textContent = "Submit to Google Sheet";
     }
   }
 
-  // =========================
-  // PAGE RENDER
-  // =========================
+  // ====== PAGE RENDER ======
   function renderPage(){
-    document.getElementById("weekOf").value = state.meta.weekOf;
-    document.getElementById("viewMode").value = state.meta.viewMode;
-    document.getElementById("orgLevel").value = state.meta.orgLevel;
-    document.getElementById("schoolSelect").value = state.meta.school;
-    document.getElementById("submitterRole").value = state.meta.submitterRole;
-    document.getElementById("submitterName").value = state.meta.submitterName;
-    document.getElementById("weeklyFocus").value = state.meta.weeklyFocus;
+    weekOf.value = state.meta.weekOf;
+    viewMode.value = state.meta.viewMode;
+    orgLevel.value = state.meta.orgLevel;
+    schoolSelect.value = state.meta.school;
+    submitterRole.value = state.meta.submitterRole;
+    submitterName.value = state.meta.submitterName;
+    weeklyFocus.value = state.meta.weeklyFocus;
 
     setSchoolVisibility();
 
-    document.getElementById("statusSelect").value = state.status.status;
-    document.getElementById("metric1").value = state.status.metric1;
-    document.getElementById("metric2").value = state.status.metric2;
-    document.getElementById("metric3").value = state.status.metric3;
-    document.getElementById("laneOwner").value = state.status.laneOwner;
+    statusSelect.value = state.status.status;
+    metric1.value = state.status.metric1;
+    metric2.value = state.status.metric2;
+    metric3.value = state.status.metric3;
+    laneOwner.value = state.status.laneOwner;
 
     updateStatusDot();
 
     const focusId = state.meta.weeklyFocus;
     const meta = FOCUS_META[focusId];
-    document.getElementById("pageTitle").textContent = `Weekly Focus: ${meta ? meta.title : "Focus Area"}`;
-    document.getElementById("pageContext").textContent =
-      "Each question includes a School box. District boxes are available for validation and support. For School contributors, District panels stay collapsed unless you open them. Analytics show the selected school and district across all areas.";
 
-    document.getElementById("focusTitle").textContent = `Focus Area Questions: ${meta ? meta.title : ""}`;
-    document.getElementById("focusHint").textContent = meta ? meta.hint : "";
+    pageTitle.textContent = `Weekly Focus: ${meta ? meta.title : "Focus Area"}`;
+    pageContext.textContent =
+      "Charts are in the left sidebar for quick context while you complete the weekly executive review. Change the week or school to update School vs District charts (current week and YTD).";
 
-    renderQuestionList("coreQuestions", "core", CORE_FRAMING_QUESTIONS);
-    renderQuestionList("focusQuestions", "focus", FOCUS_QUESTIONS[focusId] || []);
-    renderQuestionList("closingQuestion", "closing", [CLOSING_QUESTION]);
+    focusTitle.textContent = `Weekly Focus Questions: ${meta ? meta.title : ""}`;
+    focusHint.textContent = meta ? meta.hint : "";
 
-    renderSummaryBar();
+    renderQuestionList("coreQuestions", "core", CORE_FRAMING_QUESTIONS, true);
+    renderQuestionList("focusQuestions", "focus", FOCUS_QUESTIONS[focusId] || [], false);
+    renderQuestionList("closingQuestion", "closing", [CLOSING_QUESTION], false);
 
-    if(isDistrictContributor()){
-      forceExpandAllDistrictPanels();
-    }
+    refreshAnalytics();
   }
 
-  function forceExpandAllDistrictPanels(){
-    document.querySelectorAll(".districtBody").forEach(body => body.classList.remove("collapsed"));
-    document.querySelectorAll('[data-action="toggleDistrict"]').forEach(btn => {
-      btn.textContent = "Hide District";
-    });
-
-    const focusId = state.meta.weeklyFocus;
-    const allQs = [
-      ...CORE_FRAMING_QUESTIONS.map(q => ({bucket:"core", id:q.id})),
-      ...((FOCUS_QUESTIONS[focusId] || []).map(q => ({bucket:"focus", id:q.id}))),
-      {bucket:"closing", id:"closing"}
-    ];
-    allQs.forEach(x => setDistrictExpanded(x.bucket, x.id, true));
-  }
-
-  // =========================
-  // WIRES
-  // =========================
+  // ====== WIRES ======
   function wireMeta(){
     const bind = (id, fn, evt="change") => document.getElementById(id).addEventListener(evt, fn);
 
-    bind("weekOf", async () => {
-      state.meta.weekOf = document.getElementById("weekOf").value;
-      saveState();
-      await refreshAnalytics();
-    });
+    bind("weekOf", async () => { state.meta.weekOf = weekOf.value; saveState(); await refreshAnalytics(); });
+    bind("viewMode", () => { state.meta.viewMode = viewMode.value; saveState(); });
+    bind("orgLevel", async () => { state.meta.orgLevel = orgLevel.value; setSchoolVisibility(); saveState(); await refreshAnalytics(); });
 
-    bind("viewMode", () => { state.meta.viewMode = document.getElementById("viewMode").value; saveState(); });
+    bind("schoolSelect", async () => { state.meta.school = schoolSelect.value; saveState(); await refreshAnalytics(); });
 
-    bind("orgLevel", async () => {
-      state.meta.orgLevel = document.getElementById("orgLevel").value;
-      setSchoolVisibility();
-      saveState();
-      renderPage();
-      await refreshAnalytics();
-    });
+    bind("weeklyFocus", () => { state.meta.weeklyFocus = weeklyFocus.value; saveState(); renderPage(); });
 
-    bind("schoolSelect", async () => {
-      state.meta.school = document.getElementById("schoolSelect").value;
-      saveState();
-      renderSummaryBar();
-      await refreshAnalytics();
-    });
+    bind("submitterRole", () => { state.meta.submitterRole = submitterRole.value; saveState(); });
 
-    bind("submitterRole", () => { state.meta.submitterRole = document.getElementById("submitterRole").value; saveState(); });
+    submitterName.addEventListener("input", () => { state.meta.submitterName = submitterName.value; saveState(); });
 
-    document.getElementById("submitterName").addEventListener("input", () => {
-      state.meta.submitterName = document.getElementById("submitterName").value;
-      saveState();
-    });
-
-    bind("weeklyFocus", () => {
-      state.meta.weeklyFocus = document.getElementById("weeklyFocus").value;
-      saveState();
-      renderPage();
-    });
-
-    bind("statusSelect", () => {
-      state.status.status = document.getElementById("statusSelect").value;
-      saveState();
-      updateStatusDot();
-      renderSummaryBar();
-    });
-
+    bind("statusSelect", () => { state.status.status = statusSelect.value; saveState(); updateStatusDot(); });
     ["metric1","metric2","metric3","laneOwner"].forEach(id => {
       document.getElementById(id).addEventListener("input", () => {
         state.status[id === "laneOwner" ? "laneOwner" : id] = document.getElementById(id).value;
@@ -2358,17 +1074,10 @@
   }
 
   function wireButtons(){
-    document.getElementById("saveLocalBtn").addEventListener("click", () => {
-      saveState();
-      alert("Saved locally.");
-    });
+    saveLocalBtn.addEventListener("click", () => { saveState(); alert("Saved locally."); });
+    printBtn.addEventListener("click", () => { saveState(); window.print(); });
 
-    document.getElementById("printBtn").addEventListener("click", () => {
-      saveState();
-      window.print();
-    });
-
-    document.getElementById("exportBtn").addEventListener("click", () => {
+    exportBtn.addEventListener("click", () => {
       saveState();
       const blob = new Blob([JSON.stringify(state, null, 2)], { type: "application/json" });
       const url = URL.createObjectURL(blob);
@@ -2381,7 +1090,7 @@
       URL.revokeObjectURL(url);
     });
 
-    document.getElementById("importFile").addEventListener("change", async (e) => {
+    importFile.addEventListener("change", async (e) => {
       const file = e.target.files && e.target.files[0];
       e.target.value = "";
       if(!file) return;
@@ -2389,37 +1098,29 @@
         const text = await file.text();
         const parsed = JSON.parse(text);
         state = { ...defaultState(), ...parsed };
-        districtExpandMap = state._districtExpandMap || {};
         saveState();
         renderPage();
-        await refreshAnalytics();
         alert("Imported.");
       }catch(err){
         alert("Import failed: " + String(err));
       }
     });
 
-    document.getElementById("resetBtn").addEventListener("click", () => {
+    resetBtn.addEventListener("click", () => {
       if(!confirm("Reset everything to defaults for this device?")) return;
       state = defaultState();
-      districtExpandMap = {};
       saveState();
       renderPage();
-      refreshAnalytics();
     });
 
-    document.getElementById("submitToSheetBtn").addEventListener("click", submitToSheet);
-    document.getElementById("refreshTrendsBtn").addEventListener("click", refreshTrends);
-    document.getElementById("refreshAnalyticsBtn").addEventListener("click", refreshAnalytics);
+    submitToSheetBtn.addEventListener("click", submitToSheet);
+    refreshAnalyticsBtn.addEventListener("click", refreshAnalytics);
   }
 
-  // =========================
-  // INIT
-  // =========================
+  // ====== INIT ======
   wireMeta();
   wireButtons();
   renderPage();
-  refreshAnalytics();
 </script>
 </body>
 </html>
